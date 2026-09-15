@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bitepoint - Restaurant Management &amp; Orders</title>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              yellow: '#FDC544',
+              yellowHover: '#f5ba33',
+              dark: '#14181B',
+              teal: '#09706C',
+              tealDark: '#0B4E4A',
+              cream: '#F7F6F1',
+              softBorder: '#ECEAE4',
+              badgeYellow: '#F8B544',
+              mint: '#E4F8ED',
+              mintText: '#109955',
+              amberSoft: '#FFF6E5',
+              amberText: '#D97706',
+              blueSoft: '#EEF4FF',
+              blueText: '#3B82F6',
+            }
+          },
+          boxShadow: {
+            'card': '0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
+            'board': '0 25px 60px -15px rgba(22, 28, 36, 0.12)',
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-scrollbars">
+    /* Subtle aesthetic scrollbars for items container */
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #E2DFD8;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #CAC5BC;
+    }
+  </style>
+</head>
+<body class="bg-[#ECE7DF] min-h-screen text-[#2A2E37] font-sans antialiased p-3 sm:p-6 lg:p-8 flex items-center justify-center">
+<!-- BEGIN: MainAppContainer -->
+<!-- Outer mockup application canvas mimicking the exact layout canvas -->
+<div class="w-full max-w-[1440px] h-[920px] bg-brand-cream rounded-[36px] shadow-board overflow-hidden flex border border-[#ECE6DB]">
+<!-- BEGIN: SidebarNavigation -->
+<aside class="w-64 bg-white flex-shrink-0 flex flex-col justify-between py-7 px-6 border-r border-[#EFECE6]" data-purpose="sidebar">
+<div>
+<!-- Brand Logo -->
+<div class="flex items-center gap-2.5 px-2 mb-10" data-purpose="brand-logo">
+<div class="w-9 h-8 bg-[#0C7268] rounded-xl flex items-center justify-center relative overflow-hidden shadow-sm">
+<svg class="w-5 h-5 text-brand-yellow transform translate-y-0.5" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z" opacity="0.3"></path>
+<path d="M4 19h16a2 2 0 0 0 2-2V9.82a2 2 0 0 0-.74-1.55l-8-6.4a2 2 0 0 0-2.52 0l-8 6.4A2 2 0 0 0 2 9.82V17a2 2 0 0 0 2 2zm1-8.5l7-5.6 7 5.6V17h-4v-4H9v4H5v-6.5z"></path>
+<circle cx="12" cy="11" fill="#FDC544" r="2.5"></circle>
+</svg>
+</div>
+<span class="text-2xl font-extrabold tracking-tight text-[#0F2625] font-sans">bite<span class="text-[#0B6B62]">point</span></span>
+</div>
+<!-- Navigation Links -->
+<nav class="space-y-1.5" data-purpose="nav-links">
+<!-- Dashboard Link -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+            Dashboard
+          </a>
+<!-- Menu Link -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+            Menu
+          </a>
+<!-- Active Orders Link -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-bold text-[#1F1E19] bg-brand-yellow shadow-sm" href="#">
+<svg class="w-5 h-5 text-[#1F1E19]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+            Orders
+          </a>
+<!-- Table Link -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<rect height="16" rx="2" stroke-width="2" width="18" x="3" y="4"></rect>
+<path d="M3 10h18M10 4v16" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+            Table
+          </a>
+<!-- Accounting Link -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+            Accounting
+          </a>
+<!-- Settings Link -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+            Settings
+          </a>
+</nav>
+</div>
+<!-- User Profile & Logout -->
+<div class="pt-6 border-t border-[#F2EFE9] space-y-4" data-purpose="user-section">
+<!-- Staff Identity -->
+<div class="flex items-center gap-3 px-1">
+<img alt="Gladina Samantha" class="w-10 h-10 rounded-full object-cover ring-2 ring-white shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCX2Q-Q-S0UEkI7bpy8U3sUj2n2UmbqilnwHOeCqjjwMLn6KyUSo0aI6mok23_6POsHR87_neA61fIvb5YetSILC23ZELIJOvIvARwct7T4yGRwgU7HqVFUi_nAc6YxM6_93fqp8hB6nALO9OZm1woMeMb6wvFWawm4gemuKFt-gIcr_VnUeMa8rUa0a4B9qYuouOvseofzaUWeETKLiwtlecM9E2NrQCiQzl6wo9yz-NGnn-A-2-g7"/>
+<div>
+<h4 class="text-sm font-bold text-[#1A1D20] leading-tight">Gladina Samantha</h4>
+<p class="text-xs text-[#8A8F9A] font-medium mt-0.5">Waiters</p>
+</div>
+</div>
+<!-- Logout Button -->
+<button class="w-full flex items-center gap-3 px-2 py-2 text-sm font-semibold text-[#5A5F6B] hover:text-[#BD3939] transition-colors group" type="button">
+<svg class="w-5 h-5 text-[#888D98] group-hover:text-[#BD3939] transition-colors" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Logout
+        </button>
+</div>
+</aside>
+<!-- END: SidebarNavigation -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden" data-purpose="content-area">
+<!-- BEGIN: TopBar -->
+<header class="pt-7 pb-5 px-8 flex-shrink-0 flex items-center justify-between" data-purpose="top-header">
+<!-- Title & Status Filter Tabs -->
+<div>
+<h1 class="text-[28px] font-extrabold text-[#15191E] tracking-tight">Orders</h1>
+<div class="flex items-center gap-2 mt-4" data-purpose="filters">
+<button class="px-5 py-2 text-xs font-bold rounded-full bg-white text-[#636873] hover:text-black transition-colors shadow-sm">
+              All
+            </button>
+<button class="px-5 py-2 text-xs font-bold rounded-full bg-[#183935] text-white shadow-sm">
+              On Process
+            </button>
+<button class="px-5 py-2 text-xs font-bold rounded-full bg-white text-[#636873] hover:text-black transition-colors shadow-sm">
+              Completed
+            </button>
+</div>
+</div>
+<!-- Date & Global Search -->
+<div class="flex flex-col items-end gap-3.5">
+<!-- Live Date Display -->
+<div class="text-sm font-bold text-[#1B1E22]" data-purpose="current-date">
+            Wednesday, 12 July 2023
+          </div>
+<!-- Filter Icon & Search Input -->
+<div class="flex items-center gap-2.5">
+<!-- Filter Option Icon -->
+<button aria-label="Order Preferences" class="w-10 h-10 rounded-2xl bg-white border border-[#E9E6DF] flex items-center justify-center text-[#555B66] hover:bg-gray-50 shadow-sm transition-all">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<!-- Search Input Container -->
+<div class="relative w-72" data-purpose="search-box">
+<input class="w-full bg-white border border-[#EAE7DF] rounded-2xl pl-4 pr-10 py-2.5 text-xs text-[#20242B] placeholder-[#9A9EA7] focus:outline-none focus:ring-2 focus:ring-[#0C7268]/20 focus:border-[#0C7268] shadow-sm font-medium" placeholder="Search a name, order, or etc" type="text"/>
+<span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888E99]">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+</span>
+</div>
+</div>
+</div>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: OrdersGrid -->
+<section class="flex-1 overflow-y-auto px-8 pb-7 custom-scroll" data-purpose="orders-feed">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+<!-- Card 1: Ariel Hikmat (A4, Dine In, Ready) -->
+<article class="bg-white rounded-3xl p-5 shadow-card border border-[#F0ECE1] flex flex-col justify-between hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-[#09706C] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                    A4
+                  </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Ariel Hikmat</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Order <span class="text-[#32363F]">#925</span> / Dine In</p>
+</div>
+</div>
+<!-- Ready Status Badge -->
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#E6F8ED] text-[#0C8B49]">
+<svg class="w-3.5 h-3.5" fill="currentColor" viewbox="0 0 20 20">
+<path clip-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" fill-rule="evenodd"></path>
+</svg>
+                    Ready
+                  </span>
+<span class="text-[10px] text-[#727985] mt-1 font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#109955]"></span> Ready to serve
+                  </span>
+</div>
+</div>
+<!-- Time Info -->
+<div class="flex justify-between items-center text-[11px] text-[#868C96] font-semibold py-2.5">
+<span>Wed, July 12, 2023</span>
+<span>06:12 PM</span>
+</div>
+<!-- Order Item Table -->
+<div class="space-y-2 pt-1 pb-3 text-xs">
+<div class="flex justify-between text-[#8E939E] font-medium text-[11px] px-0.5">
+<span>Items</span>
+<div class="flex gap-7">
+<span>Qty</span>
+<span class="w-10 text-right">Price</span>
+</div>
+</div>
+<!-- Row 1 -->
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Scrambled eggs with toast</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$16.99</span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Smoked Salmon Bagel</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$18.49</span>
+</div>
+</div>
+<!-- Row 3 -->
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Belgian Waffles</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">2</span>
+<span class="w-12 text-right">$38.98</span>
+</div>
+</div>
+<!-- Row 4 -->
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Classic Lemonade</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$12.49</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Total and Actions Footer -->
+<div class="pt-3 border-t border-[#F5F2EA]">
+<div class="flex justify-between items-baseline mb-4">
+<span class="text-xs font-bold text-[#6F7480]">Total</span>
+<span class="text-lg font-extrabold text-[#111418]">$87.34</span>
+</div>
+<div class="grid grid-cols-2 gap-2.5">
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#4B505A] bg-[#F2F0E8] hover:bg-[#EAE6DB] transition-colors" type="button">
+                  See Details
+                </button>
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#1C1F24] bg-brand-yellow hover:bg-brand-yellowHover shadow-sm transition-colors" type="button">
+                  Pay Bills
+                </button>
+</div>
+</div>
+</article>
+<!-- Card 2: Denis Freeman (B2, Dine In, In Progress) -->
+<article class="bg-white rounded-3xl p-5 shadow-card border border-[#F0ECE1] flex flex-col justify-between hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-[#0F4E4A] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                    B2
+                  </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Denis Freeman</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Order <span class="text-[#32363F]">#921</span> / Dine In</p>
+</div>
+</div>
+<!-- In Progress Badge -->
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#FEF3D6] text-[#B86B07]">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+<path d="M12 7v5l3 2" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+                    In Progress
+                  </span>
+<span class="text-[10px] text-[#727985] mt-1 font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706]"></span> Cooking Now
+                  </span>
+</div>
+</div>
+<!-- Time Info -->
+<div class="flex justify-between items-center text-[11px] text-[#868C96] font-semibold py-2.5">
+<span>Wed, July 12, 2023</span>
+<span>06:18 PM</span>
+</div>
+<!-- Order Item Table -->
+<div class="space-y-2 pt-1 pb-3 text-xs">
+<div class="flex justify-between text-[#8E939E] font-medium text-[11px] px-0.5">
+<span>Items</span>
+<div class="flex gap-7">
+<span>Qty</span>
+<span class="w-10 text-right">Price</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Classic Cheeseburger</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$10.99</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Fish and Chips</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">2</span>
+<span class="w-12 text-right">$34.00</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Greek Gyro Plate</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$13.99</span>
+</div>
+</div>
+<!-- Empty Row Spacer to keep card rhythm visually balanced -->
+<div class="h-4"></div>
+</div>
+</div>
+<!-- Total and Actions Footer -->
+<div class="pt-3 border-t border-[#F5F2EA]">
+<div class="flex justify-between items-baseline mb-4">
+<span class="text-xs font-bold text-[#6F7480]">Total</span>
+<span class="text-lg font-extrabold text-[#111418]">$57.87</span>
+</div>
+<div class="grid grid-cols-2 gap-2.5">
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#4B505A] bg-[#F2F0E8] hover:bg-[#EAE6DB] transition-colors" type="button">
+                  See Details
+                </button>
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#1C1F24] bg-brand-yellow hover:bg-brand-yellowHover shadow-sm transition-colors" type="button">
+                  Pay Bills
+                </button>
+</div>
+</div>
+</article>
+<!-- Card 3: Morgan Cox (TA, Takeaway, In Progress) -->
+<article class="bg-white rounded-3xl p-5 shadow-card border border-[#F0ECE1] flex flex-col justify-between hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-brand-badgeYellow text-[#222019] flex items-center justify-center font-extrabold text-sm shadow-sm">
+                    TA
+                  </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Morgan Cox</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Order <span class="text-[#32363F]">#916</span> / Takeaway</p>
+</div>
+</div>
+<!-- In Progress Badge -->
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#FEF3D6] text-[#B86B07]">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+<path d="M12 7v5l3 2" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+                    In Progress
+                  </span>
+<span class="text-[10px] text-[#727985] mt-1 font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706]"></span> In the Kitchen
+                  </span>
+</div>
+</div>
+<!-- Time Info -->
+<div class="flex justify-between items-center text-[11px] text-[#868C96] font-semibold py-2.5">
+<span>Wed, July 12, 2023</span>
+<span>06:19 PM</span>
+</div>
+<!-- Order Item Table -->
+<div class="space-y-2 pt-1 pb-3 text-xs">
+<div class="flex justify-between text-[#8E939E] font-medium text-[11px] px-0.5">
+<span>Items</span>
+<div class="flex gap-7">
+<span>Qty</span>
+<span class="w-10 text-right">Price</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Vegetarian Pad Thai</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$16.99</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Shrimp Tacos</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">2</span>
+<span class="w-12 text-right">$19.49</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Belgian Waffles</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$38.98</span>
+</div>
+</div>
+<!-- Overflow Indicator item -->
+<div class="flex justify-between items-center text-[11px] font-bold text-[#8C919D] pt-0.5">
+<span class="italic text-gray-400">Freshly Coffee...</span>
+<span class="text-[#555A64] hover:underline cursor-pointer">+2 more</span>
+</div>
+</div>
+</div>
+<!-- Total and Actions Footer -->
+<div class="pt-3 border-t border-[#F5F2EA]">
+<div class="flex justify-between items-baseline mb-4">
+<span class="text-xs font-bold text-[#6F7480]">Total</span>
+<span class="text-lg font-extrabold text-[#111418]">$86.96</span>
+</div>
+<div class="grid grid-cols-2 gap-2.5">
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#4B505A] bg-[#F2F0E8] hover:bg-[#EAE6DB] transition-colors" type="button">
+                  See Details
+                </button>
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#1C1F24] bg-brand-yellow hover:bg-brand-yellowHover shadow-sm transition-colors" type="button">
+                  Pay Bills
+                </button>
+</div>
+</div>
+</article>
+<!-- Card 4: Paul Rey (TA, Takeaway, In Progress) -->
+<article class="bg-white rounded-3xl p-5 shadow-card border border-[#F0ECE1] flex flex-col justify-between hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-brand-badgeYellow text-[#222019] flex items-center justify-center font-extrabold text-sm shadow-sm">
+                    TA
+                  </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Paul Rey</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Order <span class="text-[#32363F]">#919</span> / Takeaway</p>
+</div>
+</div>
+<!-- In Progress Badge -->
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#FEF3D6] text-[#B86B07]">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+<path d="M12 7v5l3 2" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+                    In Progress
+                  </span>
+<span class="text-[10px] text-[#727985] mt-1 font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706]"></span> In the Kitchen
+                  </span>
+</div>
+</div>
+<!-- Time Info -->
+<div class="flex justify-between items-center text-[11px] text-[#868C96] font-semibold py-2.5">
+<span>Wed, July 12, 2023</span>
+<span>06:18 PM</span>
+</div>
+<!-- Order Item Table -->
+<div class="space-y-2 pt-1 pb-3 text-xs">
+<div class="flex justify-between text-[#8E939E] font-medium text-[11px] px-0.5">
+<span>Items</span>
+<div class="flex gap-7">
+<span>Qty</span>
+<span class="w-10 text-right">Price</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Margherita Pizza</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$16.99</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Belgian Waffles</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$19.49</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Virgin Mojito</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">2</span>
+<span class="w-12 text-right">$38.98</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Classic Lemonade</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">2</span>
+<span class="w-12 text-right">$25.98</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Total and Actions Footer -->
+<div class="pt-3 border-t border-[#F5F2EA]">
+<div class="flex justify-between items-baseline mb-4">
+<span class="text-xs font-bold text-[#6F7480]">Total</span>
+<span class="text-lg font-extrabold text-[#111418]">$97.96</span>
+</div>
+<div class="grid grid-cols-2 gap-2.5">
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#4B505A] bg-[#F2F0E8] hover:bg-[#EAE6DB] transition-colors" type="button">
+                  See Details
+                </button>
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#1C1F24] bg-brand-yellow hover:bg-brand-yellowHover shadow-sm transition-colors" type="button">
+                  Pay Bills
+                </button>
+</div>
+</div>
+</article>
+<!-- Card 5: Maja Becker (A9, Dine In, Completed) -->
+<article class="bg-white rounded-3xl p-5 shadow-card border border-[#F0ECE1] flex flex-col justify-between hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-[#0B5652] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                    A9
+                  </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Maja Becker</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Order <span class="text-[#32363F]">#912</span> / Dine In</p>
+</div>
+</div>
+<!-- Completed Badge -->
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#EBF3FE] text-[#2B6CB0]">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+                    Completed
+                  </span>
+<span class="text-[10px] text-[#727985] mt-1 font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#3182CE]"></span> Waiting For Payment
+                  </span>
+</div>
+</div>
+<!-- Time Info -->
+<div class="flex justify-between items-center text-[11px] text-[#868C96] font-semibold py-2.5">
+<span>Wed, July 12, 2023</span>
+<span>05:32 PM</span>
+</div>
+<!-- Order Item Table -->
+<div class="space-y-2 pt-1 pb-3 text-xs">
+<div class="flex justify-between text-[#8E939E] font-medium text-[11px] px-0.5">
+<span>Items</span>
+<div class="flex gap-7">
+<span>Qty</span>
+<span class="w-10 text-right">Price</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Feta Stuffed Mushrooms</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$18.99</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Lobster Ravioli</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$17.99</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Thai Coconut Curry</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">2</span>
+<span class="w-12 text-right">$14.49</span>
+</div>
+</div>
+<div class="flex justify-between items-center text-[11px] font-bold text-[#8C919D] pt-0.5">
+<span class="italic text-gray-400">Belgian Waffles...</span>
+<span class="text-[#555A64] hover:underline cursor-pointer">+4 more</span>
+</div>
+</div>
+</div>
+<!-- Total and Actions Footer -->
+<div class="pt-3 border-t border-[#F5F2EA]">
+<div class="flex justify-between items-baseline mb-4">
+<span class="text-xs font-bold text-[#6F7480]">Total</span>
+<span class="text-lg font-extrabold text-[#111418]">$98.34</span>
+</div>
+<div class="grid grid-cols-2 gap-2.5">
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#4B505A] bg-[#F2F0E8] hover:bg-[#EAE6DB] transition-colors" type="button">
+                  See Details
+                </button>
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#1C1F24] bg-brand-yellow hover:bg-brand-yellowHover shadow-sm transition-colors" type="button">
+                  Pay Bills
+                </button>
+</div>
+</div>
+</article>
+<!-- Card 6: Erwan Richard (C2, Dine In, Completed) -->
+<article class="bg-white rounded-3xl p-5 shadow-card border border-[#F0ECE1] flex flex-col justify-between hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Card Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-[#0A4B48] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                    C2
+                  </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Erwan Richard</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Order <span class="text-[#32363F]">#908</span> / Dine In</p>
+</div>
+</div>
+<!-- Completed Badge -->
+<div class="flex flex-col items-end">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#EBF3FE] text-[#2B6CB0]">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+                    Completed
+                  </span>
+<span class="text-[10px] text-[#727985] mt-1 font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#3182CE]"></span> Waiting For Payment
+                  </span>
+</div>
+</div>
+<!-- Time Info -->
+<div class="flex justify-between items-center text-[11px] text-[#868C96] font-semibold py-2.5">
+<span>Wed, July 12, 2023</span>
+<span>05:20 PM</span>
+</div>
+<!-- Order Item Table -->
+<div class="space-y-2 pt-1 pb-3 text-xs">
+<div class="flex justify-between text-[#8E939E] font-medium text-[11px] px-0.5">
+<span>Items</span>
+<div class="flex gap-7">
+<span>Qty</span>
+<span class="w-10 text-right">Price</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Creamy Garlic Chicken</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$15.99</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Greek Gyro Plate</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$13.99</span>
+</div>
+</div>
+<div class="flex justify-between font-semibold text-[#22262E]">
+<span class="truncate max-w-[150px]">Belgian Waffles</span>
+<div class="flex gap-8">
+<span class="text-[#686D77] w-4 text-center">1</span>
+<span class="w-12 text-right">$12.99</span>
+</div>
+</div>
+<div class="flex justify-between items-center text-[11px] font-bold text-[#8C919D] pt-0.5">
+<span class="italic text-gray-400">Iced Tea Infusion...</span>
+<span class="text-[#555A64] hover:underline cursor-pointer">+3 more</span>
+</div>
+</div>
+</div>
+<!-- Total and Actions Footer -->
+<div class="pt-3 border-t border-[#F5F2EA]">
+<div class="flex justify-between items-baseline mb-4">
+<span class="text-xs font-bold text-[#6F7480]">Total</span>
+<span class="text-lg font-extrabold text-[#111418]">$56.96</span>
+</div>
+<div class="grid grid-cols-2 gap-2.5">
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#4B505A] bg-[#F2F0E8] hover:bg-[#EAE6DB] transition-colors" type="button">
+                  See Details
+                </button>
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#1C1F24] bg-brand-yellow hover:bg-brand-yellowHover shadow-sm transition-colors" type="button">
+                  Pay Bills
+                </button>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- END: OrdersGrid -->
+</main>
+<!-- END: MainContent -->
+</div>
+<!-- END: MainAppContainer -->
+</body></html>

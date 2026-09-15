@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BitePoint Management - Operational Dashboard</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Plus Jakarta Sans for Modern Clean UI -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              amber: '#efa736',
+              amberHover: '#e09827',
+              teal: '#1f4e47',
+              tealLight: '#2a6a61',
+              sage: '#e2edea',
+              warmBg: '#eae9e4',
+              surface: '#faf9f6',
+              border: '#e7e5e4',
+              cardBorder: '#eceae6',
+              dark: '#1c1917',
+              muted: '#78716c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-scroll-and-visuals">
+    body {
+      background-color: #eae9e4;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    /* Smooth transitions and delicate border styling */
+    .dashboard-card {
+      background-color: #ffffff;
+      border: 1px solid #eceae6;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #d6d3d1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-6 lg:p-8 flex items-center justify-center text-stone-800">
+<!-- BEGIN: MainContainer -->
+<!-- Outer rounded canvas matching the exact BitePoint desktop container -->
+<main class="w-full max-w-[1560px] bg-white rounded-[36px] shadow-xl border border-stone-200/80 overflow-hidden flex flex-col lg:flex-row min-h-[920px]" data-purpose="app-shell">
+<!-- BEGIN: Sidebar -->
+<aside class="w-full lg:w-64 xl:w-72 bg-white border-r border-stone-100 flex flex-col justify-between p-6 shrink-0" data-purpose="sidebar-navigation">
+<div>
+<!-- Brand Logo Header -->
+<div class="flex items-center gap-3 px-2 py-2 mb-8">
+<div class="w-10 h-10 rounded-2xl bg-[#1f4e47] flex items-center justify-center text-white shadow-sm">
+<svg class="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewbox="0 0 24 24">
+<path d="M18 2v4a2 2 0 0 1-2 2v14"></path>
+<path d="M6 2v20"></path>
+<path d="M10 2v6a2 2 0 0 1-2 2"></path>
+<path d="M2 2h8"></path>
+</svg>
+</div>
+<div>
+<span class="text-xl font-bold tracking-tight text-stone-900 leading-tight block">bitepoint</span>
+<span class="text-[10px] tracking-widest font-semibold text-stone-400 uppercase">MANAGEMENT</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav aria-label="Main Navigation" class="space-y-1.5">
+<!-- Active: Dashboard -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl bg-[#efa736] text-stone-950 font-semibold text-sm shadow-sm transition-colors duration-150" href="#">
+<svg class="w-5 h-5 text-stone-950" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<rect height="7" rx="1.5" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1.5" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1.5" width="7" x="14" y="14"></rect>
+<rect height="7" rx="1.5" width="7" x="3" y="14"></rect>
+</svg>
+<span>Dashboard</span>
+</a>
+<!-- Menu -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-stone-600 hover:text-stone-900 hover:bg-stone-50 font-medium text-sm transition-colors duration-150" href="#">
+<svg class="w-5 h-5 text-stone-500" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+<path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+</svg>
+<span>Menu</span>
+</a>
+<!-- Orders -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-stone-600 hover:text-stone-900 hover:bg-stone-50 font-medium text-sm transition-colors duration-150" href="#">
+<svg class="w-5 h-5 text-stone-500" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+<rect height="4" rx="1" ry="1" width="8" x="8" y="2"></rect>
+<path d="M9 14h6"></path>
+<path d="M9 18h4"></path>
+<path d="M9 10h6"></path>
+</svg>
+<span>Orders</span>
+</a>
+<!-- Table -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-stone-600 hover:text-stone-900 hover:bg-stone-50 font-medium text-sm transition-colors duration-150" href="#">
+<svg class="w-5 h-5 text-stone-500" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24">
+<rect height="18" rx="2" width="18" x="3" y="3"></rect>
+<path d="M3 9h18"></path>
+<path d="M9 21V9"></path>
+</svg>
+<span>Table</span>
+</a>
+<!-- Accounting -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-stone-600 hover:text-stone-900 hover:bg-stone-50 font-medium text-sm transition-colors duration-150" href="#">
+<svg class="w-5 h-5 text-stone-500" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+<path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+<path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+</svg>
+<span>Accounting</span>
+</a>
+<!-- Settings -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-stone-600 hover:text-stone-900 hover:bg-stone-50 font-medium text-sm transition-colors duration-150" href="#">
+<svg class="w-5 h-5 text-stone-500" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="3"></circle>
+<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+</svg>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- User Profile Card in Sidebar -->
+<div class="pt-6 border-t border-stone-100" data-purpose="user-profile-badge">
+<div class="flex items-center justify-between p-3 rounded-2xl bg-stone-50 border border-stone-100 hover:bg-stone-100/60 transition-colors">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-stone-200 text-stone-700 font-bold flex items-center justify-center text-xs tracking-wider border border-white">
+              GS
+            </div>
+<div>
+<p class="text-xs font-bold text-stone-900">Gladina S.</p>
+<p class="text-[11px] font-medium text-stone-400">Head Cashier</p>
+</div>
+</div>
+<button aria-label="Log Out" class="p-1.5 text-stone-400 hover:text-stone-700 rounded-lg hover:bg-stone-200/50 transition" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+<polyline points="16 17 21 12 16 7"></polyline>
+<line x1="21" x2="9" y1="12" y2="12"></line>
+</svg>
+</button>
+</div>
+</div>
+</aside>
+<!-- END: Sidebar -->
+<!-- BEGIN: MainContentArea -->
+<div class="flex-1 flex flex-col overflow-y-auto custom-scrollbar p-6 lg:p-8 xl:p-9 space-y-6" data-purpose="primary-workspace">
+<!-- BEGIN: HeaderSection -->
+<header class="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-2">
+<!-- Title & Status Subtitle -->
+<div>
+<div class="flex items-center gap-3">
+<h1 class="text-2xl lg:text-3xl font-extrabold text-stone-900 tracking-tight">Dashboard</h1>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/70">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span>
+              LIVE SERVICE
+            </span>
+</div>
+<p class="text-xs lg:text-[13px] text-stone-500 mt-1 font-medium">
+            Downtown Flagship <span class="mx-1">•</span> Today's Operational Overview &amp; Live Floor Pulse
+          </p>
+</div>
+<!-- Utility Bar & Primary Action Button -->
+<div class="flex flex-wrap items-center gap-2.5 sm:gap-3">
+<!-- Date Pill -->
+<div class="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-stone-50 border border-stone-200/80 text-xs font-medium text-stone-600">
+<svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
+<line x1="16" x2="16" y1="2" y2="6"></line>
+<line x1="8" x2="8" y1="2" y2="6"></line>
+<line x1="3" x2="21" y1="10" y2="10"></line>
+</svg>
+<span>Wednesday, 12 July 2023</span>
+</div>
+<!-- Global Quick Search -->
+<div class="relative min-w-[220px]">
+<span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-stone-400">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+</span>
+<input class="w-full pl-9 pr-3.5 py-2 text-xs rounded-2xl border border-stone-200/80 bg-stone-50/70 text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-400 focus:bg-white transition-all" placeholder="Search orders, tables, dishes..." type="text"/>
+</div>
+<!-- Icon Action: Notification -->
+<button aria-label="Notifications" class="p-2 rounded-2xl border border-stone-200/80 bg-white hover:bg-stone-50 text-stone-600 transition" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+</svg>
+</button>
+<!-- Icon Action: Filter Settings -->
+<button aria-label="Floor Settings" class="p-2 rounded-2xl border border-stone-200/80 bg-white hover:bg-stone-50 text-stone-600 transition" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<line x1="4" x2="4" y1="21" y2="14"></line>
+<line x1="4" x2="4" y1="10" y2="3"></line>
+<line x1="12" x2="12" y1="21" y2="12"></line>
+<line x1="12" x2="12" y1="8" y2="3"></line>
+<line x1="20" x2="20" y1="21" y2="16"></line>
+<line x1="20" x2="20" y1="12" y2="3"></line>
+<line x1="1" x2="7" y1="14" y2="14"></line>
+<line x1="9" x2="15" y1="8" y2="8"></line>
+<line x1="17" x2="23" y1="16" y2="16"></line>
+</svg>
+</button>
+<!-- Primary CTA Button -->
+<button class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-[#efa736] hover:bg-[#e09827] text-stone-950 font-bold text-xs shadow-sm transition-transform active:scale-95" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24">
+<line x1="12" x2="12" y1="5" y2="19"></line>
+<line x1="5" x2="19" y1="12" y2="12"></line>
+</svg>
+<span>Create Order</span>
+</button>
+</div>
+</header>
+<!-- END: HeaderSection -->
+<!-- BEGIN: FilterAndShiftBar -->
+<div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+<!-- Segmented Filter Pills -->
+<div class="flex items-center p-1 rounded-2xl bg-stone-100 text-xs font-medium text-stone-600">
+<button class="px-3.5 py-1.5 rounded-xl bg-stone-900 text-white font-semibold shadow-xs" type="button">Today</button>
+<button class="px-3.5 py-1.5 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-white/60 transition" type="button">This Week</button>
+<button class="px-3.5 py-1.5 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-white/60 transition" type="button">This Month</button>
+<button class="px-3.5 py-1.5 rounded-xl text-stone-600 hover:text-stone-900 hover:bg-white/60 transition" type="button">Shift: Lunch / Dinner</button>
+</div>
+<!-- Quick Export / Live Status Tools -->
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 text-xs text-stone-500 font-medium mr-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+            Syncing in real-time
+          </span>
+<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-white border border-stone-200 hover:bg-stone-50 text-stone-700" type="button">
+<svg class="w-3.5 h-3.5 text-stone-500" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polyline points="6 9 6 2 18 2 18 9"></polyline>
+<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+<rect height="8" width="12" x="6" y="14"></rect>
+</svg>
+<span>Print Shift Report</span>
+</button>
+</div>
+</div>
+<!-- END: FilterAndShiftBar -->
+<!-- BEGIN: KPIStatsGrid -->
+<!-- 4 Top Level KPI Cards Matching Accounting Style -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" data-purpose="metric-cards">
+<!-- Metric 1: Revenue -->
+<div class="dashboard-card rounded-3xl p-5 relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold text-stone-400 tracking-wider uppercase">Today's Revenue</span>
+<div class="w-8 h-8 rounded-xl bg-amber-50 text-[#efa736] flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="14" rx="2" width="20" x="2" y="5"></rect>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+</div>
+</div>
+<div class="mt-3">
+<p class="text-2xl font-black text-stone-900 tracking-tight">$6,420<span class="text-base text-stone-500 font-semibold">.80</span></p>
+<div class="mt-2 flex items-center gap-2 text-xs">
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold text-[11px]">
+<svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewbox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                +12.4%
+              </span>
+<span class="text-stone-400 text-[11px]">vs yesterday</span>
+</div>
+</div>
+</div>
+<!-- Metric 2: Active Orders -->
+<div class="dashboard-card rounded-3xl p-5 relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold text-stone-400 tracking-wider uppercase">Active Orders</span>
+<div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+<polyline points="14 2 14 8 20 8"></polyline>
+<line x1="16" x2="8" y1="13" y2="13"></line>
+<line x1="16" x2="8" y1="17" y2="17"></line>
+</svg>
+</div>
+</div>
+<div class="mt-3">
+<p class="text-2xl font-black text-stone-900 tracking-tight">18 <span class="text-base text-emerald-600 font-semibold">Live</span></p>
+<div class="mt-2 flex items-center gap-1.5 text-xs text-stone-500 font-medium">
+<span class="inline-block w-2 h-2 rounded-full bg-amber-400"></span>
+<span class="text-[11px]">12 Dine-In</span>
+<span class="text-stone-300">•</span>
+<span class="text-[11px]">4 QR</span>
+<span class="text-stone-300">•</span>
+<span class="text-[11px]">2 Takeaway</span>
+</div>
+</div>
+</div>
+<!-- Metric 3: Table Occupancy -->
+<div class="dashboard-card rounded-3xl p-5 relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold text-stone-400 tracking-wider uppercase">Table Occupancy</span>
+<div class="w-8 h-8 rounded-xl bg-stone-100 text-stone-700 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+<path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"></path>
+<path d="M12 3v6"></path>
+</svg>
+</div>
+</div>
+<div class="mt-3">
+<div class="flex items-baseline justify-between">
+<p class="text-2xl font-black text-stone-900 tracking-tight">78%</p>
+<span class="text-xs font-semibold text-stone-500">25/32 Tables</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full h-2 bg-stone-100 rounded-full mt-2 overflow-hidden">
+<div class="h-full bg-[#1f4e47] rounded-full" style="width: 78%;"></div>
+</div>
+</div>
+</div>
+<!-- Metric 4: Avg Service Time -->
+<div class="dashboard-card rounded-3xl p-5 relative overflow-hidden">
+<div class="flex items-center justify-between">
+<span class="text-[11px] font-bold text-stone-400 tracking-wider uppercase">Avg. Ticket Speed</span>
+<div class="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+</div>
+</div>
+<div class="mt-3">
+<p class="text-2xl font-black text-stone-900 tracking-tight">18.5 <span class="text-sm font-semibold text-stone-500">mins</span></p>
+<div class="mt-2 flex items-center gap-2 text-xs">
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold text-[11px]">
+                -2.4 min speedup
+              </span>
+<span class="text-stone-400 text-[11px]">target: 20 min</span>
+</div>
+</div>
+</div>
+</div>
+<!-- END: KPIStatsGrid -->
+<!-- BEGIN: MainDashboardGrid (2/3 & 1/3 layout) -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+<!-- Left 2-Column Section: Pace Graph, Floor Radar & Recent Live Orders -->
+<div class="xl:col-span-2 space-y-6">
+<!-- 1. Live Pace & Hourly Volume Curve -->
+<div class="dashboard-card rounded-3xl p-6" data-purpose="hourly-volume-chart">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+<div>
+<h3 class="text-base font-bold text-stone-900">Today's Service Pace &amp; Hourly Volume</h3>
+<p class="text-xs text-stone-400 font-medium">Shift flow from lunch opening through dinner closing</p>
+</div>
+<!-- Legend Pills -->
+<div class="flex items-center gap-3 text-xs font-medium text-stone-600">
+<span class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-[#efa736]"></span> Dine-In
+                </span>
+<span class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-[#1f4e47]"></span> Online &amp; QR
+                </span>
+<span class="px-2 py-1 rounded-xl bg-stone-100 text-[11px] font-semibold text-stone-600">Hourly View</span>
+</div>
+</div>
+<!-- SVG Stylized Curved Trend Graph -->
+<div class="relative w-full h-48 sm:h-56 mt-2">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 650 180">
+<defs>
+<!-- Warm Amber Gradient -->
+<lineargradient id="amberGlow" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#efa736" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#efa736" stop-opacity="0.0"></stop>
+</lineargradient>
+<!-- Deep Teal Gradient -->
+<lineargradient id="tealGlow" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#1f4e47" stop-opacity="0.20"></stop>
+<stop offset="100%" stop-color="#1f4e47" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid guidelines -->
+<line stroke="#f1f0ec" stroke-dasharray="3 3" x1="0" x2="650" y1="30" y2="30"></line>
+<line stroke="#f1f0ec" stroke-dasharray="3 3" x1="0" x2="650" y1="80" y2="80"></line>
+<line stroke="#f1f0ec" stroke-dasharray="3 3" x1="0" x2="650" y1="130" y2="130"></line>
+<!-- Dine In Area & Stroke (Amber) -->
+<path d="M 0,140 C 70,140 100,60 170,55 C 230,50 280,110 340,105 C 410,100 480,25 550,22 C 600,20 630,70 650,85 L 650,175 L 0,175 Z" fill="url(#amberGlow)"></path>
+<path d="M 0,140 C 70,140 100,60 170,55 C 230,50 280,110 340,105 C 410,100 480,25 550,22 C 600,20 630,70 650,85" fill="none" stroke="#efa736" stroke-linecap="round" stroke-width="3"></path>
+<!-- QR / Online Area & Stroke (Teal) -->
+<path d="M 0,160 C 80,160 120,110 180,105 C 240,100 290,135 360,130 C 430,125 490,65 560,60 C 610,55 630,95 650,110 L 650,175 L 0,175 Z" fill="url(#tealGlow)"></path>
+<path d="M 0,160 C 80,160 120,110 180,105 C 240,100 290,135 360,130 C 430,125 490,65 560,60 C 610,55 630,95 650,110" fill="none" stroke="#1f4e47" stroke-linecap="round" stroke-width="2.5"></path>
+<!-- Lunch Rush Dot -->
+<circle cx="170" cy="55" fill="#efa736" r="4.5" stroke="#ffffff" stroke-width="2"></circle>
+<!-- Dinner Rush Peak Highlight Indicator -->
+<line stroke="#efa736" stroke-dasharray="3 3" stroke-width="1.5" x1="550" x2="550" y1="22" y2="175"></line>
+<circle cx="550" cy="22" fill="#efa736" r="5" stroke="#ffffff" stroke-width="2"></circle>
+</svg>
+<!-- Floating Tooltip Box over Peak Hour -->
+<div class="absolute top-2 right-16 sm:right-28 bg-stone-900 text-white px-3.5 py-2 rounded-xl text-xs shadow-md pointer-events-none hidden sm:block">
+<div class="flex items-center justify-between gap-3 text-[10px] text-stone-400 pb-0.5 border-b border-stone-800">
+<span class="font-semibold text-amber-400">DINNER PEAK</span>
+<span>07:30 PM</span>
+</div>
+<div class="pt-1 font-bold text-sm tracking-tight">$1,480.00 <span class="text-[10px] font-normal text-stone-300">/hr</span></div>
+<div class="text-[10px] text-stone-300 mt-0.5">38 orders active</div>
+</div>
+</div>
+<!-- X-Axis Timestamps -->
+<div class="flex items-center justify-between text-[11px] font-medium text-stone-400 pt-3 border-t border-stone-100 mt-1">
+<span>11:00 AM</span>
+<span>12:00 PM</span>
+<span class="text-stone-700 font-semibold">01:00 PM (Lunch)</span>
+<span>03:00 PM</span>
+<span>05:00 PM</span>
+<span class="text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded-md">07:30 PM (Current Peak)</span>
+<span>09:00 PM</span>
+<span>10:00 PM</span>
+</div>
+</div>
+<!-- 2. Floor Radar & Zone Status Summary -->
+<div class="dashboard-card rounded-3xl p-6" data-purpose="floor-radar-section">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-base font-bold text-stone-900">Floor Radar &amp; Dining Sections</h3>
+<p class="text-xs text-stone-400 font-medium">Quick spatial overview across 4 zones</p>
+</div>
+<a class="text-xs font-semibold text-stone-600 hover:text-stone-900 flex items-center gap-1" href="#">
+                Manage Floor Layout
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+<!-- Zone 1: Main Dining -->
+<div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-100 hover:border-stone-200 transition">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-stone-800">Main Dining</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<div class="mt-2 flex items-baseline justify-between">
+<span class="text-lg font-extrabold text-stone-900">11<span class="text-xs font-medium text-stone-400">/14</span></span>
+<span class="text-[11px] font-semibold text-stone-600">79% Occ.</span>
+</div>
+<div class="w-full bg-stone-200 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-[#1f4e47] h-full rounded-full" style="width: 79%;"></div>
+</div>
+<span class="text-[10px] text-stone-400 mt-1.5 block">Tables: A1 - A14</span>
+</div>
+<!-- Zone 2: Patio Terrace -->
+<div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-100 hover:border-stone-200 transition">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-stone-800">Patio Terrace</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<div class="mt-2 flex items-baseline justify-between">
+<span class="text-lg font-extrabold text-stone-900">6<span class="text-xs font-medium text-stone-400">/8</span></span>
+<span class="text-[11px] font-semibold text-stone-600">75% Occ.</span>
+</div>
+<div class="w-full bg-stone-200 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-[#efa736] h-full rounded-full" style="width: 75%;"></div>
+</div>
+<span class="text-[10px] text-stone-400 mt-1.5 block">Tables: T1 - T8</span>
+</div>
+<!-- Zone 3: VIP Lounge -->
+<div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-100 hover:border-stone-200 transition">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-stone-800">VIP Lounge</span>
+<span class="w-2 h-2 rounded-full bg-rose-500"></span>
+</div>
+<div class="mt-2 flex items-baseline justify-between">
+<span class="text-lg font-extrabold text-stone-900">4<span class="text-xs font-medium text-stone-400">/4</span></span>
+<span class="text-[11px] font-semibold text-rose-600">Full (100%)</span>
+</div>
+<div class="w-full bg-stone-200 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-rose-500 h-full rounded-full" style="width: 100%;"></div>
+</div>
+<span class="text-[10px] text-stone-400 mt-1.5 block">Tables: VIP 1 - 4</span>
+</div>
+<!-- Zone 4: Cocktail Bar -->
+<div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-100 hover:border-stone-200 transition">
+<div class="flex items-center justify-between">
+<span class="text-xs font-bold text-stone-800">Bar Counter</span>
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+</div>
+<div class="mt-2 flex items-baseline justify-between">
+<span class="text-lg font-extrabold text-stone-900">4<span class="text-xs font-medium text-stone-400">/6</span></span>
+<span class="text-[11px] font-semibold text-stone-600">66% Occ.</span>
+</div>
+<div class="w-full bg-stone-200 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-stone-700 h-full rounded-full" style="width: 66%;"></div>
+</div>
+<span class="text-[10px] text-stone-400 mt-1.5 block">Stools: B1 - B6</span>
+</div>
+</div>
+</div>
+<!-- 3. Recent Live Orders Stream (Settlement/Order Row UI) -->
+<div class="dashboard-card rounded-3xl p-6" data-purpose="live-orders-table">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+<div>
+<h3 class="text-base font-bold text-stone-900">Live Active Orders</h3>
+<p class="text-xs text-stone-400 font-medium">Real-time order tickets directly connected to POS &amp; KDS</p>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-xs font-semibold px-3 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700" type="button">
+                  View All Orders (18)
+                </button>
+</div>
+</div>
+<!-- Clean Table Representation matching Screen 2 style -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse text-xs">
+<thead>
+<tr class="border-b border-stone-100 text-[11px] font-bold uppercase text-stone-400 tracking-wider">
+<th class="py-2.5 px-2">Order ID</th>
+<th class="py-2.5 px-2">Origin &amp; Table</th>
+<th class="py-2.5 px-2">Items Summary</th>
+<th class="py-2.5 px-2">Server</th>
+<th class="py-2.5 px-2">Total</th>
+<th class="py-2.5 px-2 text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-stone-100 font-medium text-stone-700">
+<!-- Row 1 -->
+<tr class="hover:bg-stone-50/70 transition-colors">
+<td class="py-3 px-2 font-bold text-stone-900">#TX-928</td>
+<td class="py-3 px-2">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-lg bg-[#1f4e47] text-white font-bold flex items-center justify-center text-[10px]">A4</span>
+<span>Table A4 (Dine-In)</span>
+</div>
+</td>
+<td class="py-3 px-2 text-stone-600">2x Ribeye, 1x Truffle Fries, 2x Pinot</td>
+<td class="py-3 px-2 text-stone-600">Gladina S.</td>
+<td class="py-3 px-2 font-bold text-stone-900">$142.50</td>
+<td class="py-3 px-2 text-right">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+<span class="w-1.5 h-1.5 rounded-full bg-[#efa736]"></span>
+                        Cooking (12m)
+                      </span>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-stone-50/70 transition-colors">
+<td class="py-3 px-2 font-bold text-stone-900">#TX-927</td>
+<td class="py-3 px-2">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-lg bg-stone-800 text-white font-bold flex items-center justify-center text-[10px]">T1</span>
+<span>Terrace T1 (QR Order)</span>
+</div>
+</td>
+<td class="py-3 px-2 text-stone-600">1x Burrata Salad, 1x Margherita Pizza</td>
+<td class="py-3 px-2 text-stone-600">Denis F.</td>
+<td class="py-3 px-2 font-bold text-stone-900">$46.00</td>
+<td class="py-3 px-2 text-right">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                        Ready to Serve
+                      </span>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-stone-50/70 transition-colors">
+<td class="py-3 px-2 font-bold text-stone-900">#TX-926</td>
+<td class="py-3 px-2">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-900 font-bold flex items-center justify-center text-[10px]">TO</span>
+<span>Takeaway #14 (Counter)</span>
+</div>
+</td>
+<td class="py-3 px-2 text-stone-600">3x Cold Brew, 2x Salmon Bagel</td>
+<td class="py-3 px-2 text-stone-600">Self Pickup</td>
+<td class="py-3 px-2 font-bold text-stone-900">$38.20</td>
+<td class="py-3 px-2 text-right">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-stone-100 text-stone-800 border border-stone-200">
+<span class="w-1.5 h-1.5 rounded-full bg-stone-500"></span>
+                        Ready for Pickup
+                      </span>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-stone-50/70 transition-colors">
+<td class="py-3 px-2 font-bold text-stone-900">#TX-925</td>
+<td class="py-3 px-2">
+<div class="flex items-center gap-2">
+<span class="w-6 h-6 rounded-lg bg-teal-100 text-teal-900 font-bold flex items-center justify-center text-[10px]">V2</span>
+<span>VIP Lounge 2</span>
+</div>
+</td>
+<td class="py-3 px-2 text-stone-600">Chef Tasting Menu (4 pax) + Pairing</td>
+<td class="py-3 px-2 text-stone-600">Ariel H.</td>
+<td class="py-3 px-2 font-bold text-stone-900">$480.00</td>
+<td class="py-3 px-2 text-right">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-sky-50 text-sky-800 border border-sky-200">
+<span class="w-1.5 h-1.5 rounded-full bg-sky-600"></span>
+                        Courses In Progress
+                      </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<!-- Right 1-Column Section: Kitchen Queues, Best Sellers, and Staff On-Duty -->
+<div class="space-y-6">
+<!-- 1. Live Kitchen & Bar Queue Load Monitor -->
+<div class="dashboard-card rounded-3xl p-6" data-purpose="kitchen-load-monitor">
+<div class="flex items-center justify-between mb-4">
+<h3 class="text-base font-bold text-stone-900">Kitchen &amp; Bar Load</h3>
+<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">Optimal</span>
+</div>
+<div class="space-y-3">
+<!-- Kitchen Main Line -->
+<div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-100">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-stone-800">Hot Kitchen Prep</span>
+<span class="font-bold text-stone-900">6 Tickets active</span>
+</div>
+<div class="w-full bg-stone-200 h-2 rounded-full mt-2 overflow-hidden">
+<div class="bg-[#efa736] h-full rounded-full" style="width: 58%;"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-stone-400 mt-1.5">
+<span>Capacity: Moderate</span>
+<span class="font-semibold text-stone-600">Avg. 14 min wait</span>
+</div>
+</div>
+<!-- Bar & Drink Station -->
+<div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-100">
+<div class="flex items-center justify-between text-xs">
+<span class="font-bold text-stone-800">Cocktail &amp; Beverage Bar</span>
+<span class="font-bold text-stone-900">2 Tickets active</span>
+</div>
+<div class="w-full bg-stone-200 h-2 rounded-full mt-2 overflow-hidden">
+<div class="bg-[#1f4e47] h-full rounded-full" style="width: 25%;"></div>
+</div>
+<div class="flex items-center justify-between text-[11px] text-stone-400 mt-1.5">
+<span>Capacity: Fast flow</span>
+<span class="font-semibold text-stone-600">Avg. 4 min wait</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 2. Today's Top Selling Items -->
+<div class="dashboard-card rounded-3xl p-6" data-purpose="top-selling-items">
+<div class="flex items-center justify-between mb-4">
+<div>
+<h3 class="text-base font-bold text-stone-900">Top Dishes Today</h3>
+<p class="text-xs text-stone-400 font-medium">Ranked by tickets sold</p>
+</div>
+<span class="text-xs font-bold text-stone-500">Units Sold</span>
+</div>
+<div class="space-y-3.5">
+<!-- Item 1 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-xl bg-amber-50 text-[#efa736] font-bold text-xs flex items-center justify-center border border-amber-100">
+                    1
+                  </div>
+<div>
+<h4 class="text-xs font-bold text-stone-900">Smoked Salmon Bagel</h4>
+<span class="text-[11px] text-stone-400 font-medium">Brunch &amp; Lunch item</span>
+</div>
+</div>
+<div class="text-right">
+<span class="text-xs font-black text-stone-900">42 sold</span>
+<span class="text-[10px] text-emerald-600 block font-medium">+$672.00</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-xl bg-stone-100 text-stone-700 font-bold text-xs flex items-center justify-center">
+                    2
+                  </div>
+<div>
+<h4 class="text-xs font-bold text-stone-900">Crispy Belgian Waffles</h4>
+<span class="text-[11px] text-stone-400 font-medium">Bakery &amp; Sweets</span>
+</div>
+</div>
+<div class="text-right">
+<span class="text-xs font-black text-stone-900">38 sold</span>
+<span class="text-[10px] text-emerald-600 block font-medium">+$456.00</span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-xl bg-stone-100 text-stone-700 font-bold text-xs flex items-center justify-center">
+                    3
+                  </div>
+<div>
+<h4 class="text-xs font-bold text-stone-900">Margherita Woodfire Pizza</h4>
+<span class="text-[11px] text-stone-400 font-medium">Dinner Mains</span>
+</div>
+</div>
+<div class="text-right">
+<span class="text-xs font-black text-stone-900">29 sold</span>
+<span class="text-[10px] text-emerald-600 block font-medium">+$522.00</span>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-xl bg-stone-100 text-stone-700 font-bold text-xs flex items-center justify-center">
+                    4
+                  </div>
+<div>
+<h4 class="text-xs font-bold text-stone-900">Wagyu Cheeseburger</h4>
+<span class="text-[11px] text-stone-400 font-medium">Signature Grill</span>
+</div>
+</div>
+<div class="text-right">
+<span class="text-xs font-black text-stone-900">24 sold</span>
+<span class="text-[10px] text-emerald-600 block font-medium">+$432.00</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Active Floor Staff & Waiters On Shift -->
+<div class="dashboard-card rounded-3xl p-6" data-purpose="active-staff-panel">
+<div class="flex items-center justify-between mb-3">
+<div>
+<h3 class="text-base font-bold text-stone-900">Staff On Duty</h3>
+<p class="text-xs text-stone-400 font-medium">4 Floor Servers • 3 Kitchen Staff</p>
+</div>
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+</div>
+<div class="space-y-2.5 pt-1">
+<!-- Staff Member 1 -->
+<div class="flex items-center justify-between p-2 rounded-2xl bg-stone-50 border border-stone-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-stone-200 text-stone-700 text-[11px] font-bold flex items-center justify-center border border-white">
+                    GS
+                  </div>
+<div>
+<h5 class="text-xs font-bold text-stone-800">Gladina Samantha</h5>
+<span class="text-[10px] text-stone-400">Head Cashier • Section A</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">Active</span>
+</div>
+<!-- Staff Member 2 -->
+<div class="flex items-center justify-between p-2 rounded-2xl bg-stone-50 border border-stone-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-stone-200 text-stone-700 text-[11px] font-bold flex items-center justify-center border border-white">
+                    DF
+                  </div>
+<div>
+<h5 class="text-xs font-bold text-stone-800">Denis Freeman</h5>
+<span class="text-[10px] text-stone-400">Senior Waiter • Terrace</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800">Active</span>
+</div>
+<!-- Staff Member 3 -->
+<div class="flex items-center justify-between p-2 rounded-2xl bg-stone-50 border border-stone-100">
+<div class="flex items-center gap-2.5">
+<div class="w-8 h-8 rounded-full bg-stone-200 text-stone-700 text-[11px] font-bold flex items-center justify-center border border-white">
+                    AH
+                  </div>
+<div>
+<h5 class="text-xs font-bold text-stone-800">Ariel Hikmat</h5>
+<span class="text-[10px] text-stone-400">Host / VIP Floor</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-800">Break (10m)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- END: MainDashboardGrid -->
+<!-- BEGIN: FooterStatusSummary -->
+<footer class="pt-2 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-stone-400 font-medium pb-2">
+<p>BitePoint POS &amp; Dining Architecture v3.4.1 <span class="mx-1">•</span> Downtown Flagship Branch</p>
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1.5 text-stone-600">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            Kitchen Display System (KDS): Online
+          </span>
+<a class="text-stone-600 hover:text-stone-900 underline font-medium" href="#">Audit Logs</a>
+</div>
+</footer>
+<!-- END: FooterStatusSummary -->
+</div>
+<!-- END: MainContentArea -->
+</main>
+<!-- END: MainContainer -->
+</body></html>

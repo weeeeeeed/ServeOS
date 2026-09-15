@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BitePoint - Settings</title>
+<!-- Tailwind CSS CDN with forms & container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Plus Jakarta Sans -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script data-purpose="tailwind-config">
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              amber: '#efa736',
+              amberHover: '#de9627',
+              dark: '#181b1a',
+              forest: '#133e36',
+              muted: '#7e8b85',
+              surface: '#fcfbf8',
+              cardBg: '#ffffff',
+              borderLight: '#f1efe9',
+              borderSubtle: '#e7e5dc',
+              pillBg: '#f6f4ee',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-scrollbars-and-toggles">
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #e2dfd5;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #c8c5ba;
+    }
+  </style>
+</head>
+<body class="bg-[#ecebe6] text-[#1c2321] min-h-screen font-sans p-3 md:p-6 lg:p-8 flex items-center justify-center antialiased select-none">
+<!-- BEGIN: AppContainer -->
+<!-- Outer floating desktop container matching BitePoint SCREEN_2 frame -->
+<div class="w-full max-w-[1520px] bg-[#fcfbf9] rounded-[32px] shadow-[0_25px_60px_-15px_rgba(30,35,32,0.12)] border border-[#e4e2d8] overflow-hidden flex flex-col min-h-[920px]">
+<div class="flex flex-1 w-full relative">
+<!-- BEGIN: Sidebar -->
+<aside class="w-64 border-r border-[#eceae2] bg-[#fcfbf9] p-6 flex flex-col justify-between shrink-0">
+<!-- Top Section: Brand & Navigation -->
+<div class="flex flex-col gap-8">
+<!-- Logo & Brand Header -->
+<div class="flex items-center gap-3 px-1 pt-1">
+<div class="w-11 h-11 rounded-2xl bg-[#133e36] text-[#e8f2ee] flex items-center justify-center shadow-sm">
+<!-- Fork & Knife Emblem -->
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 2v20m0-20h-2a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m0-10h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-2m-4 0v10m4-10v10" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h1 class="text-lg font-bold tracking-tight leading-none text-[#121816]">bitepoint</h1>
+<p class="text-[10px] font-bold tracking-widest text-[#7b8681] uppercase mt-1">MANAGEMENT</p>
+</div>
+</div>
+<!-- Main Nav List -->
+<nav aria-label="Main Navigation" class="flex flex-col gap-1.5">
+<!-- Item: Dashboard -->
+<a class="flex items-center gap-3.5 px-4 py-3 text-[#5f6b65] hover:text-[#133e36] hover:bg-[#f3f1ea] rounded-2xl transition-all font-semibold text-sm" href="#">
+<svg class="w-5 h-5 text-[#88948d]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="7" rx="1.5" width="7" x="3" y="3"></rect>
+<rect height="7" rx="1.5" width="7" x="14" y="3"></rect>
+<rect height="7" rx="1.5" width="7" x="14" y="14"></rect>
+<rect height="7" rx="1.5" width="7" x="3" y="14"></rect>
+</svg>
+<span>Dashboard</span>
+</a>
+<!-- Item: Menu -->
+<a class="flex items-center gap-3.5 px-4 py-3 text-[#5f6b65] hover:text-[#133e36] hover:bg-[#f3f1ea] rounded-2xl transition-all font-semibold text-sm" href="#">
+<svg class="w-5 h-5 text-[#88948d]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Menu</span>
+</a>
+<!-- Item: Orders -->
+<a class="flex items-center gap-3.5 px-4 py-3 text-[#5f6b65] hover:text-[#133e36] hover:bg-[#f3f1ea] rounded-2xl transition-all font-semibold text-sm" href="#">
+<svg class="w-5 h-5 text-[#88948d]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Orders</span>
+</a>
+<!-- Item: Table -->
+<a class="flex items-center gap-3.5 px-4 py-3 text-[#5f6b65] hover:text-[#133e36] hover:bg-[#f3f1ea] rounded-2xl transition-all font-semibold text-sm" href="#">
+<svg class="w-5 h-5 text-[#88948d]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M3 10h18M3 14h18M10 3v18M14 3v18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Table</span>
+</a>
+<!-- Item: Accounting -->
+<a class="flex items-center gap-3.5 px-4 py-3 text-[#5f6b65] hover:text-[#133e36] hover:bg-[#f3f1ea] rounded-2xl transition-all font-semibold text-sm" href="#">
+<svg class="w-5 h-5 text-[#88948d]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="14" rx="2" width="20" x="2" y="5"></rect>
+<line x1="2" x2="22" y1="10" y2="10"></line>
+</svg>
+<span>Accounting</span>
+</a>
+<!-- Item: Settings (Active State) -->
+<a class="flex items-center gap-3.5 px-4 py-3.5 bg-[#efa736] text-[#1c1809] font-bold rounded-2xl shadow-sm transition-all text-sm" href="#">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round"></path>
+<circle cx="12" cy="12" r="3"></circle>
+</svg>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<!-- Bottom: User Profile Card -->
+<div class="bg-[#f4f2eb] rounded-2xl p-3 flex items-center justify-between border border-[#eae7dd]">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-[#e3e0d5] text-[#2c3732] font-bold text-xs flex items-center justify-center">
+              GS
+            </div>
+<div class="leading-tight">
+<h4 class="text-xs font-bold text-[#1a211e]">Gladina S.</h4>
+<span class="text-[11px] text-[#78847e] font-medium">Head Cashier</span>
+</div>
+</div>
+<button aria-label="Sign out" class="p-1.5 text-[#86928b] hover:text-[#18211d] rounded-lg hover:bg-[#e9e6dd] transition" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+</aside>
+<!-- END: Sidebar -->
+<!-- BEGIN: MainContent -->
+<main class="flex-1 flex flex-col px-8 py-7 overflow-y-auto max-h-[920px]">
+<!-- Header Bar -->
+<header class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-[#ece8df]">
+<div>
+<div class="flex items-center gap-3">
+<h2 class="text-3xl font-extrabold tracking-tight text-[#161f1c]">Settings</h2>
+<span class="px-2.5 py-1 text-[10px] font-bold tracking-wider rounded-full bg-[#e8f1ec] text-[#133e36] uppercase">CONFIGURATION</span>
+</div>
+<p class="text-xs font-medium text-[#75817c] mt-1.5">
+              Downtown Flagship <span class="mx-1.5">•</span> Restaurant profile, team permissions, tax &amp; hardware integrations
+            </p>
+</div>
+<!-- Quick Action Right Group -->
+<div class="flex items-center flex-wrap gap-3">
+<!-- Date Display -->
+<div class="flex items-center gap-2 bg-[#f4f2eb] px-3.5 py-2.5 rounded-xl border border-[#e5e2d6] text-xs font-semibold text-[#44504a]">
+<svg class="w-4 h-4 text-[#73807a]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="18" rx="2" ry="2" width="18" x="3" y="4"></rect>
+<line x1="16" x2="16" y1="2" y2="6"></line>
+<line x1="8" x2="8" y1="2" y2="6"></line>
+<line x1="3" x2="21" y1="10" y2="10"></line>
+</svg>
+<span>Wednesday, 12 July 2023</span>
+</div>
+<!-- Search input -->
+<div class="relative">
+<svg class="w-4 h-4 text-[#8f9b94] absolute left-3.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="11" cy="11" r="8"></circle>
+<line x1="21" x2="16.65" y1="21" y2="16.65"></line>
+</svg>
+<input class="pl-9 pr-4 py-2 text-xs bg-white rounded-xl border border-[#e5e2d6] focus:outline-none focus:ring-2 focus:ring-[#efa736] focus:border-transparent text-[#212926] placeholder-[#95a19b] w-64" placeholder="Search settings, hardware, staff..." type="text"/>
+</div>
+<!-- Notification bell -->
+<button aria-label="Notifications" class="w-9 h-9 rounded-xl bg-white border border-[#e5e2d6] flex items-center justify-center text-[#55625c] hover:bg-[#f6f4ee] transition">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<!-- Save Changes Primary Button -->
+<button class="flex items-center gap-2 bg-[#efa736] hover:bg-[#de9627] text-[#1c1809] font-bold px-4 py-2.5 rounded-xl text-xs transition shadow-sm">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Save Changes</span>
+</button>
+</div>
+</header>
+<!-- Horizontal Tab Pills Navigation -->
+<nav class="flex items-center gap-2 overflow-x-auto py-4 border-b border-[#ece8df] no-scrollbar">
+<button class="px-4 py-2 rounded-xl text-xs font-bold bg-[#143e36] text-white whitespace-nowrap shadow-sm">
+            General &amp; Profile
+          </button>
+<button class="px-4 py-2 rounded-xl text-xs font-semibold bg-[#f3f1ea] hover:bg-[#eae6dc] text-[#4f5c56] whitespace-nowrap transition">
+            Staff &amp; Permissions
+          </button>
+<button class="px-4 py-2 rounded-xl text-xs font-semibold bg-[#f3f1ea] hover:bg-[#eae6dc] text-[#4f5c56] whitespace-nowrap transition">
+            Taxes &amp; Billing
+          </button>
+<button class="px-4 py-2 rounded-xl text-xs font-semibold bg-[#f3f1ea] hover:bg-[#eae6dc] text-[#4f5c56] whitespace-nowrap transition">
+            Kitchen Display &amp; Hardware
+          </button>
+<button class="px-4 py-2 rounded-xl text-xs font-semibold bg-[#f3f1ea] hover:bg-[#eae6dc] text-[#4f5c56] whitespace-nowrap transition">
+            QR &amp; Customer Experience
+          </button>
+<button class="px-4 py-2 rounded-xl text-xs font-semibold bg-[#f3f1ea] hover:bg-[#eae6dc] text-[#4f5c56] whitespace-nowrap transition">
+            Notifications
+          </button>
+</nav>
+<!-- Main Settings Modular Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-6 pb-4">
+<!-- BEGIN: LeftPrimaryColumn (2/3 width -> 8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-6">
+<!-- Card 1: Restaurant Profile & Branch Info -->
+<section class="bg-white rounded-3xl p-6 border border-[#ece8df] shadow-[0_4px_16px_rgba(0,0,0,0.02)]">
+<div class="flex items-center justify-between pb-4 border-b border-[#f4f2eb] mb-5">
+<div>
+<h3 class="font-bold text-[#141b18] text-base">Restaurant Profile &amp; Branch Information</h3>
+<p class="text-xs text-[#798580] mt-0.5">Define your legal storefront identities, public address, and operating shifts.</p>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-[#f4f2eb] text-[#55635c] text-[11px] font-bold">Branch ID: #01-NYC</span>
+</div>
+<!-- Logo & Identity Upload -->
+<div class="flex items-center gap-5 mb-6 p-4 rounded-2xl bg-[#faf9f5] border border-[#f0ede4]">
+<div class="w-16 h-16 rounded-2xl bg-[#133e36] text-[#ebf3ef] flex flex-col items-center justify-center font-extrabold shadow-inner shrink-0">
+<span class="text-xl">BP</span>
+<span class="text-[8px] uppercase tracking-wider text-[#a2beb4]">NYC</span>
+</div>
+<div class="flex-1">
+<h4 class="text-xs font-bold text-[#1c2420]">Downtown Branch Seal &amp; Receipt Logo</h4>
+<p class="text-[11px] text-[#7d8a83] mt-0.5">Recommended format: Square SVG or PNG with transparent background (512x512px).</p>
+<div class="flex items-center gap-3 mt-2.5">
+<button class="px-3 py-1.5 bg-white border border-[#d9d5c8] rounded-xl text-xs font-bold text-[#2a3430] hover:bg-[#f6f3ea] transition shadow-2xs">Upload New Logo</button>
+<button class="text-xs text-[#8c4646] hover:text-[#b03030] font-semibold transition">Remove</button>
+</div>
+</div>
+</div>
+<!-- Input Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+<div>
+<label class="block font-bold text-[#323d38] mb-1.5">Restaurant Display Name</label>
+<input class="w-full bg-[#faf9f6] border border-[#e4e1d7] rounded-xl px-3.5 py-2.5 font-medium text-[#1c2421] focus:ring-1 focus:ring-[#efa736] focus:bg-white transition" type="text" value="BitePoint Downtown"/>
+</div>
+<div>
+<label class="block font-bold text-[#323d38] mb-1.5">Branch Identifier</label>
+<input class="w-full bg-[#faf9f6] border border-[#e4e1d7] rounded-xl px-3.5 py-2.5 font-medium text-[#1c2421] focus:ring-1 focus:ring-[#efa736] focus:bg-white transition" type="text" value="Downtown Flagship #01"/>
+</div>
+<div>
+<label class="block font-bold text-[#323d38] mb-1.5">Legal Entity Name</label>
+<input class="w-full bg-[#faf9f6] border border-[#e4e1d7] rounded-xl px-3.5 py-2.5 font-medium text-[#1c2421] focus:ring-1 focus:ring-[#efa736] focus:bg-white transition" type="text" value="BitePoint Hospitality LLC"/>
+</div>
+<div>
+<label class="block font-bold text-[#323d38] mb-1.5">Contact Support Email</label>
+<input class="w-full bg-[#faf9f6] border border-[#e4e1d7] rounded-xl px-3.5 py-2.5 font-medium text-[#1c2421] focus:ring-1 focus:ring-[#efa736] focus:bg-white transition" type="email" value="downtown.ops@bitepoint.com"/>
+</div>
+<div>
+<label class="block font-bold text-[#323d38] mb-1.5">Phone Number</label>
+<input class="w-full bg-[#faf9f6] border border-[#e4e1d7] rounded-xl px-3.5 py-2.5 font-medium text-[#1c2421] focus:ring-1 focus:ring-[#efa736] focus:bg-white transition" type="tel" value="+1 (212) 555-0198"/>
+</div>
+<div>
+<label class="block font-bold text-[#323d38] mb-1.5">Default Currency</label>
+<div class="relative">
+<select class="w-full bg-[#faf9f6] border border-[#e4e1d7] rounded-xl px-3.5 py-2.5 font-medium text-[#1c2421] appearance-none focus:ring-1 focus:ring-[#efa736]">
+<option selected="">USD ($) - United States Dollar</option>
+<option>EUR (€) - Euro</option>
+<option>GBP (£) - British Pound</option>
+</select>
+</div>
+</div>
+<div class="md:col-span-2">
+<label class="block font-bold text-[#323d38] mb-1.5">System Timezone</label>
+<input class="w-full bg-[#faf9f6] border border-[#e4e1d7] rounded-xl px-3.5 py-2.5 font-medium text-[#1c2421] focus:ring-1 focus:ring-[#efa736] focus:bg-white transition" type="text" value="America/New_York (EST) - Eastern Standard Time"/>
+</div>
+</div>
+<!-- Operating Shifts & Switch Toggle -->
+<div class="mt-5 p-4 rounded-2xl bg-[#faf9f6] border border-[#ece8de] flex flex-col md:flex-row md:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-xl bg-[#eaf2ee] text-[#133e36] flex items-center justify-center font-bold">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="10"></circle>
+<polyline points="12 6 12 12 16 14"></polyline>
+</svg>
+</div>
+<div>
+<h5 class="text-xs font-bold text-[#1f2824]">Shift Auto-Switching</h5>
+<p class="text-[11px] text-[#717d77]">Automatically switch Lunch menu to Dinner menu at 4:30 PM</p>
+</div>
+</div>
+<!-- Toggle switch active -->
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-[#d7d3c5] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#efa736]"></div>
+</label>
+</div>
+</section>
+<!-- Card 2: Ordering & Service Rules -->
+<section class="bg-white rounded-3xl p-6 border border-[#ece8df] shadow-[0_4px_16px_rgba(0,0,0,0.02)]">
+<div class="pb-4 border-b border-[#f4f2eb] mb-5">
+<h3 class="font-bold text-[#141b18] text-base">Ordering &amp; Service Logic</h3>
+<p class="text-xs text-[#798580] mt-0.5">Automations for floor turnover, station routing, and billing flow.</p>
+</div>
+<div class="space-y-4 text-xs">
+<!-- Rule 1: Table Auto Release -->
+<div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#faf9f5] border border-[#f0eee6]">
+<div class="max-w-md">
+<span class="font-bold text-[#1f2824] block">Dine-in Table Auto-Release Timer</span>
+<span class="text-[11px] text-[#7b8782]">Mark table as dirty/vacant after payment if no new order is placed within threshold.</span>
+</div>
+<div class="flex items-center gap-2">
+<select class="bg-white border border-[#dcd7cb] text-xs font-bold rounded-xl px-3 py-1.5 text-[#25302b] focus:ring-1 focus:ring-[#efa736]">
+<option>10 mins</option>
+<option selected="">15 mins</option>
+<option>30 mins</option>
+</select>
+</div>
+</div>
+<!-- Rule 2: Kitchen Ticket Routing Split -->
+<div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#faf9f5] border border-[#f0eee6]">
+<div class="max-w-md">
+<span class="font-bold text-[#1f2824] block">Kitchen Ticket Station Split</span>
+<span class="text-[11px] text-[#7b8782]">Direct items automatically: Hot Kitchen vs Cold &amp; Beverage Bar vs Pastry display.</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-[#d7d3c5] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#133e36]"></div>
+</label>
+</div>
+<!-- Rule 3: Tip Presets -->
+<div class="p-3.5 rounded-2xl bg-[#faf9f5] border border-[#f0eee6]">
+<div class="flex items-center justify-between mb-2.5">
+<span class="font-bold text-[#1f2824]">Tip Suggestion Presets</span>
+<span class="text-[11px] text-[#78857f]">Shown on customer contactless PIN pad &amp; digital bill</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-3.5 py-1.5 rounded-xl bg-white border border-[#ded9cb] font-bold text-[#1f2925]">15%</span>
+<span class="px-3.5 py-1.5 rounded-xl bg-[#efa736] text-[#1c1809] font-bold shadow-2xs">18% (Default)</span>
+<span class="px-3.5 py-1.5 rounded-xl bg-white border border-[#ded9cb] font-bold text-[#1f2925]">20%</span>
+<span class="px-3.5 py-1.5 rounded-xl bg-white border border-[#ded9cb] font-bold text-[#1f2925]">25%</span>
+<button class="px-3.5 py-1.5 rounded-xl border border-dashed border-[#b8b3a5] text-[#6d7973] font-semibold hover:bg-white transition">+ Custom %</button>
+</div>
+</div>
+<!-- Rule 4: Default Flow -->
+<div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#faf9f5] border border-[#f0eee6]">
+<div>
+<span class="font-bold text-[#1f2824] block">Default Ordering / Checkout Flow</span>
+<span class="text-[11px] text-[#7b8782]">Choose how walk-in and table guests settle bills.</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-3 py-1.5 rounded-xl bg-[#133e36] text-white font-bold text-xs">Pay at Table (QR)</button>
+<button class="px-3 py-1.5 rounded-xl bg-white border border-[#d9d5c8] text-[#55635c] font-semibold text-xs hover:bg-[#f6f4ee]">Pay at Counter</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Card 3: Tax, Service Charge & Invoicing -->
+<section class="bg-white rounded-3xl p-6 border border-[#ece8df] shadow-[0_4px_16px_rgba(0,0,0,0.02)]">
+<div class="pb-4 border-b border-[#f4f2eb] mb-5">
+<h3 class="font-bold text-[#141b18] text-base">Tax, Service Charges &amp; Digital Receipts</h3>
+<p class="text-xs text-[#798580] mt-0.5">Configure fiscal calculations and customized receipt printer text.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-5">
+<!-- Tax Toggle Card -->
+<div class="p-4 rounded-2xl bg-[#faf9f5] border border-[#f0ede4] flex items-center justify-between">
+<div>
+<span class="font-bold text-[#1c2420] block">State &amp; Local Sales Tax</span>
+<span class="text-[11px] text-[#727e78]">Auto-applied to non-exempt menu lines</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-extrabold text-sm text-[#18211d]">8.875%</span>
+<input checked="" class="rounded text-[#efa736] focus:ring-[#efa736] w-4 h-4 border-[#c8c4b7]" type="checkbox"/>
+</div>
+</div>
+<!-- Gratuity Card -->
+<div class="p-4 rounded-2xl bg-[#faf9f5] border border-[#f0ede4] flex items-center justify-between">
+<div>
+<span class="font-bold text-[#1c2420] block">Large Party Auto-Gratuity</span>
+<span class="text-[11px] text-[#727e78]">Applied on party size of 6 guests or more</span>
+</div>
+<div class="flex items-center gap-3">
+<span class="font-extrabold text-sm text-[#18211d]">10.0%</span>
+<input checked="" class="rounded text-[#efa736] focus:ring-[#efa736] w-4 h-4 border-[#c8c4b7]" type="checkbox"/>
+</div>
+</div>
+</div>
+<!-- Receipt Footer Customization -->
+<div class="p-4 rounded-2xl bg-[#faf9f5] border border-[#f0ede4]">
+<h5 class="text-xs font-bold text-[#1b231f] mb-3">Receipt Footer &amp; Customer WiFi Note</h5>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+<div>
+<label class="block font-medium text-[#5c6863] mb-1">Header Welcome Note</label>
+<input class="w-full bg-white border border-[#ded9cb] rounded-xl px-3 py-2 font-medium text-[#202925]" type="text" value="Thank you for dining at BitePoint!"/>
+</div>
+<div>
+<label class="block font-medium text-[#5c6863] mb-1">Guest Wi-Fi Password</label>
+<input class="w-full bg-white border border-[#ded9cb] rounded-xl px-3 py-2 font-medium text-[#202925]" type="text" value="BitePointGuest2023"/>
+</div>
+<div>
+<label class="block font-medium text-[#5c6863] mb-1">Federal Tax ID / EIN</label>
+<input class="w-full bg-white border border-[#ded9cb] rounded-xl px-3 py-2 font-medium text-[#202925]" type="text" value="XX-XXXX8920"/>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- END: LeftPrimaryColumn -->
+<!-- BEGIN: RightSidebarColumn (1/3 width -> 4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Hardware & Terminals -->
+<section class="bg-white rounded-3xl p-6 border border-[#ece8df] shadow-[0_4px_16px_rgba(0,0,0,0.02)]">
+<div class="flex items-center justify-between pb-3.5 border-b border-[#f4f2eb] mb-4">
+<div>
+<h3 class="font-bold text-[#141b18] text-sm">Connected Hardware</h3>
+<p class="text-[11px] text-[#798580]">Real-time peripheral health</p>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#e8f4ed] text-[#1e6144]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#2da36e] animate-pulse"></span>
+                  Online
+                </span>
+</div>
+<!-- Hardware Device List -->
+<div class="space-y-3 text-xs">
+<!-- Device 1 -->
+<div class="p-3 rounded-2xl bg-[#faf9f6] border border-[#f1eee5] flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-xl bg-white border border-[#e5e2d6] flex items-center justify-center text-[#133e36] font-bold mt-0.5">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="14" rx="2" width="20" x="2" y="3"></rect>
+<line x1="8" x2="16" y1="21" y2="21"></line>
+<line x1="12" x2="12" y1="17" y2="21"></line>
+</svg>
+</div>
+<div>
+<h4 class="font-bold text-[#1c2420]">KDS Hot Kitchen Screen</h4>
+<p class="text-[11px] text-[#75817c]">IP: 192.168.1.104</p>
+</div>
+</div>
+<span class="text-[10px] font-bold px-2 py-0.5 bg-[#eaf3ed] text-[#1c6444] rounded-md">Connected</span>
+</div>
+<!-- Device 2 -->
+<div class="p-3 rounded-2xl bg-[#faf9f6] border border-[#f1eee5] flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-xl bg-white border border-[#e5e2d6] flex items-center justify-center text-[#133e36] font-bold mt-0.5">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polyline points="6 9 6 2 18 2 18 9"></polyline>
+<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+<rect height="8" width="12" x="6" y="14"></rect>
+</svg>
+</div>
+<div>
+<h4 class="font-bold text-[#1c2420]">Cashier Thermal Printer</h4>
+<p class="text-[11px] text-[#75817c]">Epson TM-T88VI • Paper: 85%</p>
+</div>
+</div>
+<span class="text-[10px] font-bold px-2 py-0.5 bg-[#eaf3ed] text-[#1c6444] rounded-md">Ready</span>
+</div>
+<!-- Device 3 -->
+<div class="p-3 rounded-2xl bg-[#faf9f6] border border-[#f1eee5] flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-xl bg-white border border-[#e5e2d6] flex items-center justify-center text-[#133e36] font-bold mt-0.5">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polyline points="6 9 6 2 18 2 18 9"></polyline>
+<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+<rect height="8" width="12" x="6" y="14"></rect>
+</svg>
+</div>
+<div>
+<h4 class="font-bold text-[#1c2420]">Bar Ticket Printer</h4>
+<p class="text-[11px] text-[#75817c]">Star Micronics SP700</p>
+</div>
+</div>
+<span class="text-[10px] font-bold px-2 py-0.5 bg-[#eaf3ed] text-[#1c6444] rounded-md">Ready</span>
+</div>
+<!-- Device 4 -->
+<div class="p-3 rounded-2xl bg-[#faf9f6] border border-[#f1eee5] flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-xl bg-white border border-[#e5e2d6] flex items-center justify-center text-[#133e36] font-bold mt-0.5">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<rect height="20" rx="2" ry="2" width="14" x="5" y="2"></rect>
+<line x1="12" x2="12.01" y1="18" y2="18"></line>
+</svg>
+</div>
+<div>
+<h4 class="font-bold text-[#1c2420]">Terminals 1 &amp; 2 Handheld</h4>
+<p class="text-[11px] text-[#75817c]">Battery: 94% • Fully Synced</p>
+</div>
+</div>
+<span class="text-[10px] font-bold px-2 py-0.5 bg-[#eef3f9] text-[#2c5384] rounded-md">Active</span>
+</div>
+</div>
+<button class="w-full mt-4 py-2.5 bg-[#faf8f2] hover:bg-[#f2efe6] border border-dashed border-[#cfc9ba] rounded-2xl text-xs font-bold text-[#2e3a34] transition flex items-center justify-center gap-1.5">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<line x1="12" x2="12" y1="5" y2="19"></line>
+<line x1="5" x2="19" y1="12" y2="12"></line>
+</svg>
+<span>Pair New Terminal / Printer</span>
+</button>
+</section>
+<!-- Quick Staff Roles Overview -->
+<section class="bg-white rounded-3xl p-6 border border-[#ece8df] shadow-[0_4px_16px_rgba(0,0,0,0.02)]">
+<div class="pb-3 border-b border-[#f4f2eb] mb-4">
+<h3 class="font-bold text-[#141b18] text-sm">Staff &amp; Access Roles</h3>
+<p class="text-[11px] text-[#798580]">Shift security &amp; authorization levels</p>
+</div>
+<div class="space-y-2.5">
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-[#faf9f6]">
+<span class="text-xs font-bold text-[#202925]">Manager (Override Access)</span>
+<span class="text-xs font-semibold text-[#57645f]">Gladina S.</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-[#faf9f6]">
+<span class="text-xs font-bold text-[#202925]">Waitstaff &amp; Servers</span>
+<span class="text-xs font-semibold text-[#57645f]">8 Active accounts</span>
+</div>
+<div class="flex items-center justify-between p-2.5 rounded-xl bg-[#faf9f6]">
+<span class="text-xs font-bold text-[#202925]">Kitchen &amp; Line Cooks</span>
+<span class="text-xs font-semibold text-[#57645f]">4 Active stations</span>
+</div>
+</div>
+<a class="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-[#133e36] hover:text-[#efa736] transition" href="#">
+<span>Manage 14 Team Members &amp; PIN Codes</span>
+<span>→</span>
+</a>
+</section>
+<!-- Backup & Cloud Sync Status -->
+<section class="bg-white rounded-3xl p-5 border border-[#ece8df] shadow-[0_4px_16px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-[#eff5f2] text-[#133e36] flex items-center justify-center">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polyline points="20 6 9 17 4 12"></polyline>
+</svg>
+</div>
+<div class="text-xs">
+<h4 class="font-bold text-[#171f1b]">Cloud Ledger Synced</h4>
+<p class="text-[11px] text-[#74827c]">Last backed up 2 mins ago • Local POS Cache Enabled</p>
+</div>
+</div>
+</section>
+</div>
+<!-- END: RightSidebarColumn -->
+</div>
+<!-- Settings Footer -->
+<footer class="pt-4 mt-auto border-t border-[#eeebe2] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#85918b]">
+<div>
+            BitePoint POS &amp; Dining Architecture v3.4.1 <span class="mx-1">•</span> Downtown Flagship Branch
+          </div>
+<div class="flex items-center gap-2 mt-2 sm:mt-0">
+<span class="w-2 h-2 rounded-full bg-[#2ca26e]"></span>
+<span>All changes logged to Audit Trail</span>
+</div>
+</footer>
+</main>
+<!-- END: MainContent -->
+</div>
+</div>
+<!-- END: AppContainer -->
+</body></html>

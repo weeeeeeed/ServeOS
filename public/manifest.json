@@ -1,0 +1,39 @@
+{
+  "name": "RestoQR - Multi-Tenant Restaurant QR Menu SaaS",
+  "short_name": "RestoQR",
+  "description": "Contactless digital QR dining menu, table ordering, and kitchen display system.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#09090b",
+  "theme_color": "#2563eb",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=192&auto=format&fit=crop&q=80",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=512&auto=format&fit=crop&q=80",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["food", "business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Browse Menu",
+      "url": "/r/la-piazza",
+      "description": "Open live digital QR menu"
+    },
+    {
+      "name": "Owner Dashboard",
+      "url": "/dashboard",
+      "description": "Access kitchen orders and analytics"
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 10% 91%; /* #eae9e4 */
+    --foreground: 20 14% 10%; /* #1c1917 */
+    --card: 40 20% 97%; /* #faf9f6 */
+    --card-foreground: 20 14% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 10%;
+    --primary: 37 84% 57%; /* #efa736 */
+    --primary-foreground: 20 14% 10%;
+    --secondary: 168 43% 21%; /* #1f4e47 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 40 8% 85%;
+    --muted-foreground: 30 5% 45%;
+    --accent: 37 84% 57%;
+    --accent-foreground: 20 14% 10%;
+    --destructive: 0 84% 42%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 35 12% 91%; /* #eceae6 */
+    --input: 35 12% 91%;
+    --ring: 37 84% 57%;
+    --radius: 1rem;
+  }
+}
+
+body {
+  color: #1c1917;
+  background: #eae9e4;
+  font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle aesthetic scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a29e;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d6d3d1;
+  border-radius: 9999px;
+}
+
+/* Tabular numerics for tickets, prices, timers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

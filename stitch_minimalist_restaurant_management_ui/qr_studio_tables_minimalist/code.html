@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bitepoint - QR Studio &amp; Tables</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              yellow: '#FDC544',
+              yellowHover: '#f5ba33',
+              dark: '#14181B',
+              teal: '#09706C',
+              tealDark: '#0B4E4A',
+              cream: '#F7F6F1',
+              softBorder: '#ECEAE4',
+              mint: '#E4F8ED',
+              mintText: '#109955',
+              amberSoft: '#FFF6E5',
+              amberText: '#D97706',
+              purpleSoft: '#F2EDFF',
+              purpleText: '#6D3BD7',
+              graySoft: '#F3F4F6',
+              grayText: '#6B7280'
+            }
+          },
+          boxShadow: {
+            'card': '0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
+            'board': '0 25px 60px -15px rgba(22, 28, 36, 0.10)',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #E2DFD8;
+      border-radius: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb:hover {
+      background: #CAC5BC;
+    }
+  </style>
+</head>
+<body class="bg-[#ECE7DF] min-h-screen text-[#2A2E37] font-sans antialiased p-3 sm:p-6 lg:p-8 flex items-center justify-center">
+<!-- Outer Application Board Container (Matching Orders UI Screen) -->
+<div class="w-full max-w-[1440px] h-[920px] bg-[#F8F7F2] rounded-[36px] shadow-board overflow-hidden flex border border-[#ECE6DB]">
+<!-- Sidebar Navigation -->
+<aside class="w-64 bg-white flex-shrink-0 flex flex-col justify-between py-7 px-6 border-r border-[#EFECE6]">
+<div>
+<!-- Brand Logo -->
+<div class="flex items-center gap-2.5 px-2 mb-10">
+<div class="w-9 h-8 bg-[#0C7268] rounded-xl flex items-center justify-center relative overflow-hidden shadow-sm">
+<svg class="w-5 h-5 text-brand-yellow transform translate-y-0.5" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z" opacity="0.3"></path>
+<path d="M4 19h16a2 2 0 0 0 2-2V9.82a2 2 0 0 0-.74-1.55l-8-6.4a2 2 0 0 0-2.52 0l-8 6.4A2 2 0 0 0 2 9.82V17a2 2 0 0 0 2 2zm1-8.5l7-5.6 7 5.6V17h-4v-4H9v4H5v-6.5z"></path>
+<circle cx="12" cy="11" fill="#FDC544" r="2.5"></circle>
+</svg>
+</div>
+<span class="text-2xl font-extrabold tracking-tight text-[#0F2625]">bite<span class="text-[#0B6B62]">point</span></span>
+</div>
+<!-- Nav Links -->
+<nav class="space-y-1.5">
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Dashboard
+        </a>
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Menu
+        </a>
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+          Orders
+        </a>
+<!-- Active Tab: Table -->
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-bold text-[#1F1E19] bg-brand-yellow shadow-sm" href="#">
+<svg class="w-5 h-5 text-[#1F1E19]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<rect height="16" rx="2" stroke-width="2" width="18" x="3" y="4"></rect>
+<path d="M3 10h18M10 4v16" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+          Table
+        </a>
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Accounting
+        </a>
+<a class="flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[15px] font-semibold text-[#666B73] hover:text-[#181B1F] hover:bg-[#F8F7F3] transition-colors" href="#">
+<svg class="w-5 h-5 text-[#8F949E]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Settings
+        </a>
+</nav>
+</div>
+<!-- User Profile & Logout -->
+<div class="pt-6 border-t border-[#F2EFE9] space-y-4">
+<div class="flex items-center gap-3 px-1">
+<div class="w-10 h-10 rounded-full bg-[#E5F3EE] text-[#09706C] flex items-center justify-center font-bold text-sm ring-2 ring-white shadow-sm">
+          GS
+        </div>
+<div>
+<h4 class="text-sm font-bold text-[#1A1D20] leading-tight">Gladina Samantha</h4>
+<p class="text-xs text-[#8A8F9A] font-medium mt-0.5">Waiters</p>
+</div>
+</div>
+<button class="w-full flex items-center gap-3 px-2 py-1.5 text-sm font-semibold text-[#5A5F6B] hover:text-[#BD3939] transition-colors group" type="button">
+<svg class="w-5 h-5 text-[#888D98] group-hover:text-[#BD3939] transition-colors" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+        Logout
+      </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+<!-- Top Header Bar -->
+<header class="pt-6 pb-4 px-8 flex-shrink-0 flex items-center justify-between">
+<div>
+<div class="flex items-center gap-3">
+<h1 class="text-[28px] font-extrabold text-[#15191E] tracking-tight">QR Studio &amp; Tables</h1>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E7F6EE] text-[#0C8B49]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#0C8B49] animate-pulse"></span>
+            Downtown Branch • Online
+          </span>
+</div>
+<p class="text-xs text-[#7A7F8A] font-medium mt-1">Design, preview, and generate contactless QR codes for dining tables.</p>
+</div>
+<!-- Date & Search -->
+<div class="flex flex-col items-end gap-2.5">
+<div class="text-sm font-bold text-[#1B1E22]">
+          Wednesday, 12 July 2023
+        </div>
+<div class="flex items-center gap-2.5">
+<button aria-label="Table Preferences" class="w-10 h-10 rounded-2xl bg-white border border-[#E9E6DF] flex items-center justify-center text-[#555B66] hover:bg-gray-50 shadow-sm transition-all">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<div class="relative w-72">
+<input class="w-full bg-white border border-[#EAE7DF] rounded-2xl pl-4 pr-10 py-2.5 text-xs text-[#20242B] placeholder-[#9A9EA7] focus:outline-none focus:ring-2 focus:ring-[#0C7268]/20 focus:border-[#0C7268] shadow-sm font-medium" placeholder="Search table, token, or waiter..." type="text"/>
+<span class="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#888E99]">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+</span>
+</div>
+</div>
+</div>
+</header>
+<!-- Content Workspace: Two Column Layout -->
+<div class="flex-1 overflow-hidden px-8 pb-6 flex gap-6">
+<!-- LEFT: Table Catalog (Spacious & Clean) -->
+<section class="flex-1 flex flex-col min-w-0">
+<!-- Zone Tabs & Quick Action -->
+<div class="flex items-center justify-between pb-4 flex-shrink-0">
+<div class="flex items-center gap-2">
+<button class="px-4 py-2 text-xs font-bold rounded-full bg-white text-[#636873] hover:text-black transition-colors shadow-sm">
+              All (32)
+            </button>
+<button class="px-4 py-2 text-xs font-bold rounded-full bg-[#183935] text-white shadow-sm">
+              Main Dining (14)
+            </button>
+<button class="px-4 py-2 text-xs font-bold rounded-full bg-white text-[#636873] hover:text-black transition-colors shadow-sm">
+              Outdoor Terrace (8)
+            </button>
+<button class="px-4 py-2 text-xs font-bold rounded-full bg-white text-[#636873] hover:text-black transition-colors shadow-sm">
+              VIP Lounge (4)
+            </button>
+</div>
+<button class="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-brand-yellow hover:bg-brand-yellowHover text-[#1B1E22] font-bold text-xs shadow-sm transition-colors" type="button">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></path>
+</svg>
+            Add New Table
+          </button>
+</div>
+<!-- Scrollable Cards Grid -->
+<div class="flex-1 overflow-y-auto custom-scroll pr-1">
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-4 pb-2">
+<!-- Card 1: Table A4 (Active / Selected in Inspector) -->
+<article class="bg-white rounded-3xl p-5 shadow-card border-2 border-brand-yellow/80 flex flex-col justify-between relative hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-[#09706C] text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                      A4
+                    </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Table A4</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Main Dining • 4 Seats</p>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#E6F8ED] text-[#0C8B49]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#109955]"></span>
+                    Guest Seated
+                  </span>
+</div>
+<!-- QR & Metrics Body -->
+<div class="flex items-center gap-4 py-4">
+<!-- QR Code Preview -->
+<div class="w-20 h-20 bg-[#FAF9F5] border border-[#ECE7DE] rounded-2xl p-2 shadow-sm flex items-center justify-center relative flex-shrink-0">
+<svg class="w-full h-full text-[#1A1D20]" fill="currentColor" viewbox="0 0 100 100">
+<path d="M10 10h30v30h-30z M16 16v18h18v-18z M22 22h6v6h-6z M60 10h30v30h-30z M66 16v18h18v-18z M72 22h6v6h-6z M10 60h30v30h-30z M16 66v18h18v-18z M22 72h6v6h-6z M60 60h6v6h-6z M70 60h6v12h-6z M82 60h8v6h-8z M60 72h8v12h-8z M72 78h12v6h-12z M88 72h6v18h-6z M60 88h12v6h-12z M78 88h6v6h-6z"></path>
+</svg>
+<div class="absolute inset-0 m-auto w-5 h-5 rounded-md bg-[#09706C] text-white flex items-center justify-center text-[9px] font-extrabold">
+                      RT
+                    </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between text-xs text-[#6F7480] font-medium">
+<span>Daily Scans</span>
+<span class="font-extrabold text-[#111418] text-sm">54</span>
+</div>
+<p class="text-[11px] text-[#8C919D] truncate mt-1">bitepoint.menu/downtown/t-a4</p>
+<p class="text-[11px] text-[#109955] font-semibold flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[13px]">lock</span>
+                      Encrypted Live Session
+                    </p>
+</div>
+</div>
+</div>
+<!-- Card Actions -->
+<div class="pt-3 border-t border-[#F5F2EA] flex items-center justify-between">
+<button class="text-xs font-bold text-[#555A64] hover:text-[#111418] flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                  Test Scan
+                </button>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded-xl bg-[#F4F1EA] hover:bg-[#EAE6DB] flex items-center justify-center text-[#4B505A] transition-colors" title="Download QR" type="button">
+<span class="material-symbols-outlined text-[17px]">download</span>
+</button>
+<button class="px-3 py-1.5 rounded-xl bg-[#183935] text-white text-xs font-bold shadow-sm" type="button">
+                    Editing
+                  </button>
+</div>
+</div>
+</article>
+<!-- Card 2: Table A1 -->
+<article class="bg-white rounded-3xl p-5 shadow-card border border-[#F0ECE1] flex flex-col justify-between hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-[#F2EFE9] text-[#22262E] flex items-center justify-center font-bold text-sm shadow-sm">
+                      A1
+                    </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Table A1</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Main Dining • 2 Seats</p>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#F3F4F6] text-[#6B7280]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#9CA3AF]"></span>
+                    Available
+                  </span>
+</div>
+<!-- QR & Metrics Body -->
+<div class="flex items-center gap-4 py-4">
+<div class="w-20 h-20 bg-[#FAF9F5] border border-[#ECE7DE] rounded-2xl p-2 shadow-sm flex items-center justify-center relative flex-shrink-0">
+<svg class="w-full h-full text-[#1A1D20]" fill="currentColor" viewbox="0 0 100 100">
+<path d="M10 10h30v30h-30z M16 16v18h18v-18z M22 22h6v6h-6z M60 10h30v30h-30z M66 16v18h18v-18z M72 22h6v6h-6z M10 60h30v30h-30z M16 66v18h18v-18z M22 72h6v6h-6z M60 60h6v6h-6z M70 60h6v12h-6z M82 60h8v6h-8z M60 72h8v12h-8z M72 78h12v6h-12z M88 72h6v18h-6z M60 88h12v6h-12z M78 88h6v6h-6z"></path>
+</svg>
+<div class="absolute inset-0 m-auto w-5 h-5 rounded-md bg-[#09706C] text-white flex items-center justify-center text-[9px] font-extrabold">
+                      RT
+                    </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between text-xs text-[#6F7480] font-medium">
+<span>Daily Scans</span>
+<span class="font-extrabold text-[#111418] text-sm">31</span>
+</div>
+<p class="text-[11px] text-[#8C919D] truncate mt-1">bitepoint.menu/downtown/t-a1</p>
+<p class="text-[11px] text-[#8C919D] font-medium mt-1">Static Key: #99281</p>
+</div>
+</div>
+</div>
+<!-- Card Actions -->
+<div class="pt-3 border-t border-[#F5F2EA] flex items-center justify-between">
+<button class="text-xs font-bold text-[#555A64] hover:text-[#111418] flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                  Test Scan
+                </button>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded-xl bg-[#F4F1EA] hover:bg-[#EAE6DB] flex items-center justify-center text-[#4B505A] transition-colors" title="Download QR" type="button">
+<span class="material-symbols-outlined text-[17px]">download</span>
+</button>
+<button class="px-3 py-1.5 rounded-xl bg-[#F2F0E8] hover:bg-[#EAE6DB] text-[#4B505A] text-xs font-bold transition-colors" type="button">
+                    Customize
+                  </button>
+</div>
+</div>
+</article>
+<!-- Card 3: Table A2 -->
+<article class="bg-white rounded-3xl p-5 shadow-card border border-[#F0ECE1] flex flex-col justify-between hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-[#F2EFE9] text-[#22262E] flex items-center justify-center font-bold text-sm shadow-sm">
+                      A2
+                    </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Table A2</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Main Dining • 4 Seats</p>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#FEF3D6] text-[#B86B07]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#D97706]"></span>
+                    In Payment
+                  </span>
+</div>
+<!-- QR & Metrics Body -->
+<div class="flex items-center gap-4 py-4">
+<div class="w-20 h-20 bg-[#FAF9F5] border border-[#ECE7DE] rounded-2xl p-2 shadow-sm flex items-center justify-center relative flex-shrink-0">
+<svg class="w-full h-full text-[#1A1D20]" fill="currentColor" viewbox="0 0 100 100">
+<path d="M10 10h30v30h-30z M16 16v18h18v-18z M22 22h6v6h-6z M60 10h30v30h-30z M66 16v18h18v-18z M72 22h6v6h-6z M10 60h30v30h-30z M16 66v18h18v-18z M22 72h6v6h-6z M60 60h6v6h-6z M70 60h6v12h-6z M82 60h8v6h-8z M60 72h8v12h-8z M72 78h12v6h-12z M88 72h6v18h-6z M60 88h12v6h-12z M78 88h6v6h-6z"></path>
+</svg>
+<div class="absolute inset-0 m-auto w-5 h-5 rounded-md bg-[#09706C] text-white flex items-center justify-center text-[9px] font-extrabold">
+                      RT
+                    </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between text-xs text-[#6F7480] font-medium">
+<span>Daily Scans</span>
+<span class="font-extrabold text-[#111418] text-sm">68</span>
+</div>
+<p class="text-[11px] text-[#8C919D] truncate mt-1">bitepoint.menu/downtown/t-a2</p>
+<p class="text-[11px] text-[#8C919D] font-medium mt-1">Server: Elena P.</p>
+</div>
+</div>
+</div>
+<!-- Card Actions -->
+<div class="pt-3 border-t border-[#F5F2EA] flex items-center justify-between">
+<button class="text-xs font-bold text-[#555A64] hover:text-[#111418] flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                  Test Scan
+                </button>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded-xl bg-[#F4F1EA] hover:bg-[#EAE6DB] flex items-center justify-center text-[#4B505A] transition-colors" title="Download QR" type="button">
+<span class="material-symbols-outlined text-[17px]">download</span>
+</button>
+<button class="px-3 py-1.5 rounded-xl bg-[#F2F0E8] hover:bg-[#EAE6DB] text-[#4B505A] text-xs font-bold transition-colors" type="button">
+                    Customize
+                  </button>
+</div>
+</div>
+</article>
+<!-- Card 4: Terrace T1 -->
+<article class="bg-white rounded-3xl p-5 shadow-card border border-[#F0ECE1] flex flex-col justify-between hover:shadow-lg transition-all duration-200">
+<div>
+<!-- Header -->
+<div class="flex items-start justify-between pb-3.5 border-b border-[#F4F1EA]">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-[#E4F8ED] text-[#0C8B49] flex items-center justify-center font-bold text-sm shadow-sm">
+                      T1
+                    </div>
+<div>
+<h3 class="font-bold text-[15px] text-[#16191D]">Terrace T1</h3>
+<p class="text-[11px] text-[#8C919C] font-semibold mt-0.5">Outdoor Garden • 6 Seats</p>
+</div>
+</div>
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#E6F8ED] text-[#0C8B49]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#109955]"></span>
+                    Seated • 45m
+                  </span>
+</div>
+<!-- QR & Metrics Body -->
+<div class="flex items-center gap-4 py-4">
+<div class="w-20 h-20 bg-[#FAF9F5] border border-[#ECE7DE] rounded-2xl p-2 shadow-sm flex items-center justify-center relative flex-shrink-0">
+<svg class="w-full h-full text-[#1A1D20]" fill="currentColor" viewbox="0 0 100 100">
+<path d="M10 10h30v30h-30z M16 16v18h18v-18z M22 22h6v6h-6z M60 10h30v30h-30z M66 16v18h18v-18z M72 22h6v6h-6z M10 60h30v30h-30z M16 66v18h18v-18z M22 72h6v6h-6z M60 60h6v6h-6z M70 60h6v12h-6z M82 60h8v6h-8z M60 72h8v12h-8z M72 78h12v6h-12z M88 72h6v18h-6z M60 88h12v6h-12z M78 88h6v6h-6z"></path>
+</svg>
+<div class="absolute inset-0 m-auto w-5 h-5 rounded-md bg-[#09706C] text-white flex items-center justify-center text-[9px] font-extrabold">
+                      RT
+                    </div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between text-xs text-[#6F7480] font-medium">
+<span>Daily Scans</span>
+<span class="font-extrabold text-[#111418] text-sm">42</span>
+</div>
+<p class="text-[11px] text-[#8C919D] truncate mt-1">bitepoint.menu/downtown/t-t1</p>
+<p class="text-[11px] text-[#8C919D] font-medium mt-1">Waterproof Stand</p>
+</div>
+</div>
+</div>
+<!-- Card Actions -->
+<div class="pt-3 border-t border-[#F5F2EA] flex items-center justify-between">
+<button class="text-xs font-bold text-[#555A64] hover:text-[#111418] flex items-center gap-1.5 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                  Test Scan
+                </button>
+<div class="flex items-center gap-2">
+<button class="w-8 h-8 rounded-xl bg-[#F4F1EA] hover:bg-[#EAE6DB] flex items-center justify-center text-[#4B505A] transition-colors" title="Download QR" type="button">
+<span class="material-symbols-outlined text-[17px]">download</span>
+</button>
+<button class="px-3 py-1.5 rounded-xl bg-[#F2F0E8] hover:bg-[#EAE6DB] text-[#4B505A] text-xs font-bold transition-colors" type="button">
+                    Customize
+                  </button>
+</div>
+</div>
+</article>
+</div>
+</div>
+<!-- Clean Pagination Footer -->
+<div class="pt-3 flex items-center justify-between text-xs text-[#7A7F8A]">
+<span>Showing 4 of 32 configured tables</span>
+<div class="flex items-center gap-1.5">
+<button class="px-3 py-1.5 rounded-xl bg-white border border-[#ECE7DF] hover:bg-gray-50 text-[#555A64] font-semibold transition-colors">Prev</button>
+<button class="w-7 h-7 rounded-xl bg-[#183935] text-white font-bold flex items-center justify-center shadow-sm">1</button>
+<button class="w-7 h-7 rounded-xl bg-white border border-[#ECE7DF] text-[#555A64] font-semibold flex items-center justify-center hover:bg-gray-50">2</button>
+<button class="w-7 h-7 rounded-xl bg-white border border-[#ECE7DF] text-[#555A64] font-semibold flex items-center justify-center hover:bg-gray-50">3</button>
+<button class="px-3 py-1.5 rounded-xl bg-white border border-[#ECE7DF] hover:bg-gray-50 text-[#555A64] font-semibold transition-colors">Next</button>
+</div>
+</div>
+</section>
+<!-- RIGHT: Elegant Studio Inspector Panel -->
+<aside class="w-[380px] bg-white rounded-3xl p-5 border border-[#ECE7DF] shadow-card flex flex-col justify-between overflow-y-auto custom-scroll flex-shrink-0">
+<div>
+<!-- Inspector Header -->
+<div class="flex items-center justify-between pb-3 border-b border-[#F4F1EA]">
+<div>
+<h2 class="text-base font-bold text-[#14181B]">Studio Inspector</h2>
+<p class="text-[11px] text-[#8A8F9A] font-medium mt-0.5">Customizing Table A4</p>
+</div>
+<span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-[#FAF5E6] text-[#B87009]">
+              Live Mockup
+            </span>
+</div>
+<!-- Airy Physical Stand Mockup -->
+<div class="my-4 p-5 rounded-2xl bg-[#FBF9F5] border border-[#EFECE4] flex flex-col items-center justify-center relative">
+<!-- Delicate Acrylic / Card Tent Stand -->
+<div class="w-48 bg-white rounded-2xl p-4 shadow-sm border border-[#EBE6DC] flex flex-col items-center text-center">
+<div class="w-8 h-1 rounded-full bg-brand-yellow mb-2.5 opacity-90"></div>
+<span class="text-[9px] uppercase tracking-widest text-[#09706C] font-extrabold">The Rustic Truffle</span>
+<h3 class="text-lg font-black text-[#15191E] mt-0.5">Table A4</h3>
+<p class="text-[10px] text-[#868C96] mb-3">Downtown Dining Room</p>
+<!-- Rendered High Res QR Code -->
+<div class="p-2.5 bg-[#FAF9F5] rounded-xl border border-[#EDE8DE] relative mb-2.5 shadow-inner">
+<svg class="w-24 h-24 text-[#1C2024]" fill="currentColor" viewbox="0 0 100 100">
+<path d="M8 8h34v34h-34z M14 14v22h22v-22z M21 21h8v8h-8z M58 8h34v34h-34z M64 14v22h22v-22z M71 21h8v8h-8z M8 58h34v34h-34z M14 64v22h22v-22z M21 71h8v8h-8z M58 58h8v8h-8z M70 58h8v14h-8z M82 58h10v8h-10z M58 72h10v14h-10z M72 78h14v8h-14z M88 72h8v20h-8z M58 88h14v8h-14z M78 88h8v8h-8z"></path>
+</svg>
+<div class="absolute inset-0 m-auto w-6 h-6 rounded-md bg-[#09706C] text-white flex items-center justify-center text-[10px] font-bold shadow-sm">
+                  RT
+                </div>
+</div>
+<span class="inline-flex items-center gap-1 text-[10px] font-bold text-[#14181B] bg-brand-yellow/30 px-2 py-0.5 rounded-full">
+                Scan to Dine &amp; Order
+              </span>
+<div class="w-full h-1.5 bg-[#E2DED6] rounded-full mt-3"></div>
+</div>
+<span class="text-[10px] text-[#9A9EA7] font-medium mt-3">4×6 Tabletop Stand (Portrait)</span>
+</div>
+<!-- Controls Section -->
+<div class="space-y-3.5">
+<!-- Preset Options -->
+<div>
+<label class="text-xs font-bold text-[#2A2E37] block mb-1.5">Preset Theme</label>
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 px-3 rounded-xl bg-brand-yellow/20 border border-brand-yellow text-left text-xs font-bold text-[#1F1E19] flex items-center justify-between" type="button">
+<span>Warm Bistro</span>
+<span class="w-2 h-2 rounded-full bg-brand-yellow"></span>
+</button>
+<button class="py-2 px-3 rounded-xl bg-[#F8F7F3] hover:bg-[#F2EFE9] border border-transparent text-left text-xs font-semibold text-[#5A5F6B] flex items-center justify-between transition-colors" type="button">
+<span>Minimalist</span>
+</button>
+</div>
+</div>
+<!-- Color Palette Dots -->
+<div>
+<label class="text-xs font-bold text-[#2A2E37] block mb-1.5">Accent Color</label>
+<div class="flex items-center gap-2.5">
+<button class="w-6 h-6 rounded-full bg-brand-yellow ring-2 ring-offset-2 ring-brand-yellow shadow-sm" type="button"></button>
+<button class="w-6 h-6 rounded-full bg-[#09706C] hover:scale-110 transition-transform" type="button"></button>
+<button class="w-6 h-6 rounded-full bg-[#181B1F] hover:scale-110 transition-transform" type="button"></button>
+<button class="w-6 h-6 rounded-full bg-[#825500] hover:scale-110 transition-transform" type="button"></button>
+</div>
+</div>
+<!-- CTA Label Input -->
+<div>
+<label class="text-xs font-bold text-[#2A2E37] block mb-1">Call-to-Action Text</label>
+<input class="w-full bg-[#FAF9F5] border border-[#ECE7DF] rounded-xl px-3 py-2 text-xs text-[#1F242D] focus:outline-none focus:ring-1 focus:ring-[#0C7268] font-medium" type="text" value="Scan to Dine &amp; Order"/>
+</div>
+<!-- Logo Toggle -->
+<div class="flex items-center justify-between py-1">
+<div>
+<span class="text-xs font-bold text-[#2A2E37] block leading-tight">Embed Logo</span>
+<span class="text-[10px] text-[#8A8F9A]">Show monogram in QR center</span>
+</div>
+<div class="w-9 h-5 bg-[#09706C] rounded-full relative cursor-pointer p-0.5">
+<div class="w-4 h-4 bg-white rounded-full shadow-sm transform translate-x-4 transition-transform"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="pt-4 border-t border-[#F5F2EA] space-y-2">
+<button class="w-full py-2.5 rounded-2xl text-xs font-bold text-[#1C1F24] bg-brand-yellow hover:bg-brand-yellowHover shadow-sm transition-colors" type="button">
+            Apply to All Tables
+          </button>
+<div class="grid grid-cols-2 gap-2">
+<button class="w-full py-2 rounded-2xl text-xs font-bold text-[#4B505A] bg-[#F2F0E8] hover:bg-[#EAE6DB] transition-colors" type="button">
+              Save Preset
+            </button>
+<button class="w-full py-2 rounded-2xl text-xs font-bold text-[#09706C] bg-[#E4F8ED] hover:bg-[#D3F3E1] transition-colors" type="button">
+              Print PDF
+            </button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>
