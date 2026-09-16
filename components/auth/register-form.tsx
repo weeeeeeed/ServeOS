@@ -94,24 +94,24 @@ export function RegisterForm() {
 
   return (
     <div className="w-full max-w-xl mx-auto space-y-6">
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-6 sm:p-8 shadow-card">
+      <div className="bg-white border border-stone-200 rounded-[32px] p-6 sm:p-8 shadow-board">
         {/* Header */}
-        <div className="space-y-2 text-center pb-6 border-b border-zinc-100 dark:border-zinc-800">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold dark:bg-brand-950/50 dark:text-brand-300 mb-2">
+        <div className="space-y-2 text-center pb-6 border-b border-stone-100">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1f4e47] text-[#efa736] text-[11px] font-bold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5" />
             <span>14-Day Free Pro Trial Included</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <h1 className="text-2xl font-bold tracking-tight text-stone-900">
             Create Restaurant Account
           </h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+          <p className="text-xs text-stone-500">
             Set up your digital QR menu in under 2 minutes
           </p>
         </div>
 
         {/* Error Alert */}
         {error && (
-          <div className="my-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 flex items-start gap-2.5 text-red-700 dark:text-red-300 text-xs">
+          <div className="my-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-start gap-2.5 text-red-700 text-xs">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <span className="leading-relaxed">{error}</span>
           </div>
@@ -120,7 +120,7 @@ export function RegisterForm() {
         <form onSubmit={handleSubmit} className="space-y-5 mt-6">
           {/* Owner Details Section */}
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.16em] text-stone-400 mb-3">
               1. Owner Credentials
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -132,6 +132,7 @@ export function RegisterForm() {
                 onChange={(e) => setName(e.target.value)}
                 leftIcon={<UserIcon className="w-4 h-4" />}
                 required
+                className="bg-[#faf9f6] border-stone-200 focus:border-[#efa736] focus:ring-[#efa736]/20 rounded-xl"
               />
 
               <Input
@@ -142,6 +143,7 @@ export function RegisterForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 leftIcon={<Mail className="w-4 h-4" />}
                 required
+                className="bg-[#faf9f6] border-stone-200 focus:border-[#efa736] focus:ring-[#efa736]/20 rounded-xl"
               />
             </div>
 
@@ -154,13 +156,14 @@ export function RegisterForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 leftIcon={<Lock className="w-4 h-4" />}
                 required
+                className="bg-[#faf9f6] border-stone-200 focus:border-[#efa736] focus:ring-[#efa736]/20 rounded-xl"
               />
             </div>
           </div>
 
           {/* Restaurant Details Section */}
-          <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-3">
+          <div className="pt-4 border-t border-stone-100">
+            <h2 className="text-[10px] font-black uppercase tracking-[0.16em] text-stone-400 mb-3">
               2. Restaurant Information
             </h2>
 
@@ -173,6 +176,7 @@ export function RegisterForm() {
                 onChange={(e) => handleRestaurantNameChange(e.target.value)}
                 leftIcon={<Store className="w-4 h-4" />}
                 required
+                className="bg-[#faf9f6] border-stone-200 focus:border-[#efa736] focus:ring-[#efa736]/20 rounded-xl"
               />
 
               <div>
@@ -185,6 +189,7 @@ export function RegisterForm() {
                   leftIcon={<Globe className="w-4 h-4" />}
                   helperText={slug ? `Customer QR URL: /${slug}` : 'Unique handle for your restaurant menu'}
                   required
+                  className="bg-[#faf9f6] border-stone-200 focus:border-[#efa736] focus:ring-[#efa736]/20 rounded-xl"
                 />
               </div>
 
@@ -196,6 +201,7 @@ export function RegisterForm() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   leftIcon={<Phone className="w-4 h-4" />}
+                  className="bg-[#faf9f6] border-stone-200 focus:border-[#efa736] focus:ring-[#efa736]/20 rounded-xl"
                 />
 
                 <Input
@@ -205,6 +211,7 @@ export function RegisterForm() {
                   value={address}
                   onChange={(e) => setAddress(e.target.value)}
                   leftIcon={<MapPin className="w-4 h-4" />}
+                  className="bg-[#faf9f6] border-stone-200 focus:border-[#efa736] focus:ring-[#efa736]/20 rounded-xl"
                 />
               </div>
             </div>
@@ -212,7 +219,7 @@ export function RegisterForm() {
 
           <Button
             type="submit"
-            className="w-full mt-4"
+            className="w-full mt-4 bg-[#efa736] hover:bg-[#e09827] text-stone-950 font-bold rounded-xl h-12 shadow-sm"
             size="lg"
             isLoading={isLoading}
           >
@@ -222,11 +229,11 @@ export function RegisterForm() {
         </form>
 
         {/* Footer */}
-        <div className="mt-6 text-center text-xs text-zinc-500 dark:text-zinc-400 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+        <div className="mt-6 text-center text-xs text-stone-500 pt-4 border-t border-stone-100">
           Already have an account?{' '}
           <Link
             href="/login"
-            className="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline underline-offset-2"
+            className="font-bold text-stone-900 hover:text-[#1f4e47] underline underline-offset-2"
           >
             Sign in to dashboard
           </Link>

@@ -22,18 +22,18 @@ export function UserTable({ users }: UserTableProps) {
   });
 
   return (
-    <div id="users" className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200/80 dark:border-zinc-800 shadow-card overflow-hidden">
+    <div id="users" className="bg-white rounded-[28px] border border-stone-200 shadow-xs overflow-hidden">
       {/* Table Header */}
-      <div className="p-4 sm:p-5 border-b border-zinc-200/80 dark:border-zinc-800 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100">
+      <div className="p-5 border-b border-stone-100 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between bg-[#faf9f6]">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-2xl bg-[#1f4e47] text-[#efa736] flex items-center justify-center shadow-xs">
             <Users className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 text-base">
+            <h3 className="font-bold text-stone-900 text-base">
               Platform Accounts & User Roles
             </h3>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-stone-500 font-medium">
               {filtered.length} registered accounts
             </p>
           </div>
@@ -42,20 +42,20 @@ export function UserTable({ users }: UserTableProps) {
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-2">
           <div className="relative flex-1 sm:w-60">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
             <input
               type="text"
               placeholder="Search user name or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg focus:outline-none"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-white border border-stone-200 rounded-xl focus:outline-none focus:border-[#efa736] focus:ring-[#efa736]/20 text-stone-800"
             />
           </div>
 
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="text-xs bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg px-2.5 py-1.5 text-zinc-700 dark:text-zinc-300 focus:outline-none"
+            className="text-xs bg-white border border-stone-200 rounded-xl px-2.5 py-1.5 text-stone-700 focus:outline-none focus:border-[#efa736]"
           >
             <option value="all">All Roles</option>
             <option value="admin">Super Admins</option>
@@ -67,7 +67,7 @@ export function UserTable({ users }: UserTableProps) {
       {/* Table Content */}
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs">
-          <thead className="bg-zinc-50 dark:bg-zinc-800/60 border-b border-zinc-200 dark:border-zinc-800 text-zinc-500 dark:text-zinc-400 font-semibold uppercase tracking-wider">
+          <thead className="bg-[#faf9f6] border-b border-stone-200/80 text-stone-500 font-bold uppercase tracking-wider text-[11px]">
             <tr>
               <th className="px-5 py-3">Account Name</th>
               <th className="px-5 py-3">Email Address</th>
@@ -76,39 +76,47 @@ export function UserTable({ users }: UserTableProps) {
               <th className="px-5 py-3 text-right">Registered</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-200/80 dark:divide-zinc-800 text-zinc-700 dark:text-zinc-300">
+          <tbody className="divide-y divide-stone-100 text-stone-700">
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-5 py-8 text-center text-zinc-400">
+                <td colSpan={5} className="px-5 py-8 text-center text-stone-400">
                   No platform users found.
                 </td>
               </tr>
             ) : (
               filtered.map((user) => (
-                <tr key={user.id} className="hover:bg-zinc-50/70 dark:hover:bg-zinc-800/40 transition-colors">
-                  <td className="px-5 py-4 font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center font-bold text-[10px] text-zinc-700 dark:text-zinc-300">
+                <tr key={user.id} className="hover:bg-[#faf9f6]/70 transition-colors">
+                  <td className="px-5 py-4 font-bold text-stone-900 flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-full bg-[#1f4e47] text-[#efa736] flex items-center justify-center font-bold text-[11px] shrink-0">
                       {user.name.slice(0, 2).toUpperCase()}
                     </div>
                     <span>{user.name}</span>
                   </td>
 
-                  <td className="px-5 py-4 text-zinc-600 dark:text-zinc-400">
+                  <td className="px-5 py-4 text-stone-600">
                     <div className="flex items-center gap-1.5">
-                      <Mail className="w-3 h-3 text-zinc-400" />
-                      <span>{user.email}</span>
+                      <Mail className="w-3.5 h-3.5 text-stone-400" />
+                      <span className="font-mono text-[11px]">{user.email}</span>
                     </div>
                   </td>
 
                   <td className="px-5 py-4">
-                    <Badge role={user.role} />
+                    {user.role === 'admin' ? (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-[#1f4e47] border border-emerald-200">
+                        Super Admin
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-900 border border-amber-200">
+                        Restaurant Owner
+                      </span>
+                    )}
                   </td>
 
-                  <td className="px-5 py-4 font-mono text-[11px] text-zinc-400">
+                  <td className="px-5 py-4 font-mono text-[11px] text-stone-400">
                     {user.id}
                   </td>
 
-                  <td className="px-5 py-4 text-right text-zinc-500 whitespace-nowrap">
+                  <td className="px-5 py-4 text-right text-stone-500 whitespace-nowrap">
                     {new Date(user.created_at).toLocaleDateString(undefined, {
                       year: 'numeric',
                       month: 'short',

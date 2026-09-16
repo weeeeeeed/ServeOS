@@ -25,48 +25,49 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-zinc-200/80 bg-white/80 backdrop-blur-md dark:border-zinc-800/80 dark:bg-zinc-950/80">
+    <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-[#faf9f6]/95 backdrop-blur-md antialiased">
       <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 font-semibold text-zinc-900 dark:text-zinc-50 group">
-          <div className="w-9 h-9 rounded-xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center shadow-subtle group-hover:scale-105 transition-transform">
+        <Link href="/" className="flex items-center gap-2.5 font-bold text-stone-900 group">
+          <div className="w-9 h-9 rounded-xl bg-[#1f4e47] text-[#efa736] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
             <QrCode className="w-5 h-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-base tracking-tight font-bold leading-none">RestoQR</span>
-            <span className="text-[10px] text-zinc-500 font-medium tracking-wide uppercase">Multi-Tenant SaaS</span>
+            <span className="text-base tracking-tight font-black text-stone-900 leading-none">BitePoint</span>
+            <span className="text-[10px] text-stone-500 font-bold tracking-[0.14em] uppercase">Culinary Modernism OS</span>
           </div>
         </Link>
 
         {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-zinc-600 dark:text-zinc-400">
-          <Link href="/#features" className="hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors">
-            Features
+        <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-stone-600">
+          <Link href="/#modules" className="hover:text-stone-950 transition-colors">
+            Platform Modules
           </Link>
-          <Link href="/#architecture" className="hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors">
-            Architecture
+          <Link href="/#radar" className="hover:text-stone-950 transition-colors">
+            Floor Radar
           </Link>
-          <Link href="/r/la-piazza" className="hover:text-zinc-950 dark:hover:text-zinc-50 transition-colors">
-            Live QR Demo
+          <Link href="/r/la-piazza" className="hover:text-stone-950 transition-colors flex items-center gap-1 text-[#1f4e47] font-bold">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#efa736] animate-pulse" />
+            <span>Live Diner QR Demo</span>
           </Link>
         </nav>
 
         {/* Right Action Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {user ? (
             <div className="flex items-center gap-2">
               {user.role === 'admin' ? (
                 <Link href="/admin">
-                  <Button variant="secondary" size="sm" className="gap-1.5">
-                    <Shield className="w-3.5 h-3.5 text-purple-600" />
-                    Admin Panel
+                  <Button size="sm" className="gap-1.5 bg-[#1f4e47] hover:bg-[#133e36] text-white font-bold rounded-xl shadow-xs">
+                    <Shield className="w-3.5 h-3.5 text-[#efa736]" />
+                    <span>Admin Panel</span>
                   </Button>
                 </Link>
               ) : (
                 <Link href="/dashboard">
-                  <Button variant="secondary" size="sm" className="gap-1.5">
-                    <LayoutDashboard className="w-3.5 h-3.5" />
-                    Owner Dashboard
+                  <Button size="sm" className="gap-1.5 bg-[#1f4e47] hover:bg-[#133e36] text-white font-bold rounded-xl shadow-xs">
+                    <LayoutDashboard className="w-3.5 h-3.5 text-[#efa736]" />
+                    <span>Owner Dashboard</span>
                   </Button>
                 </Link>
               )}
@@ -74,7 +75,8 @@ export function Navbar() {
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
-                className="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+                className="text-stone-500 hover:text-stone-900 rounded-xl"
+                title="Sign out"
               >
                 <LogOut className="w-4 h-4" />
               </Button>
@@ -82,12 +84,12 @@ export function Navbar() {
           ) : (
             <>
               <Link href="/login">
-                <Button variant="ghost" size="sm">
+                <Button variant="ghost" size="sm" className="text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-semibold rounded-xl text-xs">
                   Sign In
                 </Button>
               </Link>
               <Link href="/register">
-                <Button variant="primary" size="sm" className="gap-1.5 shadow-sm">
+                <Button size="sm" className="gap-1.5 shadow-xs bg-[#efa736] hover:bg-[#e09827] text-stone-950 font-bold rounded-xl text-xs">
                   <span>Start Free Trial</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Button>

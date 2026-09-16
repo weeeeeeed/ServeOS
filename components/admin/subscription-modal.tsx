@@ -87,19 +87,19 @@ export function SubscriptionModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl shadow-elevated overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-xs animate-in fade-in duration-200 antialiased">
+      <div className="relative w-full max-w-lg bg-white border border-stone-200 rounded-[32px] shadow-board overflow-hidden my-8">
         {/* Header */}
-        <div className="p-5 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-950/40">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400">
+        <div className="p-5 border-b border-stone-100 flex items-center justify-between bg-[#faf9f6]">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-[#1f4e47] text-[#efa736] flex items-center justify-center shadow-xs">
               <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
+              <h2 className="text-base font-bold text-stone-900">
                 Manage Tenant Subscription
               </h2>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-stone-500 font-mono">
                 {tenant.name} &bull; /r/{tenant.slug}
               </p>
             </div>
@@ -107,7 +107,7 @@ export function SubscriptionModal({
           <button
             onClick={onClose}
             aria-label="Close dialog"
-            className="text-zinc-400 hover:text-zinc-700 p-1 rounded-lg"
+            className="text-stone-400 hover:text-stone-700 hover:bg-stone-100 p-1.5 rounded-xl transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -116,7 +116,7 @@ export function SubscriptionModal({
         {/* Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 text-xs text-red-700 flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -124,7 +124,7 @@ export function SubscriptionModal({
 
           {/* Plan Selector */}
           <div className="space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-stone-400">
               Select SaaS Pricing Tier
             </label>
             <div className="grid grid-cols-3 gap-2">
@@ -137,12 +137,12 @@ export function SubscriptionModal({
                     onClick={() => setSelectedPlan(p.name)}
                     className={`p-3 rounded-2xl border text-left transition-all ${
                       isSelected
-                        ? 'border-brand-600 bg-brand-50/50 dark:bg-brand-950/30 ring-1 ring-brand-600'
-                        : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 bg-white dark:bg-zinc-900'
+                        ? 'border-[#efa736] bg-[#efa736]/15 ring-1 ring-[#efa736]'
+                        : 'border-stone-200 hover:border-stone-300 bg-[#faf9f6]'
                     }`}
                   >
-                    <span className="text-xs font-black block text-zinc-900 dark:text-zinc-100">{p.name}</span>
-                    <span className="text-xs font-bold text-brand-600 dark:text-brand-400 block mt-0.5">{p.price}</span>
+                    <span className="text-xs font-black block text-stone-900">{p.name}</span>
+                    <span className="text-xs font-bold text-[#1f4e47] block mt-0.5">{p.price}</span>
                   </button>
                 );
               })}
@@ -151,13 +151,13 @@ export function SubscriptionModal({
 
           {/* Subscription Status */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-stone-400 mb-1.5">
               Account Contract Status
             </label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as SubscriptionStatus)}
-              className="w-full h-10 px-3 py-2 text-xs font-semibold bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 rounded-xl text-zinc-900 dark:text-zinc-100 focus:outline-none"
+              className="w-full h-10 px-3 py-2 text-xs font-semibold bg-[#faf9f6] border border-stone-200 rounded-xl text-stone-900 focus:outline-none focus:border-[#efa736] focus:ring-[#efa736]/20"
             >
               <option value="active">🟢 Active (Full Access)</option>
               <option value="trialing">🔵 14-Day Free Trial</option>
@@ -169,37 +169,37 @@ export function SubscriptionModal({
 
           {/* Expiry Date */}
           <div className="space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-zinc-400">
+            <label className="block text-[10px] font-black uppercase tracking-[0.16em] text-stone-400">
               Contract Expiry Date
             </label>
             <Input
               type="date"
               value={expiryDate}
               onChange={(e) => setExpiryDate(e.target.value)}
-              className="text-xs h-10"
+              className="text-xs h-10 bg-[#faf9f6] border-stone-200 rounded-xl"
               required
             />
 
             <div className="flex gap-1.5 pt-1">
-              <span className="text-[11px] text-zinc-400 self-center mr-1">Extend:</span>
+              <span className="text-[11px] text-stone-400 self-center mr-1">Extend:</span>
               <button
                 type="button"
                 onClick={() => handleQuickDuration(1)}
-                className="px-2 py-0.5 rounded-lg border text-[11px] font-semibold bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                className="px-2 py-0.5 rounded-lg border border-stone-200 text-[11px] font-semibold bg-[#faf9f6] hover:bg-stone-100 text-stone-700"
               >
                 +1 Month
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickDuration(6)}
-                className="px-2 py-0.5 rounded-lg border text-[11px] font-semibold bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                className="px-2 py-0.5 rounded-lg border border-stone-200 text-[11px] font-semibold bg-[#faf9f6] hover:bg-stone-100 text-stone-700"
               >
                 +6 Months
               </button>
               <button
                 type="button"
                 onClick={() => handleQuickDuration(12)}
-                className="px-2 py-0.5 rounded-lg border text-[11px] font-semibold bg-zinc-50 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300"
+                className="px-2 py-0.5 rounded-lg border border-stone-200 text-[11px] font-semibold bg-[#faf9f6] hover:bg-stone-100 text-stone-700"
               >
                 +1 Year
               </button>
@@ -207,11 +207,23 @@ export function SubscriptionModal({
           </div>
 
           {/* Footer Actions */}
-          <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex justify-end gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={onClose} disabled={isLoading}>
+          <div className="pt-4 border-t border-stone-100 flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onClose}
+              disabled={isLoading}
+              className="border-stone-200 text-stone-700 hover:bg-stone-50 rounded-xl"
+            >
               Cancel
             </Button>
-            <Button type="submit" size="sm" isLoading={isLoading} className="gap-1.5 font-bold">
+            <Button
+              type="submit"
+              size="sm"
+              isLoading={isLoading}
+              className="bg-[#efa736] hover:bg-[#e09827] text-stone-950 font-bold rounded-xl gap-1.5 shadow-sm"
+            >
               <span>Update Subscription</span>
             </Button>
           </div>

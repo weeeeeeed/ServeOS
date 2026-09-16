@@ -26,23 +26,23 @@ export default function HomePage() {
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#fbf9f6] text-[#1c1917] flex flex-col selection:bg-[#efa736] selection:text-stone-950 font-sans">
+    <div className="min-h-screen bg-[#eae9e4] text-[#1c1917] flex flex-col selection:bg-[#efa736] selection:text-stone-950 font-sans antialiased">
       {/* 1. Top Announcement Bar */}
-      <div className="bg-[#873724] text-[#faeae6] text-[11px] sm:text-xs py-2 px-4 font-medium tracking-wide">
+      <div className="bg-[#1f4e47] text-emerald-100 text-[11px] sm:text-xs py-2 px-4 font-medium tracking-wide">
         <div className="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-1 sm:gap-4">
           <div className="flex items-center gap-2 text-center sm:text-left">
-            <span className="inline-block px-1.5 py-0.5 rounded bg-[#9c3e29] text-[10px] font-bold tracking-wider uppercase text-amber-200">
-              HERITAGE SUITE 2.4
+            <span className="inline-block px-2 py-0.5 rounded bg-[#efa736] text-[10px] font-black tracking-wider uppercase text-stone-950">
+              BITEPOINT 2.0
             </span>
             <span className="opacity-95">
-              Now pairing Fine-Dine Courtyards, Heritage Havens &amp; High-Velocity Kitchens
+              Modern Culinary OS for Fine-Dine Courtyards, Bustling Bistros &amp; High-Velocity Kitchens
             </span>
           </div>
           <Link
-            href="#operations"
-            className="inline-flex items-center gap-1 hover:text-white transition-colors underline-offset-2 hover:underline font-semibold"
+            href="/r/la-piazza"
+            className="inline-flex items-center gap-1 text-[#efa736] hover:text-white transition-colors underline-offset-2 hover:underline font-bold"
           >
-            <span>Explore Heritage OS Tour</span>
+            <span>Try Live Diner QR Demo</span>
             <ChevronRight className="w-3 h-3" />
           </Link>
         </div>
@@ -51,30 +51,27 @@ export default function HomePage() {
       {/* 2. Navigation Header */}
       <Navbar />
 
-      {/* 3. Hero Section */}
-      <section className="relative pt-12 pb-16 md:pt-20 md:pb-24 overflow-hidden">
-        {/* Subtle decorative warm background radial */}
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[720px] h-[500px] bg-[#f5ebe1]/60 rounded-full blur-3xl pointer-events-none -z-10" />
-
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* 3. Hero Section with Floating Board Shell */}
+      <section className="relative px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <div className="max-w-[1440px] mx-auto bg-white rounded-[32px] sm:rounded-[40px] border border-stone-200/90 shadow-board p-6 sm:p-12 md:p-16 text-center relative overflow-hidden">
           {/* Top Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#e8dcd5] bg-[#faefe9]/70 text-[11px] font-semibold text-[#873724] mb-8 shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#873724] animate-pulse" />
-            <span>ARCHITECTURAL FLOOR CURATION</span>
-            <span className="opacity-40">•</span>
-            <span>FINE TIMING ENGINE</span>
-            <span className="opacity-40">•</span>
-            <span>HIGH-VELOCITY KITCHENS</span>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-stone-200 bg-[#faf9f6] text-[10px] sm:text-[11px] font-black tracking-[0.18em] uppercase text-[#1f4e47] mb-8 shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-[#efa736] animate-pulse" />
+            <span>LIVE FLOOR RADAR</span>
+            <span className="opacity-30">•</span>
+            <span>KITCHEN PASS SYNC</span>
+            <span className="opacity-30">•</span>
+            <span>CONTACTLESS QR DINING</span>
           </div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-normal tracking-tight text-[#1c1917] max-w-4xl mx-auto leading-[1.12]">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-sans font-black tracking-tight text-stone-900 max-w-4xl mx-auto leading-[1.08]">
             Run your floor, kitchen, and guests with{' '}
-            <span className="italic font-serif text-[#873724]">effortless grace.</span>
+            <span className="text-[#1f4e47] underline decoration-[#efa736] decoration-wavy decoration-2">effortless grace.</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="mt-6 text-base sm:text-lg text-[#615b56] max-w-2xl mx-auto leading-relaxed font-sans">
+          <p className="mt-6 text-base sm:text-lg text-stone-600 max-w-2xl mx-auto leading-relaxed font-sans">
             A unified hospitality operating system bridging timeless dining craft with instant cloud speed.
             Point-of-sale, contactless QR, intelligent floor radar, and kitchen sync in seamless harmony.
           </p>
@@ -84,7 +81,7 @@ export default function HomePage() {
             <Link href="/register">
               <Button
                 size="lg"
-                className="bg-[#873724] hover:bg-[#732f1e] text-white rounded-xl px-7 py-3 text-sm font-semibold shadow-card gap-2 transition-all hover:translate-y-[-1px]"
+                className="bg-[#efa736] hover:bg-[#e09827] text-stone-950 font-bold rounded-xl px-7 py-3 text-sm shadow-card gap-2 transition-all hover:translate-y-[-1px]"
               >
                 <span>Start Your 14-Day Free Access</span>
                 <ArrowRight className="w-4 h-4" />
@@ -93,12 +90,11 @@ export default function HomePage() {
 
             <Link href="/dashboard">
               <Button
-                variant="outline"
                 size="lg"
-                className="bg-white hover:bg-[#f9f8f5] text-[#1c1917] border-[#e2ded9] rounded-xl px-6 py-3 text-sm font-medium shadow-xs gap-2"
+                className="bg-[#1f4e47] hover:bg-[#133e36] text-white font-bold rounded-xl px-6 py-3 text-sm shadow-xs gap-2"
               >
-                <Play className="w-3.5 h-3.5 fill-[#873724] text-[#873724]" />
-                <span>Watch 2-Min Live Floor Walkthrough</span>
+                <Play className="w-3.5 h-3.5 fill-[#efa736] text-[#efa736]" />
+                <span>Open Owner Dashboard</span>
               </Button>
             </Link>
           </div>
@@ -569,14 +565,14 @@ export default function HomePage() {
       </section>
 
       {/* 6. Editorial Testimonial Quote Section */}
-      <section className="py-20 md:py-24 bg-[#873724] text-white relative overflow-hidden">
+      <section className="py-20 md:py-24 bg-[#1f4e47] text-white relative overflow-hidden">
         {/* Subtle decorative concentric circle watermark */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-white/5 rounded-full pointer-events-none" />
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           {/* Diamond Ornaments */}
-          <div className="flex items-center justify-center gap-3 text-amber-300/80 mb-6 text-xs tracking-widest">
+          <div className="flex items-center justify-center gap-3 text-[#efa736] mb-6 text-xs tracking-widest">
             <span>◆</span>
             <span>◆</span>
             <span>◆</span>
@@ -585,18 +581,18 @@ export default function HomePage() {
           </div>
 
           {/* Testimonial Quote */}
-          <blockquote className="text-xl sm:text-3xl lg:text-4xl font-serif italic leading-relaxed text-[#faefe9]">
+          <blockquote className="text-xl sm:text-3xl lg:text-4xl font-serif italic leading-relaxed text-[#faf9f6]">
             &ldquo;In our 180-seat courtyard palace, hospitality is a dance of intimacy and tradition. Most POS systems feel like brutalist software built for fast-food counters. BitePoint gave us the elegance of fine dining cadence while keeping our kitchens firing at hyper-scale speed.&rdquo;
           </blockquote>
 
           {/* Author */}
           <div className="mt-8 flex flex-col items-center justify-center gap-2">
-            <div className="w-12 h-12 rounded-full bg-[#9c3e29] border border-amber-300/30 flex items-center justify-center font-bold font-serif text-sm text-white">
+            <div className="w-12 h-12 rounded-full bg-[#133e36] border border-[#efa736]/40 flex items-center justify-center font-bold font-sans text-sm text-[#efa736]">
               AR
             </div>
             <div>
               <p className="font-semibold text-base text-white">Chef Arjun Rajawat</p>
-              <p className="text-xs text-amber-200/80">Culinary Director &amp; Proprietor, The Amber Courtyard</p>
+              <p className="text-xs text-emerald-200">Culinary Director &amp; Proprietor, The Amber Courtyard</p>
             </div>
           </div>
         </div>
@@ -606,7 +602,7 @@ export default function HomePage() {
       <section id="pricing" className="py-20 md:py-28">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
-            <p className="text-[11px] font-bold tracking-widest uppercase text-[#873724]">
+            <p className="text-[11px] font-bold tracking-widest uppercase text-[#1f4e47]">
               FAIR ARCHITECTURE FOR CULINARY EXCELLENCE
             </p>
             <h2 className="mt-3 text-3xl sm:text-5xl font-serif text-[#1c1917]">
@@ -665,9 +661,9 @@ export default function HomePage() {
             </div>
 
             {/* Pro Hospitality (FEATURED) */}
-            <div className="rounded-[28px] bg-white border-2 border-[#873724] p-8 shadow-xl relative flex flex-col justify-between scale-[1.02]">
+            <div className="rounded-[28px] bg-white border-2 border-[#1f4e47] p-8 shadow-xl relative flex flex-col justify-between scale-[1.02]">
               {/* Featured Badge */}
-              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-[#873724] text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-3.5 py-1 rounded-full bg-[#1f4e47] text-[#efa736] text-[10px] font-bold uppercase tracking-wider shadow-sm">
                 MOST CHOSEN BY HERITAGE RESTAURANTS
               </div>
 
@@ -678,33 +674,33 @@ export default function HomePage() {
                 </p>
 
                 <div className="mt-6 flex items-baseline gap-1">
-                  <span className="text-4xl font-serif font-bold text-[#873724]">$149</span>
+                  <span className="text-4xl font-serif font-bold text-[#1f4e47]">$149</span>
                   <span className="text-xs text-[#78716c]">/month billed annually</span>
                 </div>
 
                 <ul className="mt-8 space-y-3 text-xs text-[#1c1917] font-medium">
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#873724] shrink-0" />
+                    <Check className="w-4 h-4 text-[#1f4e47] shrink-0" />
                     <span>Unlimited floor terminals &amp; reservations</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#873724] shrink-0" />
+                    <Check className="w-4 h-4 text-[#1f4e47] shrink-0" />
                     <span>Architectural Multi-Zone Floor Radar</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#873724] shrink-0" />
+                    <Check className="w-4 h-4 text-[#1f4e47] shrink-0" />
                     <span>Smart KDS Routing (Pass, Grill, Prep)</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#873724] shrink-0" />
+                    <Check className="w-4 h-4 text-[#1f4e47] shrink-0" />
                     <span>Sommelier Pairing Engine / Tap &amp; Split Table</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#873724] shrink-0" />
-                    <span>Sommelier &amp; Sommelier Course Pacing</span>
+                    <Check className="w-4 h-4 text-[#1f4e47] shrink-0" />
+                    <span>Sommelier &amp; Course Pacing</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-[#873724] shrink-0" />
+                    <Check className="w-4 h-4 text-[#1f4e47] shrink-0" />
                     <span>24/7 Dedicated Floor Support</span>
                   </li>
                 </ul>
@@ -712,7 +708,7 @@ export default function HomePage() {
 
               <div className="mt-8 pt-6 border-t border-stone-100">
                 <Link href="/register">
-                  <Button className="w-full rounded-xl bg-[#873724] hover:bg-[#732f1e] text-white text-xs font-semibold py-2.5 shadow-md">
+                  <Button className="w-full rounded-xl bg-[#efa736] hover:bg-[#e09827] text-stone-950 text-xs font-bold py-2.5 shadow-md">
                     Claim 14-Day Free Access
                   </Button>
                 </Link>
@@ -769,12 +765,12 @@ export default function HomePage() {
       </section>
 
       {/* 8. Pre-Footer Call To Action Banner */}
-      <section className="py-16 md:py-20 bg-[#6e2a1b] text-white">
+      <section className="py-16 md:py-20 bg-[#1f4e47] text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-serif text-white">
             Ready to bring effortless grace to your floor?
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-[#f5d9d2] max-w-xl mx-auto">
+          <p className="mt-3 text-sm sm:text-base text-emerald-100 max-w-xl mx-auto">
             Set up in under 10 minutes. Import your existing menu with one click with nothing to install and risk free for 14 days.
           </p>
 
@@ -792,23 +788,23 @@ export default function HomePage() {
               onChange={(e) => setEmailInput(e.target.value)}
               placeholder="Enter your restaurant email"
               required
-              className="w-full sm:flex-1 px-4 py-3 rounded-xl bg-white text-[#1c1917] text-xs placeholder:text-[#a8a29e] border-none focus:outline-none focus:ring-2 focus:ring-amber-300"
+              className="w-full sm:flex-1 px-4 py-3 rounded-xl bg-white text-[#1c1917] text-xs placeholder:text-[#a8a29e] border-none focus:outline-none focus:ring-2 focus:ring-[#efa736]"
             />
             <button
               type="submit"
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#873724] hover:bg-[#732f1e] text-white text-xs font-bold transition-colors whitespace-nowrap shadow-sm"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-[#efa736] hover:bg-[#e09827] text-stone-950 text-xs font-bold transition-colors whitespace-nowrap shadow-sm"
             >
               Start 14-Day Free
             </button>
           </form>
 
-          <p className="mt-4 text-[11px] text-[#faefe9]/75">
+          <p className="mt-4 text-[11px] text-emerald-200/80">
             No credit card required. Instant 14-day full production trial access.
           </p>
         </div>
       </section>
 
-      {/* 9. Architectural Footer with Indian Heritage Monuments Skyline */}
+      {/* 9. Architectural Footer */}
       <footer className="bg-[#fbf7f2] text-[#1c1917] border-t border-[#eceae6] pt-16 pb-0 overflow-hidden relative">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Top 4-Column Directory Grid */}
@@ -816,7 +812,7 @@ export default function HomePage() {
             {/* Col 1: Brand & Concierge (Col 4) */}
             <div className="lg:col-span-4 space-y-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-[#873724] text-white flex items-center justify-center shadow-xs">
+                <div className="w-8 h-8 rounded-full bg-[#1f4e47] text-[#efa736] flex items-center justify-center shadow-xs">
                   <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm0-8h-2V7h2v2zm4 8h-2v-4h2v4zm0-6h-2V7h2v4z"/>
                   </svg>
