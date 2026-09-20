@@ -4,32 +4,32 @@
 
 @layer base {
   :root {
-    --background: 40 10% 91%; /* #eae9e4 */
-    --foreground: 20 14% 10%; /* #1c1917 */
-    --card: 40 20% 97%; /* #faf9f6 */
-    --card-foreground: 20 14% 10%;
+    --background: 40 25% 97%; /* #faf8f5 */
+    --foreground: 155 30% 12%; /* #162820 */
+    --card: 0 0% 100%; /* #ffffff */
+    --card-foreground: 155 30% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 20 14% 10%;
-    --primary: 37 84% 57%; /* #efa736 */
-    --primary-foreground: 20 14% 10%;
-    --secondary: 168 43% 21%; /* #1f4e47 */
+    --popover-foreground: 155 30% 12%;
+    --primary: 156 37% 17%; /* #1b3b2f - Forest Green */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 152 36% 36%; /* #3a7d5c - Sage Green */
     --secondary-foreground: 0 0% 100%;
-    --muted: 40 8% 85%;
-    --muted-foreground: 30 5% 45%;
-    --accent: 37 84% 57%;
-    --accent-foreground: 20 14% 10%;
+    --muted: 140 15% 92%; /* #eef4f0 */
+    --muted-foreground: 145 10% 45%; /* #6b7c72 */
+    --accent: 152 36% 36%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 42%;
     --destructive-foreground: 0 0% 100%;
-    --border: 35 12% 91%; /* #eceae6 */
-    --input: 35 12% 91%;
-    --ring: 37 84% 57%;
-    --radius: 1rem;
+    --border: 135 15% 91%; /* #e4ede5 */
+    --input: 135 15% 91%;
+    --ring: 156 37% 17%;
+    --radius: 1.25rem;
   }
 }
 
 body {
-  color: #1c1917;
-  background: #eae9e4;
+  color: #162820;
+  background: #faf8f5;
   font-family: var(--font-plus-jakarta), 'Plus Jakarta Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

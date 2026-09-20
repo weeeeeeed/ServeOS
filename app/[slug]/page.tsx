@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -16,13 +16,15 @@ export default function CustomerRestaurantRedirectPage() {
   }, [slug, router]);
 
   return (
-    <div className="min-h-screen bg-[#eae9e4] p-4 sm:p-8 flex flex-col items-center justify-center">
-      <div className="max-w-md w-full space-y-4 bg-white p-6 rounded-[32px] border border-stone-200 shadow-board text-center">
-        <Skeleton className="h-16 w-16 rounded-2xl mx-auto bg-stone-200" />
-        <Skeleton className="h-6 w-48 mx-auto bg-stone-200" />
-        <Skeleton className="h-4 w-64 mx-auto bg-stone-100" />
-        <p className="text-xs text-stone-500 font-medium pt-2">
-          Loading BitePoint Dining Menu...
+    <div className="min-h-screen bg-[#f4efe8] p-4 sm:p-8 flex flex-col items-center justify-center font-sans antialiased">
+      <div className="max-w-md w-full space-y-4 bg-[#faf8f5] p-8 rounded-[36px] border border-[#e6e2da] shadow-xs text-center">
+        <img
+          src="/images/serveos-icon.png"
+          alt="ServeOS"
+          className="h-12 w-auto mx-auto object-contain animate-pulse"
+        />
+        <p className="text-xs text-[#556960] font-medium pt-2">
+          Opening ServeOS Dining Menu...
         </p>
       </div>
     </div>

@@ -21,6 +21,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Button } from '@/components/ui/button';
 import { AnalyticsData } from '@/lib/types';
 import { AnalyticsService } from '@/lib/analytics-service';
+import { formatCurrency, CURRENCY_SYMBOL } from '@/lib/currency';
 
 interface AnalyticsDashboardProps {
   restaurantId: string;
@@ -75,16 +76,15 @@ export function AnalyticsDashboard({ restaurantId }: AnalyticsDashboardProps) {
               <p className="text-xs font-semibold text-zinc-500">Gross Sales Revenue</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <p className="text-2xl font-black text-zinc-900 dark:text-zinc-100">
-                  ${data.totalRevenue.toFixed(2)}
+                  {formatCurrency(data.totalRevenue)}
                 </p>
               </div>
-              <p className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-0.5 mt-0.5">
-                <ArrowUpRight className="w-3 h-3" />
-                <span>+{data.revenueGrowthRate}% vs last month</span>
+              <p className="text-[11px] text-zinc-500 font-semibold flex items-center gap-1 mt-0.5">
+                <span>{data.totalOrders > 0 ? `${data.totalOrders} orders processed` : 'Awaiting dine-in sales'}</span>
               </p>
             </div>
-            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-              <DollarSign className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400 flex items-center justify-center font-black text-lg">
+              {CURRENCY_SYMBOL}
             </div>
           </CardContent>
         </Card>
@@ -93,10 +93,10 @@ export function AnalyticsDashboard({ restaurantId }: AnalyticsDashboardProps) {
         <Card className="border-zinc-200/80 dark:border-zinc-800 shadow-card">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-xs font-semibold text-zinc-500">Total Fulfilled Orders</p>
+              <p className="text-xs font-semibold text-zinc-500">Total Dine &amp; QR Orders</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <p className="text-2xl font-black text-zinc-900 dark:text-zinc-100">
-                  {data.totalOrders}
+                  {data.totalOrders.toLocaleString()}
                 </p>
               </div>
               <p className="text-[11px] text-zinc-400 mt-0.5">Contactless QR orders</p>
@@ -114,7 +114,7 @@ export function AnalyticsDashboard({ restaurantId }: AnalyticsDashboardProps) {
               <p className="text-xs font-semibold text-zinc-500">Average Order Value (AOV)</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <p className="text-2xl font-black text-zinc-900 dark:text-zinc-100">
-                  ${data.averageOrderValue.toFixed(2)}
+                  {formatCurrency(data.averageOrderValue)}
                 </p>
               </div>
               <p className="text-[11px] text-zinc-400 mt-0.5">Per dining table ticket</p>
@@ -201,7 +201,7 @@ export function AnalyticsDashboard({ restaurantId }: AnalyticsDashboardProps) {
                   <div key={item.date} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
                     {/* Tooltip on hover */}
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-zinc-900 text-white text-[10px] py-1 px-1.5 rounded font-mono pointer-events-none mb-1 text-center whitespace-nowrap shadow-md">
-                      {chartMode === 'revenue' ? `$${item.revenue.toFixed(0)}` : `${item.orders} orders`}
+                      {chartMode === 'revenue' ? formatCurrency(item.revenue) : `${item.orders} orders`}
                     </div>
 
                     {/* Bar */}
@@ -240,8 +240,8 @@ export function AnalyticsDashboard({ restaurantId }: AnalyticsDashboardProps) {
                 </CardDescription>
               </div>
 
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                Trending Up
+              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-[#eef4f0] text-[#1b3b2f] border border-[#d2ded6]">
+                6-Month Overview
               </span>
             </div>
           </CardHeader>
@@ -260,7 +260,7 @@ export function AnalyticsDashboard({ restaurantId }: AnalyticsDashboardProps) {
                       </span>
                       <div className="flex items-center gap-3">
                         <span className="text-zinc-400 text-[11px] font-normal font-mono">{item.orders} orders</span>
-                        <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono">${item.revenue.toFixed(2)}</span>
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100 font-mono">{formatCurrency(item.revenue)}</span>
                       </div>
                     </div>
 
@@ -302,56 +302,66 @@ export function AnalyticsDashboard({ restaurantId }: AnalyticsDashboardProps) {
           </CardHeader>
 
           <CardContent className="p-5 sm:p-6 pt-4">
-            <div className="divide-y divide-zinc-100 dark:divide-zinc-800 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden">
-              {data.popularDishes.map((dish, rank) => (
-                <div
-                  key={dish.id}
-                  className="p-3.5 sm:p-4 flex items-center justify-between gap-3 text-xs bg-white dark:bg-zinc-900"
-                >
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    {/* Rank Badge */}
-                    <span className={`w-6 h-6 rounded-lg font-black text-[11px] flex items-center justify-center shrink-0 ${
-                      rank === 0
-                        ? 'bg-amber-400 text-amber-950 shadow-sm'
-                        : rank === 1
-                        ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200'
-                        : rank === 2
-                        ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
-                        : 'text-zinc-400'
-                    }`}>
-                      #{rank + 1}
-                    </span>
-
-                    {/* Dish Image */}
-                    <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0">
-                      {dish.image ? (
-                        <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <Utensils className="w-4 h-4 m-auto text-zinc-400" />
-                      )}
-                    </div>
-
-                    <div className="min-w-0 flex-1">
-                      <span className="font-bold text-zinc-900 dark:text-zinc-100 block truncate">
-                        {dish.name}
+            {data.popularDishes.length === 0 ? (
+              <div className="py-12 text-center text-xs text-zinc-500">
+                <Utensils className="w-8 h-8 mx-auto mb-2 text-zinc-400" />
+                <p className="font-semibold text-zinc-800 dark:text-zinc-200">No Item Sales Recorded Yet</p>
+                <p className="text-zinc-400 mt-1 max-w-xs mx-auto">
+                  Dishes ordered by guests via QR menu will rank here by popularity and gross revenue.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-zinc-100 dark:divide-zinc-800 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl overflow-hidden">
+                {data.popularDishes.map((dish, rank) => (
+                  <div
+                    key={dish.id}
+                    className="p-3.5 sm:p-4 flex items-center justify-between gap-3 text-xs bg-white dark:bg-zinc-900"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      {/* Rank Badge */}
+                      <span className={`w-6 h-6 rounded-lg font-black text-[11px] flex items-center justify-center shrink-0 ${
+                        rank === 0
+                          ? 'bg-amber-400 text-amber-950 shadow-sm'
+                          : rank === 1
+                          ? 'bg-zinc-200 dark:bg-zinc-700 text-zinc-800 dark:text-zinc-200'
+                          : rank === 2
+                          ? 'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                          : 'text-zinc-400'
+                      }`}>
+                        #{rank + 1}
                       </span>
-                      <div className="flex items-center gap-2 mt-0.5 text-[11px] text-zinc-400">
-                        <span>{dish.totalQuantity} orders placed</span>
-                        <span>&bull;</span>
-                        <span className="text-emerald-600 font-semibold">{dish.percentageOfSales}% of menu sales</span>
+
+                      {/* Dish Image */}
+                      <div className="w-10 h-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 overflow-hidden shrink-0">
+                        {dish.image ? (
+                          <img src={dish.image} alt={dish.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <Utensils className="w-4 h-4 m-auto text-zinc-400" />
+                        )}
+                      </div>
+
+                      <div className="min-w-0 flex-1">
+                        <span className="font-bold text-zinc-900 dark:text-zinc-100 block truncate">
+                          {dish.name}
+                        </span>
+                        <div className="flex items-center gap-2 mt-0.5 text-[11px] text-zinc-400">
+                          <span>{dish.totalQuantity} orders placed</span>
+                          <span>&bull;</span>
+                          <span className="text-emerald-600 font-semibold">{dish.percentageOfSales}% of menu sales</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="text-right shrink-0">
-                    <span className="font-black text-sm text-zinc-900 dark:text-zinc-100 block font-mono">
-                      ${dish.totalRevenue.toFixed(2)}
-                    </span>
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider">Gross Rev</span>
+                    <div className="text-right shrink-0">
+                      <span className="font-black text-sm text-zinc-900 dark:text-zinc-100 block font-mono">
+                        {formatCurrency(dish.totalRevenue)}
+                      </span>
+                      <span className="text-[10px] text-zinc-400 uppercase tracking-wider">Gross Rev</span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -371,7 +381,7 @@ export function AnalyticsDashboard({ restaurantId }: AnalyticsDashboardProps) {
 
           <CardContent className="p-5 sm:p-6 pt-4 space-y-4">
             {data.peakHours.map((slot) => {
-              const maxSlot = Math.max(...data.peakHours.map((s) => s.orders));
+              const maxSlot = Math.max(...data.peakHours.map((s) => s.orders), 1);
               const pct = Math.round((slot.orders / maxSlot) * 100);
 
               return (
@@ -390,10 +400,12 @@ export function AnalyticsDashboard({ restaurantId }: AnalyticsDashboardProps) {
               );
             })}
 
-            <div className="p-3.5 bg-blue-50 dark:bg-blue-950/40 rounded-2xl border border-blue-200 dark:border-blue-900/40 text-xs text-blue-900 dark:text-blue-200 space-y-1">
-              <span className="font-bold block">💡 Kitchen Staffing Tip:</span>
+            <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-2xl border border-emerald-200 dark:border-emerald-900/40 text-xs text-emerald-900 dark:text-emerald-200 space-y-1">
+              <span className="font-bold block">💡 Kitchen Service Velocity:</span>
               <p className="leading-relaxed text-[11px]">
-                Dinner Rush (7 PM - 9 PM) represents 36% of all daily tickets. Ensure prep stations are fully stocked by 6:30 PM.
+                {data.totalOrders > 0
+                  ? `Peak dining load reflects ${data.totalOrders} live customer orders placed via QR codes.`
+                  : 'As guest table tickets arrive, your peak dining windows will be mapped automatically.'}
               </p>
             </div>
           </CardContent>

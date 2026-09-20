@@ -1,4 +1,17 @@
-import { User, Restaurant, Category, MenuItem, OrderWithItems, Feedback, Subscription } from './types';
+import {
+  User,
+  Restaurant,
+  Category,
+  MenuItem,
+  OrderWithItems,
+  Feedback,
+  Subscription,
+  NotificationSubscription,
+  MarketingCampaign,
+  SubscriptionPlanEntity,
+  Announcement,
+  RestaurantNotification,
+} from './types';
 
 export const INITIAL_USERS: User[] = [
   {
@@ -35,7 +48,7 @@ export const INITIAL_USERS: User[] = [
     email: 'carlos@urbantaco.com',
     role: 'owner',
     created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-  }
+  },
 ];
 
 export const INITIAL_RESTAURANTS: Restaurant[] = [
@@ -50,6 +63,7 @@ export const INITIAL_RESTAURANTS: Restaurant[] = [
     opening_hours: 'Mon - Sun: 11:30 AM - 11:00 PM',
     description: 'Authentic rustic Italian trattoria specializing in handcrafted sourdough pizzas, fresh tagliatelle, and imported Italian wines.',
     subscription_status: 'active',
+    marketing_enabled: true,
     created_at: new Date(Date.now() - 14 * 86400000).toISOString(),
   },
   {
@@ -63,6 +77,7 @@ export const INITIAL_RESTAURANTS: Restaurant[] = [
     opening_hours: 'Tue - Sun: 12:00 PM - 10:00 PM (Closed Mondays)',
     description: 'Slow-simmered 18-hour tonkotsu broth, handmade ramen noodles, and crispy gyoza.',
     subscription_status: 'active',
+    marketing_enabled: true,
     created_at: new Date(Date.now() - 10 * 86400000).toISOString(),
   },
   {
@@ -76,6 +91,7 @@ export const INITIAL_RESTAURANTS: Restaurant[] = [
     opening_hours: 'Mon - Sat: 7:30 AM - 6:00 PM',
     description: 'Artisanal French bakery, flaky butter croissants, and Parisian cafe breakfast specials.',
     subscription_status: 'trialing',
+    marketing_enabled: true,
     created_at: new Date(Date.now() - 5 * 86400000).toISOString(),
   },
   {
@@ -89,8 +105,9 @@ export const INITIAL_RESTAURANTS: Restaurant[] = [
     opening_hours: 'Mon - Sun: 12:00 PM - 12:00 AM',
     description: 'Street-style gourmet tacos, fresh guacamole, and craft agave margaritas.',
     subscription_status: 'past_due',
+    marketing_enabled: false,
     created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
-  }
+  },
 ];
 
 export const INITIAL_SUBSCRIPTIONS: Subscription[] = [
@@ -129,7 +146,7 @@ export const INITIAL_SUBSCRIPTIONS: Subscription[] = [
     expiry_date: new Date(Date.now() - 2 * 86400000).toISOString(),
     status: 'past_due',
     created_at: new Date(Date.now() - 40 * 86400000).toISOString(),
-  }
+  },
 ];
 
 export const INITIAL_CATEGORIES: Category[] = [
@@ -162,7 +179,7 @@ export const INITIAL_CATEGORIES: Category[] = [
     restaurant_id: 'rst-01',
     name: 'Beverages',
     created_at: new Date(Date.now() - 14 * 86400000).toISOString(),
-  }
+  },
 ];
 
 export const INITIAL_MENU_ITEMS: MenuItem[] = [
@@ -172,7 +189,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     category_id: 'cat-01',
     name: 'Bruschetta al Pomodoro',
     description: 'Toasted sourdough bread, heirloom tomatoes, fresh sweet basil, garlic, and aged balsamic glaze.',
-    price: 12.50,
+    price: 180.00,
     image: 'https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?w=500&auto=format&fit=crop&q=80',
     available: true,
     is_veg: true,
@@ -185,7 +202,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     category_id: 'cat-01',
     name: 'Burrata Pugliese',
     description: 'Creamy fresh burrata cheese, heirloom tomatoes, wild baby arugula, and extra virgin olive oil.',
-    price: 16.00,
+    price: 320.00,
     image: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb22509?w=500&auto=format&fit=crop&q=80',
     available: true,
     is_veg: true,
@@ -198,7 +215,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     category_id: 'cat-02',
     name: 'Margherita D.O.P.',
     description: 'San Marzano tomato sauce, fior di latte mozzarella, fresh basil leaves, and cold-pressed olive oil.',
-    price: 18.50,
+    price: 290.00,
     image: 'https://images.unsplash.com/photo-1604382355076-af4b0eb60143?w=500&auto=format&fit=crop&q=80',
     available: true,
     is_veg: true,
@@ -211,7 +228,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     category_id: 'cat-02',
     name: 'Truffle & Wild Mushroom Pizza',
     description: 'Black truffle cream, roasted shiitake and cremini mushrooms, fontina cheese, and fresh thyme.',
-    price: 24.00,
+    price: 420.00,
     image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=80',
     available: true,
     is_veg: true,
@@ -224,7 +241,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     category_id: 'cat-03',
     name: 'Tagliatelle al Tartufo',
     description: 'Hand-rolled egg tagliatelle, black summer truffles, creamy butter sauce, and 24-month Parmigiano-Reggiano.',
-    price: 26.00,
+    price: 450.00,
     image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=500&auto=format&fit=crop&q=80',
     available: true,
     is_veg: true,
@@ -237,7 +254,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     category_id: 'cat-03',
     name: 'Classic Lasagna Bolognese',
     description: 'Layered fresh pasta sheets, slow-braised beef ragu, creamy bechamel, and melted mozzarella.',
-    price: 22.00,
+    price: 390.00,
     image: 'https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=500&auto=format&fit=crop&q=80',
     available: false,
     is_veg: false,
@@ -250,7 +267,7 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     category_id: 'cat-04',
     name: 'Tiramisu Tradizionale',
     description: 'Espresso-soaked Savoiardi ladyfingers, mascarpone sabayon, and Dutch dark cocoa dusting.',
-    price: 9.50,
+    price: 190.00,
     image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=500&auto=format&fit=crop&q=80',
     available: true,
     is_veg: true,
@@ -263,13 +280,13 @@ export const INITIAL_MENU_ITEMS: MenuItem[] = [
     category_id: 'cat-05',
     name: 'San Pellegrino Sparkling (750ml)',
     description: 'Imported natural sparkling mineral water from the Italian Alps.',
-    price: 5.50,
+    price: 120.00,
     image: 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=500&auto=format&fit=crop&q=80',
     available: true,
     is_veg: true,
     dietary_type: 'vegan',
     created_at: new Date(Date.now() - 14 * 86400000).toISOString(),
-  }
+  },
 ];
 
 export const INITIAL_ORDERS: OrderWithItems[] = [
@@ -279,7 +296,7 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
     table_number: 'Table 4',
     customer_notes: 'Please cut pizzas into 8 slices. Extra napkins please!',
     status: 'pending',
-    total_amount: 42.50,
+    total_amount: 700.00,
     created_at: new Date(Date.now() - 3 * 60000).toISOString(),
     items: [
       {
@@ -288,7 +305,7 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
         menu_item_id: 'item-03',
         name: 'Margherita D.O.P.',
         quantity: 2,
-        price: 18.50,
+        price: 290.00,
         created_at: new Date(Date.now() - 3 * 60000).toISOString(),
       },
       {
@@ -297,10 +314,10 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
         menu_item_id: 'item-08',
         name: 'San Pellegrino Sparkling (750ml)',
         quantity: 1,
-        price: 5.50,
+        price: 120.00,
         created_at: new Date(Date.now() - 3 * 60000).toISOString(),
-      }
-    ]
+      },
+    ],
   },
   {
     id: 'ord-02',
@@ -308,7 +325,7 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
     table_number: 'Table 12',
     customer_notes: 'Extra freshly shaved black truffles if possible.',
     status: 'preparing',
-    total_amount: 42.00,
+    total_amount: 770.00,
     created_at: new Date(Date.now() - 10 * 60000).toISOString(),
     items: [
       {
@@ -317,7 +334,7 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
         menu_item_id: 'item-05',
         name: 'Tagliatelle al Tartufo',
         quantity: 1,
-        price: 26.00,
+        price: 450.00,
         created_at: new Date(Date.now() - 10 * 60000).toISOString(),
       },
       {
@@ -326,10 +343,10 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
         menu_item_id: 'item-02',
         name: 'Burrata Pugliese',
         quantity: 1,
-        price: 16.00,
+        price: 320.00,
         created_at: new Date(Date.now() - 10 * 60000).toISOString(),
-      }
-    ]
+      },
+    ],
   },
   {
     id: 'ord-03',
@@ -337,7 +354,7 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
     table_number: 'Table 7',
     customer_notes: '',
     status: 'ready',
-    total_amount: 33.50,
+    total_amount: 610.00,
     created_at: new Date(Date.now() - 18 * 60000).toISOString(),
     items: [
       {
@@ -346,7 +363,7 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
         menu_item_id: 'item-04',
         name: 'Truffle & Wild Mushroom Pizza',
         quantity: 1,
-        price: 24.00,
+        price: 420.00,
         created_at: new Date(Date.now() - 18 * 60000).toISOString(),
       },
       {
@@ -355,10 +372,10 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
         menu_item_id: 'item-07',
         name: 'Tiramisu Tradizionale',
         quantity: 1,
-        price: 9.50,
+        price: 190.00,
         created_at: new Date(Date.now() - 18 * 60000).toISOString(),
-      }
-    ]
+      },
+    ],
   },
   {
     id: 'ord-04',
@@ -366,7 +383,7 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
     table_number: 'Table 2',
     customer_notes: 'Celebration dinner',
     status: 'completed',
-    total_amount: 31.00,
+    total_amount: 470.00,
     created_at: new Date(Date.now() - 55 * 60000).toISOString(),
     items: [
       {
@@ -375,7 +392,7 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
         menu_item_id: 'item-01',
         name: 'Bruschetta al Pomodoro',
         quantity: 1,
-        price: 12.50,
+        price: 180.00,
         created_at: new Date(Date.now() - 55 * 60000).toISOString(),
       },
       {
@@ -384,11 +401,11 @@ export const INITIAL_ORDERS: OrderWithItems[] = [
         menu_item_id: 'item-03',
         name: 'Margherita D.O.P.',
         quantity: 1,
-        price: 18.50,
+        price: 290.00,
         created_at: new Date(Date.now() - 55 * 60000).toISOString(),
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];
 
 export const INITIAL_FEEDBACK: Feedback[] = [
@@ -436,7 +453,7 @@ export const INITIAL_FEEDBACK: Feedback[] = [
     rating: 5,
     comment: 'Authentic Italian dining at its finest! The Tiramisu was light and heavenly.',
     created_at: new Date(Date.now() - 48 * 3600000).toISOString(),
-  }
+  },
 ];
 
 export const DEMO_ACCOUNTS = [
@@ -453,7 +470,261 @@ export const DEMO_ACCOUNTS = [
     title: 'Super Admin Demo',
     email: 'admin@demo.com',
     password: 'password123',
-    description: 'Full platform oversight, manage all tenants, toggle subscriptions',
+    description: 'Full platform oversight, manage all tenants, toggle subscriptions, set plans & broadcasts',
     restaurantName: 'Platform Administration',
-  }
+  },
+];
+
+// ==========================================
+// DYNAMIC SUBSCRIPTION PLANS (IN INDIAN RUPEES)
+// ==========================================
+export const INITIAL_SUBSCRIPTION_PLANS: SubscriptionPlanEntity[] = [
+  {
+    id: 'plan-starter-01',
+    name: 'Starter Bistro',
+    slug: 'starter',
+    description: 'For boutique bistros, cafes & quick-service food outlets starting digital ordering.',
+    price_monthly: 199.00,
+    price_yearly: 1999.00,
+    features: [
+      'Up to 12 QR table terminals',
+      'Standard Single-Zone Floor Radar',
+      'Instant KDS Kitchen Display',
+      'Offline Cache Protection',
+      'Public customer guest ordering',
+    ],
+    max_restaurants: 1,
+    max_qr_codes: 12,
+    max_orders: 1000,
+    max_staff: 3,
+    marketing_enabled: false,
+    ai_enabled: false,
+    analytics_enabled: true,
+    is_featured: false,
+    is_active: true,
+    sort_order: 1,
+    created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
+  },
+  {
+    id: 'plan-pro-02',
+    name: 'Pro Hospitality',
+    slug: 'pro',
+    description: 'For high-cadence dining rooms requiring expanded pass sync, marketing push, and multiple zones.',
+    price_monthly: 499.00,
+    price_yearly: 4999.00,
+    features: [
+      'Unlimited floor terminals & reservations',
+      'Architectural Multi-Zone Floor Radar',
+      'Smart KDS Routing (Pass, Grill, Prep)',
+      'Web Push Marketing Broadcasts (RFC 8291)',
+      'Sommelier & Course Pacing',
+      '24/7 Dedicated Floor Support',
+    ],
+    max_restaurants: 3,
+    max_qr_codes: 50,
+    max_orders: 5000,
+    max_staff: 10,
+    marketing_enabled: true,
+    ai_enabled: true,
+    analytics_enabled: true,
+    is_featured: true,
+    is_active: true,
+    sort_order: 2,
+    created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
+  },
+  {
+    id: 'plan-enterprise-03',
+    name: 'Heritage Group',
+    slug: 'enterprise',
+    description: 'For multi-property collections, boutique hotel dining groups, and hospitality estates.',
+    price_monthly: 999.00,
+    price_yearly: 9999.00,
+    features: [
+      'Unlimited restaurants & table QR tents',
+      'Enterprise Multi-Property Console',
+      'Centralized Multi-Unit Accounting',
+      'Dedicated Account Concierge',
+      'Custom Domain & White-labeling',
+      'Priority Feature Access & SLAs',
+    ],
+    max_restaurants: 10,
+    max_qr_codes: 200,
+    max_orders: 50000,
+    max_staff: 50,
+    marketing_enabled: true,
+    ai_enabled: true,
+    analytics_enabled: true,
+    is_featured: false,
+    is_active: true,
+    sort_order: 3,
+    created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
+  },
+];
+
+// ==========================================
+// ADMIN ANNOUNCEMENTS & NOTIFICATIONS
+// ==========================================
+export const INITIAL_ANNOUNCEMENTS: Announcement[] = [
+  {
+    id: 'anc-01',
+    title: '🚀 Web Push Marketing Hub Released',
+    message: 'Restaurant owners can now broadcast instant browser push notifications to diners who opted in via your table QR menu. Try it in the new Marketing tab!',
+    priority: 'important',
+    target_audience: 'all',
+    image_url: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+    cta_label: 'Explore Marketing Hub',
+    cta_url: '/dashboard',
+    created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
+    created_by: 'Platform Super Admin',
+    total_sent: 4,
+    total_read: 2,
+  },
+  {
+    id: 'anc-02',
+    title: '🎉 Diwali Early-Bird Annual Plan Discount',
+    message: 'Renew your subscription annually this festive season and save an extra 20% on all Pro & Heritage plans with code DIWALI20.',
+    priority: 'normal',
+    target_audience: 'premium',
+    image_url: null,
+    cta_label: 'View Subscription',
+    cta_url: '/dashboard',
+    created_at: new Date(Date.now() - 24 * 3600000).toISOString(),
+    created_by: 'Platform Super Admin',
+    total_sent: 2,
+    total_read: 1,
+  },
+  {
+    id: 'anc-03',
+    title: '⚠ Scheduled Cloud Maintenance Notice',
+    message: 'Routine database optimization will take place Sunday morning at 03:00 AM IST. Downtime will be less than 5 minutes with zero order data disruption.',
+    priority: 'critical',
+    target_audience: 'all',
+    image_url: null,
+    cta_label: null,
+    cta_url: null,
+    created_at: new Date(Date.now() - 48 * 3600000).toISOString(),
+    created_by: 'Platform Super Admin',
+    total_sent: 4,
+    total_read: 4,
+  },
+];
+
+export const INITIAL_RESTAURANT_NOTIFICATIONS: RestaurantNotification[] = [
+  {
+    id: 'notif-demo-01',
+    restaurant_id: 'rst-01',
+    announcement_id: 'anc-01',
+    announcement: INITIAL_ANNOUNCEMENTS[0],
+    read: false,
+    read_at: null,
+    created_at: new Date(Date.now() - 2 * 3600000).toISOString(),
+  },
+  {
+    id: 'notif-demo-02',
+    restaurant_id: 'rst-01',
+    announcement_id: 'anc-02',
+    announcement: INITIAL_ANNOUNCEMENTS[1],
+    read: false,
+    read_at: null,
+    created_at: new Date(Date.now() - 24 * 3600000).toISOString(),
+  },
+  {
+    id: 'notif-demo-03',
+    restaurant_id: 'rst-01',
+    announcement_id: 'anc-03',
+    announcement: INITIAL_ANNOUNCEMENTS[2],
+    read: true,
+    read_at: new Date(Date.now() - 40 * 3600000).toISOString(),
+    created_at: new Date(Date.now() - 48 * 3600000).toISOString(),
+  },
+];
+
+export const INITIAL_NOTIFICATION_SUBSCRIPTIONS: NotificationSubscription[] = [
+  {
+    id: 'sub-01',
+    restaurant_id: 'rst-01',
+    endpoint: 'https://fcm.googleapis.com/fcm/send/demo-token-chrome-mobile-1',
+    p256dh: 'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QT9AcUbVYOSTKnqd0vxgAbnZGUi9qVy6sohkT5KsWz0WOHB8',
+    auth: 'tBHItJI5svbpez7KI4CCXg',
+    browser: 'Chrome Mobile',
+    device: 'Mobile (Pixel 8 Pro)',
+    created_at: new Date(Date.now() - 4 * 86400000).toISOString(),
+    last_seen: new Date(Date.now() - 20 * 60000).toISOString(),
+    active: true,
+  },
+  {
+    id: 'sub-02',
+    restaurant_id: 'rst-01',
+    endpoint: 'https://updates.push.services.mozilla.com/wpush/v2/demo-token-firefox-mac-2',
+    p256dh: 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjXYDs95NrqKZX5KA50xG68g-jVBg',
+    auth: '3J2JzKxZJjSgSnfckjXYDw',
+    browser: 'Firefox',
+    device: 'Desktop (macOS)',
+    created_at: new Date(Date.now() - 3 * 86400000).toISOString(),
+    last_seen: new Date(Date.now() - 3 * 3600000).toISOString(),
+    active: true,
+  },
+  {
+    id: 'sub-03',
+    restaurant_id: 'rst-01',
+    endpoint: 'https://fcm.googleapis.com/fcm/send/demo-token-chrome-win-3',
+    p256dh: 'BLe0-j21xUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjXYDs95NrqKZX5KA50xG68g-jVB',
+    auth: 'k2wtaz5Ry4YfYCA_0QT9Ac',
+    browser: 'Chrome',
+    device: 'Desktop (Windows 11)',
+    created_at: new Date(Date.now() - 2 * 86400000).toISOString(),
+    last_seen: new Date(Date.now() - 15 * 60000).toISOString(),
+    active: true,
+  },
+  {
+    id: 'sub-04',
+    restaurant_id: 'rst-01',
+    endpoint: 'https://web.push.apple.com/demo-token-safari-ios-4',
+    p256dh: 'BNcRdreALRFXTkOOUHK1EtK2wtaz5Ry4YfYCA_0QT9AcUbVYOSTKnqd0vxgAbnZGUi9qVy6sohkT5KsWz0WOHB8',
+    auth: 'appleAuthKeyP256Mock',
+    browser: 'Mobile Safari',
+    device: 'Mobile (iPhone 15)',
+    created_at: new Date(Date.now() - 1 * 86400000).toISOString(),
+    last_seen: new Date(Date.now() - 1 * 3600000).toISOString(),
+    active: true,
+  },
+  {
+    id: 'sub-05',
+    restaurant_id: 'rst-01',
+    endpoint: 'https://wns2-sn1p.notify.windows.com/wix/demo-token-edge-5',
+    p256dh: 'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjXYDs95NrqKZX5KA50xG68g-jVBg',
+    auth: 'edgeAuthSecretToken',
+    browser: 'Edge',
+    device: 'Desktop (Surface Pro)',
+    created_at: new Date(Date.now() - 6 * 86400000).toISOString(),
+    last_seen: new Date(Date.now() - 48 * 3600000).toISOString(),
+    active: false,
+  },
+];
+
+export const INITIAL_MARKETING_CAMPAIGNS: MarketingCampaign[] = [
+  {
+    id: 'cmp-01',
+    restaurant_id: 'rst-01',
+    title: '🍕 20% OFF Wood-Fired Pizza Tonight!',
+    message: 'Flash Friday Deal: Enjoy 20% off all artisan sourdough pizzas when dining at Table or Bar!',
+    image_url: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80',
+    cta_url: '/r/la-piazza',
+    sent_at: new Date(Date.now() - 2 * 86400000).toISOString(),
+    total_targeted: 5,
+    total_sent: 4,
+    total_failed: 1,
+  },
+  {
+    id: 'cmp-02',
+    restaurant_id: 'rst-01',
+    title: '🎉 New Autumn Truffle Menu Released',
+    message: 'Fresh black truffles imported from Umbria have arrived. Try our new Tagliatelle & Burrata creations.',
+    image_url: 'https://images.unsplash.com/photo-1621996346565-e3d5d62816dd?w=800&auto=format&fit=crop&q=80',
+    cta_url: '/r/la-piazza',
+    sent_at: new Date(Date.now() - 7 * 86400000).toISOString(),
+    total_targeted: 4,
+    total_sent: 4,
+    total_failed: 0,
+  },
 ];

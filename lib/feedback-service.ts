@@ -3,6 +3,7 @@
 import { createClient, isSupabaseConfigured } from './supabase/client';
 import { Feedback, FeedbackStats } from './types';
 import { INITIAL_FEEDBACK } from './mock-data';
+import { toValidUUID, isValidUUID } from './uuid-utils';
 
 const STORAGE_FEEDBACK_KEY = 'qr_saas_feedback_v2';
 
@@ -42,14 +43,17 @@ export const FeedbackService = {
       throw new Error('Please select a star rating from 1 to 5');
     }
 
+    const validRestaurantId = toValidUUID(params.restaurantId);
+    const validOrderId = params.orderId && isValidUUID(params.orderId) ? params.orderId : null;
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         const { data, error } = await supabase
           .from('feedback')
           .insert({
-            restaurant_id: params.restaurantId,
-            order_id: params.orderId || null,
+            restaurant_id: validRestaurantId,
+            order_id: validOrderId,
             customer_name: params.customerName?.trim() || 'Diner',
             rating: params.rating,
             comment: params.comment?.trim() || null,
@@ -58,9 +62,17 @@ export const FeedbackService = {
           .single();
 
         if (error) throw error;
+
+        // Also update local cache
+        const all = getStoredFeedback();
+        all.unshift(data);
+        saveStoredFeedback(all);
+
+        console.log('✅ Supabase feedback submitted successfully:', data.id);
         return data;
       } catch (err: any) {
-        console.warn('Supabase submitFeedback failed, saving to local store:', err?.message);
+        console.error('❌ Supabase submitFeedback error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to submit review to database');
       }
     }
 
@@ -89,13 +101,15 @@ export const FeedbackService = {
   ): Promise<Feedback[]> {
     if (!restaurantId) return [];
 
+    const validRestaurantId = toValidUUID(restaurantId);
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         let query = supabase
           .from('feedback')
           .select('*')
-          .eq('restaurant_id', restaurantId)
+          .or(`restaurant_id.eq.${validRestaurantId},restaurant_id.eq.${restaurantId}`)
           .order('created_at', { ascending: false });
 
         if (ratingFilter && ratingFilter !== 'all') {
@@ -126,7 +140,7 @@ export const FeedbackService = {
     const totalReviews = list.length;
     if (totalReviews === 0) {
       return {
-        averageRating: 5.0,
+        averageRating: 0.0,
         totalReviews: 0,
         ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
       };

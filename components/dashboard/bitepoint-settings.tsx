@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
 import { Restaurant } from '@/lib/types';
 import { AuthService } from '@/lib/auth-service';
+import { BotanicalLeafBranch } from '@/components/ui/botanical-decorations';
 
 interface BitepointSettingsProps {
   restaurant: Restaurant;
@@ -28,19 +29,17 @@ interface BitepointSettingsProps {
 
 export function BitepointSettings({ restaurant, onUpdateRestaurant }: BitepointSettingsProps) {
   const toast = useToast();
-  const [activeTab, setActiveTab] = useState<'profile' | 'hours' | 'ordering' | 'staff'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'hours' | 'ordering'>('profile');
   const [isSaving, setIsSaving] = useState(false);
 
   // Form states
-  const [name, setName] = useState(restaurant.name);
-  const [address, setAddress] = useState(restaurant.address || '148 Elmwood Boulevard, Downtown');
-  const [phone, setPhone] = useState(restaurant.phone || '+1 (555) 234-8900');
-  const [description, setDescription] = useState(
-    restaurant.description || 'Authentic artisan wood-fired dining and craft refreshments.'
-  );
+  const [name, setName] = useState(restaurant.name || '');
+  const [address, setAddress] = useState(restaurant.address || '');
+  const [phone, setPhone] = useState(restaurant.phone || '');
+  const [description, setDescription] = useState(restaurant.description || '');
 
-  const [openingHours, setOpeningHours] = useState('11:00 AM - 10:30 PM');
-  const [taxRate, setTaxRate] = useState('8.5');
+  const [openingHours, setOpeningHours] = useState(restaurant.opening_hours || '11:00 AM - 11:00 PM');
+  const [taxRate, setTaxRate] = useState('5.0');
   const [autoAcceptOrders, setAutoAcceptOrders] = useState(false);
   const [enableNotes, setEnableNotes] = useState(true);
 
@@ -52,6 +51,7 @@ export function BitepointSettings({ restaurant, onUpdateRestaurant }: BitepointS
         address,
         phone,
         description,
+        opening_hours: openingHours,
       });
 
       if (onUpdateRestaurant) onUpdateRestaurant(updated);
@@ -66,34 +66,32 @@ export function BitepointSettings({ restaurant, onUpdateRestaurant }: BitepointS
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200/70">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e6e2da]">
         <div>
-          <h2 className="text-2xl font-black text-stone-900 tracking-tight">
+          <h2 className="text-2xl lg:text-3xl font-serif font-bold text-[#1b3b2f] tracking-tight">
             Settings &amp; Configuration
           </h2>
-          <p className="text-xs text-stone-500 mt-0.5 font-medium">
+          <p className="text-xs lg:text-[13px] text-[#556960] mt-1 font-sans">
             Manage your restaurant profile, dining hours, operational policies, and order fulfillment rules
           </p>
         </div>
 
         <Button
-          variant="primary"
-          size="sm"
           onClick={handleSave}
           disabled={isSaving}
-          className="text-xs font-bold gap-2 rounded-2xl bg-[#efa736] hover:bg-[#e09827] text-stone-950 shadow-sm"
+          className="text-xs font-semibold gap-2 rounded-2xl bg-[#1b3b2f] hover:bg-[#122820] text-[#f8faf7] px-5 py-2 shadow-xs"
         >
           <Save className="w-4 h-4" />
-          <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
+          <span>{isSaving ? 'Saving...' : 'Save Configuration'}</span>
         </Button>
       </div>
 
       {/* Settings Navigation Tabs */}
-      <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-stone-100 text-xs font-semibold text-stone-600 overflow-x-auto">
+      <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#f4f1eb] text-xs font-semibold text-[#556960] overflow-x-auto">
         <button
           onClick={() => setActiveTab('profile')}
           className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
-            activeTab === 'profile' ? 'bg-stone-900 text-white font-bold shadow-xs' : 'hover:text-stone-900 hover:bg-white/50'
+            activeTab === 'profile' ? 'bg-[#1b3b2f] text-white font-bold shadow-xs' : 'hover:text-[#1b3b2f] hover:bg-white/60'
           }`}
           type="button"
         >
@@ -104,7 +102,7 @@ export function BitepointSettings({ restaurant, onUpdateRestaurant }: BitepointS
         <button
           onClick={() => setActiveTab('hours')}
           className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
-            activeTab === 'hours' ? 'bg-stone-900 text-white font-bold shadow-xs' : 'hover:text-stone-900 hover:bg-white/50'
+            activeTab === 'hours' ? 'bg-[#1b3b2f] text-white font-bold shadow-xs' : 'hover:text-[#1b3b2f] hover:bg-white/60'
           }`}
           type="button"
         >
@@ -115,7 +113,7 @@ export function BitepointSettings({ restaurant, onUpdateRestaurant }: BitepointS
         <button
           onClick={() => setActiveTab('ordering')}
           className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 whitespace-nowrap ${
-            activeTab === 'ordering' ? 'bg-stone-900 text-white font-bold shadow-xs' : 'hover:text-stone-900 hover:bg-white/50'
+            activeTab === 'ordering' ? 'bg-[#1b3b2f] text-white font-bold shadow-xs' : 'hover:text-[#1b3b2f] hover:bg-white/60'
           }`}
           type="button"
         >
@@ -126,65 +124,68 @@ export function BitepointSettings({ restaurant, onUpdateRestaurant }: BitepointS
 
       {/* Profile Form */}
       {activeTab === 'profile' && (
-        <div className="bg-white rounded-3xl p-6 border border-[#eceae6] shadow-card space-y-6 max-w-3xl">
+        <div className="bg-white/95 rounded-3xl p-6 lg:p-7 border border-[#e6e2da] shadow-2xs space-y-6 max-w-3xl">
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#1b3b2f] uppercase tracking-wider mb-1.5">
                 Establishment Name
               </label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs rounded-2xl border border-stone-200/80 bg-stone-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#efa736]"
+                className="w-full px-4 py-2.5 text-xs rounded-2xl border border-[#dcd7ce] bg-[#faf8f5] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#3a7d5c] text-[#162820]"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#1b3b2f] uppercase tracking-wider mb-1.5">
                   Public URL Slug
                 </label>
-                <div className="flex items-center px-3 py-2 text-xs rounded-2xl border border-stone-200 bg-stone-100 text-stone-500 font-mono">
+                <div className="flex items-center px-3 py-2 text-xs rounded-2xl border border-[#dcd7ce] bg-[#f4f1eb] text-[#556960] font-mono">
                   <span>/r/</span>
-                  <span className="font-bold text-stone-800">{restaurant.slug}</span>
+                  <span className="font-bold text-[#1b3b2f]">{restaurant.slug}</span>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#1b3b2f] uppercase tracking-wider mb-1.5">
                   Phone Number
                 </label>
                 <input
                   type="text"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full px-4 py-2.5 text-xs rounded-2xl border border-stone-200/80 bg-stone-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#efa736]"
+                  placeholder="e.g. +91 98450 12345"
+                  className="w-full px-4 py-2.5 text-xs rounded-2xl border border-[#dcd7ce] bg-[#faf8f5] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#3a7d5c] text-[#162820]"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#1b3b2f] uppercase tracking-wider mb-1.5">
                 Physical Address
               </label>
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs rounded-2xl border border-stone-200/80 bg-stone-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#efa736]"
+                placeholder="e.g. 148 Botanical Terrace, Civil Lines"
+                className="w-full px-4 py-2.5 text-xs rounded-2xl border border-[#dcd7ce] bg-[#faf8f5] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#3a7d5c] text-[#162820]"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#1b3b2f] uppercase tracking-wider mb-1.5">
                 Restaurant Description &amp; Bio
               </label>
               <textarea
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-4 py-2.5 text-xs rounded-2xl border border-stone-200/80 bg-stone-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#efa736]"
+                placeholder="Brief summary of your restaurant cuisine, atmosphere, and specialties..."
+                className="w-full px-4 py-2.5 text-xs rounded-2xl border border-[#dcd7ce] bg-[#faf8f5] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#3a7d5c] text-[#162820]"
               />
             </div>
           </div>
@@ -193,23 +194,24 @@ export function BitepointSettings({ restaurant, onUpdateRestaurant }: BitepointS
 
       {/* Service Hours */}
       {activeTab === 'hours' && (
-        <div className="bg-white rounded-3xl p-6 border border-[#eceae6] shadow-card space-y-6 max-w-3xl">
+        <div className="bg-white/95 rounded-3xl p-6 lg:p-7 border border-[#e6e2da] shadow-2xs space-y-4 max-w-3xl">
+          <h3 className="font-serif font-bold text-base text-[#1b3b2f] mb-2">Weekly Dining Schedule</h3>
           <div className="space-y-3">
             {[
-              { day: 'Monday – Thursday', time: '11:00 AM – 10:00 PM', open: true },
+              { day: 'Monday – Thursday', time: '11:00 AM – 10:30 PM', open: true },
               { day: 'Friday', time: '11:00 AM – 11:30 PM', open: true },
-              { day: 'Saturday', time: '10:00 AM – 11:30 PM', open: true },
-              { day: 'Sunday', time: '10:00 AM – 09:30 PM', open: true },
+              { day: 'Saturday', time: '10:30 AM – 11:30 PM', open: true },
+              { day: 'Sunday', time: '10:30 AM – 10:00 PM', open: true },
             ].map((schedule) => (
               <div
                 key={schedule.day}
-                className="p-3.5 rounded-2xl bg-stone-50 border border-stone-100 flex items-center justify-between text-xs"
+                className="p-3.5 rounded-2xl bg-[#faf8f5] border border-[#e6e2da] flex items-center justify-between text-xs"
               >
                 <div className="flex items-center gap-3">
-                  <span className="w-2 h-2 rounded-full bg-[#109955]" />
-                  <span className="font-bold text-stone-800">{schedule.day}</span>
+                  <span className="w-2 h-2 rounded-full bg-[#3a7d5c]" />
+                  <span className="font-bold text-[#162820]">{schedule.day}</span>
                 </div>
-                <span className="font-mono text-stone-500">{schedule.time}</span>
+                <span className="font-mono text-[#556960]">{schedule.time}</span>
               </div>
             ))}
           </div>
@@ -218,45 +220,48 @@ export function BitepointSettings({ restaurant, onUpdateRestaurant }: BitepointS
 
       {/* Ordering Policies */}
       {activeTab === 'ordering' && (
-        <div className="bg-white rounded-3xl p-6 border border-[#eceae6] shadow-card space-y-6 max-w-3xl">
+        <div className="bg-white/95 rounded-3xl p-6 lg:p-7 border border-[#e6e2da] shadow-2xs space-y-6 max-w-3xl">
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-stone-50 border border-stone-100">
-              <div>
-                <h4 className="text-xs font-bold text-stone-900">Allow Customer Chef Notes</h4>
-                <p className="text-[11px] text-stone-500">Enable diners to write allergy and preparation notes on orders</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={enableNotes}
-                onChange={(e) => setEnableNotes(e.target.checked)}
-                className="w-4 h-4 rounded text-[#efa736] focus:ring-[#efa736]"
-              />
-            </div>
-
-            <div className="flex items-center justify-between p-4 rounded-2xl bg-stone-50 border border-stone-100">
-              <div>
-                <h4 className="text-xs font-bold text-stone-900">Auto-Accept Incoming Orders</h4>
-                <p className="text-[11px] text-stone-500">Automatically route orders directly to the kitchen without manual acceptance</p>
-              </div>
-              <input
-                type="checkbox"
-                checked={autoAcceptOrders}
-                onChange={(e) => setAutoAcceptOrders(e.target.checked)}
-                className="w-4 h-4 rounded text-[#efa736] focus:ring-[#efa736]"
-              />
-            </div>
-
             <div>
-              <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider mb-1.5">
-                Sales Tax Rate (%)
+              <label className="block text-xs font-bold text-[#1b3b2f] uppercase tracking-wider mb-1.5">
+                GST / Tax Percentage (%)
               </label>
               <input
                 type="number"
                 step="0.1"
                 value={taxRate}
                 onChange={(e) => setTaxRate(e.target.value)}
-                className="w-48 px-4 py-2 text-xs rounded-2xl border border-stone-200/80 bg-stone-50/70 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#efa736]"
+                className="w-full sm:w-48 px-4 py-2.5 text-xs rounded-2xl border border-[#dcd7ce] bg-[#faf8f5] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#3a7d5c] text-[#162820]"
               />
+              <p className="text-[11px] text-[#85988e] mt-1">Standard restaurant dining GST in India is 5.0%</p>
+            </div>
+
+            <div className="pt-4 border-t border-[#f0ede6] space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-[#1b3b2f]">Auto-Accept Incoming Orders</p>
+                  <p className="text-[11px] text-[#556960]">Automatically transition new QR guest orders directly to kitchen prep</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={autoAcceptOrders}
+                  onChange={(e) => setAutoAcceptOrders(e.target.checked)}
+                  className="w-4 h-4 accent-[#1b3b2f] rounded"
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-[#1b3b2f]">Allow Kitchen Notes from Guests</p>
+                  <p className="text-[11px] text-[#556960]">Permit diners to enter custom allergy or prep requests on menu dishes</p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={enableNotes}
+                  onChange={(e) => setEnableNotes(e.target.checked)}
+                  className="w-4 h-4 accent-[#1b3b2f] rounded"
+                />
+              </div>
             </div>
           </div>
         </div>

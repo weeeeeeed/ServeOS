@@ -8,6 +8,8 @@ import { AuthService } from '@/lib/auth-service';
 import { User } from '@/lib/types';
 import { useRouter } from 'next/navigation';
 
+import { ServeOSLogo } from '@/components/ui/botanical-decorations';
+
 export function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
@@ -25,49 +27,49 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-[#faf9f6]/95 backdrop-blur-md antialiased">
+    <header className="sticky top-0 z-40 w-full border-b border-[#e6ede7] bg-[#faf8f5]/95 backdrop-blur-md antialiased transition-all">
       <div className="max-w-7xl mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center gap-2.5 font-bold text-stone-900 group">
-          <div className="w-9 h-9 rounded-xl bg-[#1f4e47] text-[#efa736] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-            <QrCode className="w-5 h-5" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-base tracking-tight font-black text-stone-900 leading-none">BitePoint</span>
-            <span className="text-[10px] text-stone-500 font-bold tracking-[0.14em] uppercase">Culinary Modernism OS</span>
-          </div>
+        <Link href="/" className="flex items-center group">
+          <ServeOSLogo className="h-8" textClassName="text-xl" />
         </Link>
 
-        {/* Navigation Links */}
-        <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-stone-600">
-          <Link href="/#modules" className="hover:text-stone-950 transition-colors">
-            Platform Modules
+        {/* Navigation Links - Matching Reference Image */}
+        <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-[#526359]">
+          <Link href="/#features" className="hover:text-[#1b3b2f] transition-colors">
+            Product
           </Link>
-          <Link href="/#radar" className="hover:text-stone-950 transition-colors">
-            Floor Radar
+          <Link href="/#solutions" className="hover:text-[#1b3b2f] transition-colors">
+            Solutions
           </Link>
-          <Link href="/r/la-piazza" className="hover:text-stone-950 transition-colors flex items-center gap-1 text-[#1f4e47] font-bold">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#efa736] animate-pulse" />
-            <span>Live Diner QR Demo</span>
+          <Link href="/#pricing" className="hover:text-[#1b3b2f] transition-colors">
+            Pricing
+          </Link>
+          <Link href="/#faq" className="hover:text-[#1b3b2f] transition-colors">
+            Resources
+          </Link>
+          <Link href="/r/la-piazza" className="hover:text-[#1b3b2f] transition-colors flex items-center gap-1.5 text-[#2d6a4f] font-bold bg-[#eef4f0] px-2.5 py-1 rounded-full">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2d6a4f] animate-pulse" />
+            <span>Diner QR Menu</span>
           </Link>
         </nav>
 
         {/* Right Action Buttons */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-3">
           {user ? (
             <div className="flex items-center gap-2">
               {user.role === 'admin' ? (
                 <Link href="/admin">
-                  <Button size="sm" className="gap-1.5 bg-[#1f4e47] hover:bg-[#133e36] text-white font-bold rounded-xl shadow-xs">
-                    <Shield className="w-3.5 h-3.5 text-[#efa736]" />
+                  <Button size="sm" className="gap-1.5 bg-[#1b3b2f] hover:bg-[#153026] text-white font-semibold rounded-full shadow-xs text-xs px-4">
+                    <Shield className="w-3.5 h-3.5 text-[#8fbc8f]" />
                     <span>Admin Panel</span>
                   </Button>
                 </Link>
               ) : (
                 <Link href="/dashboard">
-                  <Button size="sm" className="gap-1.5 bg-[#1f4e47] hover:bg-[#133e36] text-white font-bold rounded-xl shadow-xs">
-                    <LayoutDashboard className="w-3.5 h-3.5 text-[#efa736]" />
-                    <span>Owner Dashboard</span>
+                  <Button size="sm" className="gap-1.5 bg-[#1b3b2f] hover:bg-[#153026] text-white font-semibold rounded-full shadow-xs text-xs px-4">
+                    <LayoutDashboard className="w-3.5 h-3.5 text-[#8fbc8f]" />
+                    <span>Dashboard</span>
                   </Button>
                 </Link>
               )}
@@ -75,7 +77,7 @@ export function Navbar() {
                 variant="ghost"
                 size="sm"
                 onClick={handleLogout}
-                className="text-stone-500 hover:text-stone-900 rounded-xl"
+                className="text-[#6b7c72] hover:text-[#162820] hover:bg-[#eef4f0] rounded-full"
                 title="Sign out"
               >
                 <LogOut className="w-4 h-4" />
@@ -84,14 +86,16 @@ export function Navbar() {
           ) : (
             <>
               <Link href="/login">
-                <Button variant="ghost" size="sm" className="text-stone-700 hover:text-stone-950 hover:bg-stone-100 font-semibold rounded-xl text-xs">
-                  Sign In
-                </Button>
+                <button
+                  type="button"
+                  className="text-xs font-semibold text-[#3d5045] hover:text-[#162820] px-3.5 py-2 transition-colors"
+                >
+                  Log in
+                </button>
               </Link>
               <Link href="/register">
-                <Button size="sm" className="gap-1.5 shadow-xs bg-[#efa736] hover:bg-[#e09827] text-stone-950 font-bold rounded-xl text-xs">
-                  <span>Start Free Trial</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                <Button size="sm" className="bg-[#1b3b2f] hover:bg-[#153026] text-white font-semibold rounded-full text-xs px-5 shadow-sm">
+                  Start Free
                 </Button>
               </Link>
             </>

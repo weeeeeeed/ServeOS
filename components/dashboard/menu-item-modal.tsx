@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Category, MenuItem, DietaryType } from '@/lib/types';
 import { MenuService } from '@/lib/menu-service';
+import { CURRENCY_SYMBOL, CURRENCY_CODE } from '@/lib/currency';
 
 interface MenuItemModalProps {
   isOpen: boolean;
@@ -226,14 +227,14 @@ export function MenuItemModal({
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Input
-              label="Price (USD $) *"
+              label={`Price (${CURRENCY_CODE} ${CURRENCY_SYMBOL}) *`}
               type="number"
-              step="0.01"
+              step="1"
               min="0"
-              placeholder="18.50"
+              placeholder="350"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              leftIcon={<DollarSign className="w-4 h-4" />}
+              leftIcon={<span className="font-bold text-xs">{CURRENCY_SYMBOL}</span>}
               required
             />
 

@@ -181,10 +181,10 @@ export function TenantTable({ tenants, onRefresh }: TenantTableProps) {
                     <td className="px-5 py-4">
                       <div className="flex flex-col">
                         <span className="font-semibold text-stone-800">
-                          {tenant.owner?.name || 'Marco Rossi'}
+                          {tenant.owner?.name || tenant.owner?.email?.split('@')[0] || 'Merchant'}
                         </span>
                         <span className="text-[11px] text-stone-400 font-mono">
-                          {tenant.owner?.email || 'owner@demo.com'}
+                          {tenant.owner?.email || '—'}
                         </span>
                       </div>
                     </td>

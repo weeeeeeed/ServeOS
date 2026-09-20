@@ -3,6 +3,7 @@
 import { createClient, isSupabaseConfigured } from './supabase/client';
 import { Category, MenuItem, DietaryType, OwnerMenuStats } from './types';
 import { INITIAL_CATEGORIES, INITIAL_MENU_ITEMS } from './mock-data';
+import { toValidUUID } from './uuid-utils';
 
 const STORAGE_CATEGORIES_KEY = 'qr_saas_categories_v2';
 const STORAGE_MENU_ITEMS_KEY = 'qr_saas_menu_items_v2';
@@ -87,28 +88,35 @@ export const MenuService = {
   async getCategories(restaurantId: string): Promise<Category[]> {
     if (!restaurantId) return [];
 
+    const validRestaurantId = toValidUUID(restaurantId);
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         const { data, error } = await supabase
           .from('categories')
           .select('*')
-          .eq('restaurant_id', restaurantId)
+          .or(`restaurant_id.eq.${validRestaurantId},restaurant_id.eq.${restaurantId}`)
           .order('created_at', { ascending: true });
 
-        if (!error && data) return data;
+        if (!error && data) {
+          saveStoredCategories(data);
+          return data;
+        }
       } catch (err) {
         console.warn('Supabase getCategories failed, using local store:', err);
       }
     }
 
     const all = getStoredCategories();
-    return all.filter((c) => c.restaurant_id === restaurantId);
+    return all.filter((c) => c.restaurant_id === restaurantId || c.restaurant_id === validRestaurantId);
   },
 
   async createCategory(restaurantId: string, name: string): Promise<Category> {
     if (!name.trim()) throw new Error('Category name is required');
     if (!restaurantId) throw new Error('Restaurant ID is required');
+
+    const validRestaurantId = toValidUUID(restaurantId);
 
     if (isSupabaseConfigured()) {
       try {
@@ -116,16 +124,21 @@ export const MenuService = {
         const { data, error } = await supabase
           .from('categories')
           .insert({
-            restaurant_id: restaurantId,
+            restaurant_id: validRestaurantId,
             name: name.trim(),
           })
           .select()
           .single();
 
         if (error) throw error;
+
+        const all = getStoredCategories();
+        all.push(data);
+        saveStoredCategories(all);
         return data;
       } catch (err: any) {
-        console.warn('Supabase createCategory failed, using local store:', err?.message);
+        console.error('Supabase createCategory error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to create category in database');
       }
     }
 
@@ -148,29 +161,39 @@ export const MenuService = {
     restaurantId?: string
   ): Promise<Category> {
     if (!name.trim()) throw new Error('Category name is required');
+    const validCategoryId = toValidUUID(categoryId);
+    const validRestaurantId = restaurantId ? toValidUUID(restaurantId) : undefined;
 
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         let query = supabase
           .from('categories')
-          .update({ name: name.trim() })
-          .eq('id', categoryId);
+          .update({ name: name.trim(), updated_at: new Date().toISOString() })
+          .or(`id.eq.${validCategoryId},id.eq.${categoryId}`);
 
-        if (restaurantId) {
-          query = query.eq('restaurant_id', restaurantId);
+        if (validRestaurantId) {
+          query = query.or(`restaurant_id.eq.${validRestaurantId},restaurant_id.eq.${restaurantId}`);
         }
 
         const { data, error } = await query.select().single();
         if (error) throw error;
+
+        const all = getStoredCategories();
+        const idx = all.findIndex((c) => c.id === categoryId || c.id === validCategoryId);
+        if (idx !== -1) {
+          all[idx] = data;
+          saveStoredCategories(all);
+        }
         return data;
       } catch (err: any) {
-        console.warn('Supabase updateCategory failed, using local store:', err?.message);
+        console.error('Supabase updateCategory error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to update category in database');
       }
     }
 
     const all = getStoredCategories();
-    const index = all.findIndex((c) => c.id === categoryId && (!restaurantId || c.restaurant_id === restaurantId));
+    const index = all.findIndex((c) => (c.id === categoryId || c.id === validCategoryId) && (!restaurantId || c.restaurant_id === restaurantId || c.restaurant_id === validRestaurantId));
     if (index === -1) throw new Error('Category not found or unauthorized');
 
     const updated: Category = {
@@ -184,33 +207,37 @@ export const MenuService = {
   },
 
   async deleteCategory(categoryId: string, restaurantId?: string): Promise<void> {
+    const validCategoryId = toValidUUID(categoryId);
+    const validRestaurantId = restaurantId ? toValidUUID(restaurantId) : undefined;
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         let query = supabase
           .from('categories')
           .delete()
-          .eq('id', categoryId);
+          .or(`id.eq.${validCategoryId},id.eq.${categoryId}`);
 
-        if (restaurantId) {
-          query = query.eq('restaurant_id', restaurantId);
+        if (validRestaurantId) {
+          query = query.or(`restaurant_id.eq.${validRestaurantId},restaurant_id.eq.${restaurantId}`);
         }
 
         const { error } = await query;
         if (error) throw error;
-      } catch (err) {
-        console.warn('Supabase deleteCategory failed, using local store:', err);
+      } catch (err: any) {
+        console.error('Supabase deleteCategory error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to delete category from database');
       }
     }
 
     const all = getStoredCategories().filter(
-      (c) => !(c.id === categoryId && (!restaurantId || c.restaurant_id === restaurantId))
+      (c) => !( (c.id === categoryId || c.id === validCategoryId) && (!restaurantId || c.restaurant_id === restaurantId || c.restaurant_id === validRestaurantId) )
     );
     saveStoredCategories(all);
 
     // Cascade delete local menu items
     const items = getStoredMenuItems().filter(
-      (i) => !(i.category_id === categoryId && (!restaurantId || i.restaurant_id === restaurantId))
+      (i) => !( (i.category_id === categoryId || i.category_id === validCategoryId) && (!restaurantId || i.restaurant_id === restaurantId || i.restaurant_id === validRestaurantId) )
     );
     saveStoredMenuItems(items);
   },
@@ -224,30 +251,37 @@ export const MenuService = {
   ): Promise<MenuItem[]> {
     if (!restaurantId) return [];
 
+    const validRestaurantId = toValidUUID(restaurantId);
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         let query = supabase
           .from('menu_items')
           .select('*')
-          .eq('restaurant_id', restaurantId)
+          .or(`restaurant_id.eq.${validRestaurantId},restaurant_id.eq.${restaurantId}`)
           .order('created_at', { ascending: true });
 
         if (categoryId && categoryId !== 'all') {
-          query = query.eq('category_id', categoryId);
+          const validCatId = toValidUUID(categoryId);
+          query = query.or(`category_id.eq.${validCatId},category_id.eq.${categoryId}`);
         }
 
         const { data, error } = await query;
-        if (!error && data) return data;
+        if (!error && data) {
+          saveStoredMenuItems(data);
+          return data;
+        }
       } catch (err) {
         console.warn('Supabase getMenuItems failed, using local store:', err);
       }
     }
 
     const all = getStoredMenuItems();
-    let filtered = all.filter((i) => i.restaurant_id === restaurantId);
+    let filtered = all.filter((i) => i.restaurant_id === restaurantId || i.restaurant_id === validRestaurantId);
     if (categoryId && categoryId !== 'all') {
-      filtered = filtered.filter((i) => i.category_id === categoryId);
+      const validCatId = toValidUUID(categoryId);
+      filtered = filtered.filter((i) => i.category_id === categoryId || i.category_id === validCatId);
     }
     return filtered;
   },
@@ -270,14 +304,17 @@ export const MenuService = {
     const dietaryType = data.dietary_type || (data.is_veg ? 'veg' : 'non-veg');
     const isVeg = dietaryType === 'veg' || dietaryType === 'vegan';
 
+    const validRestaurantId = toValidUUID(data.restaurant_id);
+    const validCategoryId = toValidUUID(data.category_id);
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         const { data: itemData, error } = await supabase
           .from('menu_items')
           .insert({
-            restaurant_id: data.restaurant_id,
-            category_id: data.category_id,
+            restaurant_id: validRestaurantId,
+            category_id: validCategoryId,
             name: data.name.trim(),
             description: data.description?.trim() || null,
             price: data.price,
@@ -290,9 +327,14 @@ export const MenuService = {
           .single();
 
         if (error) throw error;
+
+        const all = getStoredMenuItems();
+        all.push(itemData);
+        saveStoredMenuItems(all);
         return itemData;
       } catch (err: any) {
-        console.warn('Supabase createMenuItem failed, using local store:', err?.message);
+        console.error('Supabase createMenuItem error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to create menu item in database');
       }
     }
 
@@ -321,28 +363,48 @@ export const MenuService = {
     updates: Partial<Omit<MenuItem, 'id' | 'restaurant_id' | 'created_at'>>,
     restaurantId?: string
   ): Promise<MenuItem> {
+    const validItemId = toValidUUID(itemId);
+    const validRestaurantId = restaurantId ? toValidUUID(restaurantId) : undefined;
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
+        const sanitizedUpdates: any = { ...updates };
+        if (sanitizedUpdates.category_id) {
+          sanitizedUpdates.category_id = toValidUUID(sanitizedUpdates.category_id);
+        }
+        if (sanitizedUpdates.dietary_type) {
+          sanitizedUpdates.is_veg = sanitizedUpdates.dietary_type === 'veg' || sanitizedUpdates.dietary_type === 'vegan';
+        }
+        sanitizedUpdates.updated_at = new Date().toISOString();
+
         let query = supabase
           .from('menu_items')
-          .update(updates)
-          .eq('id', itemId);
+          .update(sanitizedUpdates)
+          .or(`id.eq.${validItemId},id.eq.${itemId}`);
 
-        if (restaurantId) {
-          query = query.eq('restaurant_id', restaurantId);
+        if (validRestaurantId) {
+          query = query.or(`restaurant_id.eq.${validRestaurantId},restaurant_id.eq.${restaurantId}`);
         }
 
         const { data, error } = await query.select().single();
         if (error) throw error;
+
+        const all = getStoredMenuItems();
+        const idx = all.findIndex((i) => i.id === itemId || i.id === validItemId);
+        if (idx !== -1) {
+          all[idx] = data;
+          saveStoredMenuItems(all);
+        }
         return data;
       } catch (err: any) {
-        console.warn('Supabase updateMenuItem failed, using local store:', err?.message);
+        console.error('Supabase updateMenuItem error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to update menu item in database');
       }
     }
 
     const all = getStoredMenuItems();
-    const index = all.findIndex((i) => i.id === itemId && (!restaurantId || i.restaurant_id === restaurantId));
+    const index = all.findIndex((i) => (i.id === itemId || i.id === validItemId) && (!restaurantId || i.restaurant_id === restaurantId || i.restaurant_id === validRestaurantId));
     if (index === -1) throw new Error('Menu item not found or unauthorized');
 
     const updated: MenuItem = {
@@ -356,27 +418,31 @@ export const MenuService = {
   },
 
   async deleteMenuItem(itemId: string, restaurantId?: string): Promise<void> {
+    const validItemId = toValidUUID(itemId);
+    const validRestaurantId = restaurantId ? toValidUUID(restaurantId) : undefined;
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         let query = supabase
           .from('menu_items')
           .delete()
-          .eq('id', itemId);
+          .or(`id.eq.${validItemId},id.eq.${itemId}`);
 
-        if (restaurantId) {
-          query = query.eq('restaurant_id', restaurantId);
+        if (validRestaurantId) {
+          query = query.or(`restaurant_id.eq.${validRestaurantId},restaurant_id.eq.${restaurantId}`);
         }
 
         const { error } = await query;
         if (error) throw error;
-      } catch (err) {
-        console.warn('Supabase deleteMenuItem failed, using local store:', err);
+      } catch (err: any) {
+        console.error('Supabase deleteMenuItem error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to delete menu item from database');
       }
     }
 
     const all = getStoredMenuItems().filter(
-      (i) => !(i.id === itemId && (!restaurantId || i.restaurant_id === restaurantId))
+      (i) => !( (i.id === itemId || i.id === validItemId) && (!restaurantId || i.restaurant_id === restaurantId || i.restaurant_id === validRestaurantId) )
     );
     saveStoredMenuItems(all);
   },

@@ -20,7 +20,8 @@ export interface Toast {
   duration?: number;
 }
 
-interface ToastContextType {
+export interface ToastContextType {
+  (toast: Omit<Toast, 'id'>): void;
   toast: (toast: Omit<Toast, 'id'>) => void;
   success: (title: string, description?: string) => void;
   error: (title: string, description?: string) => void;
@@ -74,8 +75,24 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     [addToast]
   );
 
+  const toastFn = useCallback(
+    (opts: Omit<Toast, 'id'>) => addToast(opts),
+    [addToast]
+  );
+
+  const contextValue = React.useMemo(() => {
+    const fn = ((opts: Omit<Toast, 'id'>) => addToast(opts)) as any;
+    fn.toast = addToast;
+    fn.success = success;
+    fn.error = error;
+    fn.info = info;
+    fn.warning = warning;
+    fn.dismiss = dismiss;
+    return fn;
+  }, [addToast, success, error, info, warning, dismiss]);
+
   return (
-    <ToastContext.Provider value={{ toast: addToast, success, error, info, warning, dismiss }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       {/* Floating Toast Viewport */}
       <aside aria-label="Notifications" className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0">

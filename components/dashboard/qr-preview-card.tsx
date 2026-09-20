@@ -21,7 +21,7 @@ export function QRPreviewCard({ restaurant }: QRPreviewCardProps) {
     }
   }, []);
 
-  const slug = restaurant?.slug || 'la-piazza';
+  const slug = restaurant?.slug || '';
   const fullMenuUrl = `${origin}/r/${slug}`;
 
   const handleCopy = () => {
@@ -76,7 +76,7 @@ export function QRPreviewCard({ restaurant }: QRPreviewCardProps) {
 
         ctx.fillStyle = '#a1a1aa';
         ctx.font = '14px sans-serif';
-        ctx.fillText('Powered by RestoQR Platform', 300, 660);
+        ctx.fillText('Powered by ServeOS Platform', 300, 660);
 
         const pngFile = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');

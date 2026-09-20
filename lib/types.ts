@@ -38,6 +38,7 @@ export interface Restaurant {
   opening_hours?: string | null;
   description?: string | null;
   subscription_status: SubscriptionStatus;
+  marketing_enabled?: boolean;
   created_at: string;
   updated_at?: string;
 }
@@ -67,6 +68,20 @@ export interface MenuItem {
 
 export interface MenuItemWithCategory extends MenuItem {
   category?: Category;
+}
+
+export type TableStatus = 'active' | 'in_service' | 'idle' | 'reserved';
+
+export interface RestaurantTable {
+  id: string;
+  restaurant_id: string;
+  name: string;
+  zone: string;
+  capacity: number;
+  status: TableStatus;
+  sort_order?: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface OrderItem {
@@ -234,3 +249,108 @@ export interface OrderStats {
   completedOrders: number;
   todayRevenue: number;
 }
+
+export interface NotificationSubscription {
+  id: string;
+  restaurant_id: string;
+  endpoint: string;
+  p256dh: string;
+  auth: string;
+  browser?: string;
+  device?: string;
+  created_at: string;
+  last_seen?: string;
+  active: boolean;
+}
+
+export interface MarketingCampaign {
+  id: string;
+  restaurant_id: string;
+  title: string;
+  message: string;
+  image_url?: string | null;
+  cta_url?: string | null;
+  sent_at: string;
+  total_targeted: number;
+  total_sent: number;
+  total_failed: number;
+}
+
+export interface MarketingStats {
+  totalSubscribers: number;
+  activeSubscribers: number;
+  campaignsSent: number;
+  lastCampaignDate?: string | null;
+  openRateEstimated: string;
+}
+
+export interface SendCampaignResult {
+  success: boolean;
+  campaign?: MarketingCampaign;
+  totalTargeted: number;
+  totalSent: number;
+  totalFailed: number;
+  inactiveMarked: number;
+  error?: string;
+}
+
+// ==========================================
+// SUBSCRIPTION PLANS (DYNAMIC PRICING CATALOG)
+// ==========================================
+export interface SubscriptionPlanEntity {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price_monthly: number;
+  price_yearly: number;
+  features: string[];
+  max_restaurants: number;
+  max_qr_codes: number;
+  max_orders: number;
+  max_staff: number;
+  marketing_enabled: boolean;
+  ai_enabled: boolean;
+  analytics_enabled: boolean;
+  is_featured: boolean;
+  is_active: boolean;
+  sort_order: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+// ==========================================
+// ADMIN COMMUNICATIONS & BROADCASTS
+// ==========================================
+export type AnnouncementPriority = 'normal' | 'important' | 'critical';
+
+export type AnnouncementAudience = 'all' | 'trial' | 'premium' | 'expired' | 'specific';
+
+export interface Announcement {
+  id: string;
+  title: string;
+  message: string;
+  priority: AnnouncementPriority;
+  target_audience: AnnouncementAudience;
+  target_restaurant_id?: string | null;
+  target_restaurant_name?: string | null;
+  image_url?: string | null;
+  cta_label?: string | null;
+  cta_url?: string | null;
+  scheduled_at?: string | null;
+  created_at: string;
+  created_by: string;
+  total_sent?: number;
+  total_read?: number;
+}
+
+export interface RestaurantNotification {
+  id: string;
+  restaurant_id: string;
+  announcement_id: string;
+  announcement: Announcement;
+  read: boolean;
+  read_at?: string | null;
+  created_at: string;
+}
+

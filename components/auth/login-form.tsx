@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { AuthService } from '@/lib/auth-service';
 import { DEMO_ACCOUNTS } from '@/lib/mock-data';
+import { ServeOSLogo } from '@/components/ui/botanical-decorations';
 
 export function LoginForm() {
   const router = useRouter();
@@ -20,7 +21,7 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(
     reasonParam === 'admin_required'
-      ? 'Admin authorization required. Please sign in as a Super Admin.'
+      ? 'Admin authorization required. Please sign in as Super Admin.'
       : reasonParam === 'auth_required'
       ? 'Please sign in to access your dashboard.'
       : null
@@ -39,7 +40,6 @@ export function LoginForm() {
     try {
       const { user } = await AuthService.login(email, password);
 
-      // Role-based redirection
       if (user.role === 'admin') {
         router.push(redirectParam && redirectParam.startsWith('/admin') ? redirectParam : '/admin');
       } else {
@@ -62,23 +62,23 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-md mx-auto space-y-6">
       {/* Card Wrapper */}
-      <div className="bg-white border border-stone-200 rounded-[32px] p-6 sm:p-8 shadow-board">
-        <div className="space-y-2 text-center pb-6 border-b border-stone-100">
-          <div className="w-10 h-10 rounded-2xl bg-[#1f4e47] text-[#efa736] flex items-center justify-center mx-auto shadow-xs mb-3">
-            <Store className="w-5 h-5" />
+      <div className="bg-white/95 border border-[#e6e2da] rounded-4xl p-6 sm:p-8 shadow-xs">
+        <div className="space-y-2 text-center pb-6 border-b border-[#f0ede6]">
+          <div className="flex justify-center mb-2">
+            <ServeOSLogo variant="stacked" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-stone-900">
+          <h1 className="text-2xl font-serif font-bold tracking-tight text-[#1b3b2f]">
             Welcome Back
           </h1>
-          <p className="text-xs text-stone-500">
-            Sign in to manage your restaurant or access the platform admin
+          <p className="text-xs text-[#556960]">
+            Sign in to your restaurant workspace or platform portal
           </p>
         </div>
 
         {/* Quick Demo Role Fillers */}
         <div className="my-5">
-          <p className="text-[10px] font-black text-stone-400 uppercase tracking-[0.16em] mb-2.5">
-            Quick 1-Click Role Switcher
+          <p className="text-[10px] font-bold text-[#85988e] uppercase tracking-wider mb-2">
+            Quick 1-Click Role Login
           </p>
           <div className="grid grid-cols-2 gap-2">
             {DEMO_ACCOUNTS.map((acc) => {
@@ -90,21 +90,19 @@ export function LoginForm() {
                   onClick={() => handleQuickDemoLogin(acc.email, acc.password)}
                   className={`flex flex-col text-left p-3 rounded-2xl border text-xs transition-all ${
                     isSelected
-                      ? 'border-[#1f4e47] bg-[#1f4e47] text-white shadow-xs'
-                      : 'border-stone-200 bg-[#faf9f6] hover:border-stone-300 hover:bg-stone-50 text-stone-700'
+                      ? 'border-[#1b3b2f] bg-[#1b3b2f] text-white shadow-xs'
+                      : 'border-[#e6e2da] bg-[#faf8f5] hover:border-[#c5beb2] text-[#162820]'
                   }`}
                 >
-                  <div className="flex items-center gap-1.5 font-bold">
+                  <div className="flex items-center gap-1.5 font-bold font-serif">
                     {acc.role === 'admin' ? (
-                      <Shield className={`w-3.5 h-3.5 ${isSelected ? 'text-[#efa736]' : 'text-stone-600'}`} />
+                      <Shield className={`w-3.5 h-3.5 ${isSelected ? 'text-[#eef4f0]' : 'text-[#3a7d5c]'}`} />
                     ) : (
-                      <Store className={`w-3.5 h-3.5 ${isSelected ? 'text-[#efa736]' : 'text-[#2f6858]'}`} />
+                      <Store className={`w-3.5 h-3.5 ${isSelected ? 'text-[#eef4f0]' : 'text-[#3a7d5c]'}`} />
                     )}
-                    <span>{acc.role === 'admin' ? 'Super Admin' : 'Owner'}</span>
+                    <span>{acc.role === 'admin' ? 'Super Admin' : 'Restaurant Owner'}</span>
                   </div>
-                  <span className={`text-[11px] mt-0.5 truncate ${
-                    isSelected ? 'text-emerald-200' : 'text-stone-400'
-                  }`}>
+                  <span className={`text-[10px] truncate mt-0.5 font-sans ${isSelected ? 'text-[#d2ded6]' : 'text-[#85988e]'}`}>
                     {acc.email}
                   </span>
                 </button>
@@ -113,60 +111,67 @@ export function LoginForm() {
           </div>
         </div>
 
-        {/* Error Alert */}
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 flex items-start gap-2.5 text-red-700 text-xs">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-            <span className="leading-relaxed">{error}</span>
+          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-800 flex items-start gap-2.5 animate-in fade-in">
+            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
+            <span>{error}</span>
           </div>
         )}
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            label="Email Address"
-            type="email"
-            placeholder="you@restaurant.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            leftIcon={<Mail className="w-4 h-4" />}
-            required
-            autoComplete="email"
-            className="bg-[#faf9f6] border-stone-200 focus:border-[#efa736] focus:ring-[#efa736]/20 rounded-xl"
-          />
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+          <div>
+            <label className="block text-xs font-bold text-[#1b3b2f] uppercase tracking-wider mb-1.5">
+              Email Address
+            </label>
+            <div className="relative">
+              <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85988e]" />
+              <input
+                type="email"
+                required
+                placeholder="name@restaurant.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-2xl border border-[#dcd7ce] bg-[#faf8f5] text-[#162820] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#3a7d5c]"
+              />
+            </div>
+          </div>
 
-          <Input
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            leftIcon={<Lock className="w-4 h-4" />}
-            required
-            autoComplete="current-password"
-            className="bg-[#faf9f6] border-stone-200 focus:border-[#efa736] focus:ring-[#efa736]/20 rounded-xl"
-          />
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-[#1b3b2f] uppercase tracking-wider">
+                Password
+              </label>
+            </div>
+            <div className="relative">
+              <Lock className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85988e]" />
+              <input
+                type="password"
+                required
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2.5 text-xs rounded-2xl border border-[#dcd7ce] bg-[#faf8f5] text-[#162820] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#3a7d5c]"
+              />
+            </div>
+          </div>
 
           <Button
             type="submit"
-            className="w-full mt-2 bg-[#efa736] hover:bg-[#e09827] text-stone-950 font-bold rounded-xl h-12 shadow-sm"
-            size="lg"
-            isLoading={isLoading}
+            disabled={isLoading}
+            className="w-full bg-[#1b3b2f] hover:bg-[#122820] text-white rounded-2xl py-2.5 text-xs font-semibold shadow-xs flex items-center justify-center gap-2"
           >
-            <span>Sign In to BitePoint</span>
+            <span>{isLoading ? 'Authenticating...' : 'Sign In to ServeOS'}</span>
             <ArrowRight className="w-4 h-4" />
           </Button>
         </form>
 
-        {/* Footer Link */}
-        <div className="mt-6 text-center text-xs text-stone-500 pt-4 border-t border-stone-100">
-          New dining establishment?{' '}
-          <Link
-            href="/register"
-            className="font-bold text-stone-900 hover:text-[#1f4e47] underline underline-offset-2"
-          >
-            Register restaurant account
-          </Link>
+        <div className="mt-6 pt-5 border-t border-[#f0ede6] text-center">
+          <p className="text-xs text-[#556960]">
+            Don&apos;t have a restaurant workspace yet?{' '}
+            <Link href="/register" className="font-bold text-[#1b3b2f] hover:underline">
+              Create Restaurant &rarr;
+            </Link>
+          </p>
         </div>
       </div>
     </div>

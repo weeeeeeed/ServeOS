@@ -23,9 +23,9 @@ interface SubscriptionModalProps {
 }
 
 const PLANS: { name: SubscriptionPlan; price: string; features: string }[] = [
-  { name: 'Starter', price: '$29/mo', features: 'Up to 25 dishes, 10 table QR codes' },
-  { name: 'Pro', price: '$79/mo', features: 'Unlimited dishes, live KDS, table ordering, analytics' },
-  { name: 'Enterprise', price: '$199/mo', features: 'Multi-location, priority kitchen dispatch, SLA' },
+  { name: 'Starter', price: '₹199/mo', features: 'Up to 25 dishes, 10 table QR codes' },
+  { name: 'Pro', price: '₹499/mo', features: 'Unlimited dishes, live KDS, table ordering, analytics' },
+  { name: 'Enterprise', price: '₹999/mo', features: 'Multi-location, priority kitchen dispatch, SLA' },
 ];
 
 export function SubscriptionModal({

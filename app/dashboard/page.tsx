@@ -10,10 +10,15 @@ import {
   Wallet,
   Settings,
   MessageSquare,
+  Megaphone,
   LogOut,
-  Sparkles,
-  RefreshCw,
+  Users,
+  CreditCard,
   ExternalLink,
+  ChevronRight,
+  Flame,
+  ChefHat,
+  Sparkles,
 } from 'lucide-react';
 import { BitepointOverview } from '@/components/dashboard/bitepoint-overview';
 import { KitchenOrders } from '@/components/dashboard/kitchen-orders';
@@ -22,18 +27,37 @@ import { TableQrStudio } from '@/components/dashboard/table-qr-studio';
 import { AccountingLedger } from '@/components/dashboard/accounting-ledger';
 import { BitepointSettings } from '@/components/dashboard/bitepoint-settings';
 import { FeedbackSection } from '@/components/dashboard/feedback-section';
+import { MarketingHub } from '@/components/dashboard/marketing-hub';
+import { StaffManagement } from '@/components/dashboard/staff-management';
+import { BillingPanel } from '@/components/dashboard/billing-panel';
+import { NotificationDrawer } from '@/components/dashboard/notification-drawer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AuthService } from '@/lib/auth-service';
 import { OrderService } from '@/lib/order-service';
 import { FeedbackService } from '@/lib/feedback-service';
-import { User, Restaurant, OrderWithItems, FeedbackStats } from '@/lib/types';
+import { TableService } from '@/lib/table-service';
+import { User, Restaurant, OrderWithItems, FeedbackStats, RestaurantTable } from '@/lib/types';
+import { ServeOSLogo } from '@/components/ui/botanical-decorations';
 
-export default function BitepointDashboardPage() {
+type ActiveDashboardTab =
+  | 'overview'
+  | 'orders'
+  | 'menu'
+  | 'tables'
+  | 'staff'
+  | 'billing'
+  | 'accounting'
+  | 'feedback'
+  | 'marketing'
+  | 'settings';
+
+export default function ServeOSDashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [orders, setOrders] = useState<OrderWithItems[]>([]);
-  const [activeTab, setActiveTab] = useState<'overview' | 'menu' | 'orders' | 'tables' | 'accounting' | 'settings' | 'feedback'>('overview');
+  const [tables, setTables] = useState<RestaurantTable[]>([]);
+  const [activeTab, setActiveTab] = useState<ActiveDashboardTab>('overview');
   const [loading, setLoading] = useState(true);
 
   const [feedbackStats, setFeedbackStats] = useState<FeedbackStats>({
@@ -58,12 +82,14 @@ export default function BitepointDashboardPage() {
     setRestaurant(session.restaurant);
 
     if (session.restaurant?.id) {
-      const [oList, fStats] = await Promise.all([
+      const [oList, fStats, tList] = await Promise.all([
         OrderService.getRestaurantOrders(session.restaurant.id),
         FeedbackService.getFeedbackStats(session.restaurant.id),
+        TableService.getTables(session.restaurant.id),
       ]);
       setOrders(oList);
       setFeedbackStats(fStats);
+      setTables(tList);
     }
     setLoading(false);
   };
@@ -72,6 +98,20 @@ export default function BitepointDashboardPage() {
     loadDashboard();
   }, [router]);
 
+  useEffect(() => {
+    const handleTablesUpdated = (e: any) => {
+      if (restaurant?.id && (!e.detail || e.detail.restaurantId === restaurant.id)) {
+        if (e.detail?.tables && Array.isArray(e.detail.tables)) {
+          setTables(e.detail.tables);
+        } else {
+          TableService.getTables(restaurant.id).then((tList) => setTables(tList));
+        }
+      }
+    };
+    window.addEventListener('serveos_tables_updated', handleTablesUpdated);
+    return () => window.removeEventListener('serveos_tables_updated', handleTablesUpdated);
+  }, [restaurant?.id]);
+
   const handleLogout = async () => {
     await AuthService.logout();
     router.push('/login');
@@ -79,16 +119,16 @@ export default function BitepointDashboardPage() {
 
   if (loading || !restaurant || !user) {
     return (
-      <div className="min-h-screen bg-[#eae9e4] p-4 md:p-8 flex items-center justify-center">
-        <div className="w-full max-w-[1560px] bg-white rounded-[36px] p-8 shadow-board border border-stone-200 space-y-6">
-          <Skeleton className="h-12 w-64 bg-stone-200 rounded-2xl" />
+      <div className="min-h-screen bg-[#f4f1eb] p-4 md:p-8 flex items-center justify-center">
+        <div className="w-full max-w-[1560px] bg-[#faf8f5] rounded-[36px] p-8 shadow-xs border border-[#e6e2da] space-y-6">
+          <Skeleton className="h-12 w-64 bg-[#e6e2da] rounded-2xl" />
           <div className="grid grid-cols-4 gap-4">
-            <Skeleton className="h-32 bg-stone-100 rounded-2xl" />
-            <Skeleton className="h-32 bg-stone-100 rounded-2xl" />
-            <Skeleton className="h-32 bg-stone-100 rounded-2xl" />
-            <Skeleton className="h-32 bg-stone-100 rounded-2xl" />
+            <Skeleton className="h-32 bg-[#ebe7df] rounded-2xl" />
+            <Skeleton className="h-32 bg-[#ebe7df] rounded-2xl" />
+            <Skeleton className="h-32 bg-[#ebe7df] rounded-2xl" />
+            <Skeleton className="h-32 bg-[#ebe7df] rounded-2xl" />
           </div>
-          <Skeleton className="h-96 w-full bg-stone-100 rounded-3xl" />
+          <Skeleton className="h-96 w-full bg-[#ebe7df] rounded-3xl" />
         </div>
       </div>
     );
@@ -96,161 +136,108 @@ export default function BitepointDashboardPage() {
 
   const activeOrdersCount = orders.filter((o) => o.status === 'pending' || o.status === 'preparing').length;
 
+  const navItems = [
+    { id: 'overview' as const, label: 'Overview', icon: LayoutGrid, count: null },
+    { id: 'orders' as const, label: 'Orders & Kitchen', icon: Receipt, count: activeOrdersCount },
+    { id: 'menu' as const, label: 'Menu Catalog', icon: UtensilsCrossed, count: null },
+    { id: 'tables' as const, label: 'Tables & QR Studio', icon: TableProperties, count: tables.length },
+    { id: 'staff' as const, label: 'Staff & Roster', icon: Users, count: null },
+    { id: 'billing' as const, label: 'Plan & Billing', icon: CreditCard, count: null },
+    { id: 'accounting' as const, label: 'Accounting & Sales', icon: Wallet, count: null },
+    { id: 'feedback' as const, label: 'Guest Reviews', icon: MessageSquare, count: null },
+    { id: 'marketing' as const, label: 'Push Marketing', icon: Megaphone, count: null, isNew: true },
+    { id: 'settings' as const, label: 'Settings', icon: Settings, count: null },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#eae9e4] p-3 sm:p-5 lg:p-7 flex items-center justify-center font-sans antialiased text-stone-800">
-      {/* Outer Rounded Board Container (Exact Stitch Screen Spec) */}
-      <main className="w-full max-w-[1560px] bg-white rounded-[36px] shadow-board border border-stone-200/80 overflow-hidden flex flex-col lg:flex-row min-h-[920px]">
+    <div className="min-h-screen bg-[#f4efe8] p-3 sm:p-5 lg:p-7 flex items-center justify-center font-sans antialiased text-[#162820] relative overflow-hidden">
+      
+      
+
+      
+      
+
+      
+      
+
+      {/* Outer Rounded Board Container - ServeOS Botanical Manager Frame */}
+      <main className="w-full max-w-[1600px] bg-[#faf8f5] rounded-[36px] shadow-[0_24px_70px_rgba(18,40,32,0.07)] border border-[#e4ded4] overflow-hidden flex flex-col lg:flex-row min-h-[940px] relative z-10">
         {/* Left Sidebar Navigation */}
-        <aside className="w-full lg:w-64 xl:w-72 bg-white border-r border-stone-100 flex flex-col justify-between p-6 shrink-0">
+        <aside className="w-full lg:w-64 xl:w-72 bg-[#fdfbf7] border-r border-[#e6e2da] flex flex-col justify-between p-5 shrink-0">
           <div>
-            {/* Brand Logo Header */}
-            <div className="flex items-center gap-3 px-2 py-2 mb-8">
-              <div className="w-10 h-10 rounded-2xl bg-[#1f4e47] flex items-center justify-center text-white shadow-sm">
-                <UtensilsCrossed className="w-5 h-5 text-[#efa736]" />
-              </div>
-              <div>
-                <span className="text-xl font-black tracking-tight text-stone-900 leading-tight block">
-                  bite<span className="text-[#1f4e47]">point</span>
-                </span>
-                <span className="text-[10px] tracking-widest font-bold text-stone-400 uppercase">
-                  MANAGEMENT
-                </span>
-              </div>
+            {/* ServeOS Brand Logo */}
+            <div className="px-2 py-3 mb-6">
+              <ServeOSLogo size="md" showTagline={true} />
             </div>
 
             {/* Navigation Links */}
-            <nav aria-label="Main Navigation" className="space-y-1.5">
-              {/* Dashboard */}
-              <button
-                onClick={() => setActiveTab('overview')}
-                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-semibold text-sm transition-colors duration-150 text-left ${
-                  activeTab === 'overview'
-                    ? 'bg-[#efa736] text-stone-950 font-bold shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
-                }`}
-                type="button"
-              >
-                <LayoutGrid className="w-5 h-5" />
-                <span>Dashboard</span>
-              </button>
-
-              {/* Menu */}
-              <button
-                onClick={() => setActiveTab('menu')}
-                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-semibold text-sm transition-colors duration-150 text-left ${
-                  activeTab === 'menu'
-                    ? 'bg-[#efa736] text-stone-950 font-bold shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
-                }`}
-                type="button"
-              >
-                <UtensilsCrossed className="w-5 h-5" />
-                <span>Menu</span>
-              </button>
-
-              {/* Orders */}
-              <button
-                onClick={() => setActiveTab('orders')}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl font-semibold text-sm transition-colors duration-150 text-left ${
-                  activeTab === 'orders'
-                    ? 'bg-[#efa736] text-stone-950 font-bold shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
-                }`}
-                type="button"
-              >
-                <div className="flex items-center gap-3.5">
-                  <Receipt className="w-5 h-5" />
-                  <span>Orders</span>
-                </div>
-                {activeOrdersCount > 0 && (
-                  <span
-                    className={`text-[11px] px-2 py-0.5 rounded-full font-black ${
-                      activeTab === 'orders' ? 'bg-stone-950 text-white' : 'bg-amber-100 text-amber-900'
+            <nav aria-label="Main Navigation" className="space-y-1">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => setActiveTab(item.id)}
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-semibold transition-all duration-150 text-left ${
+                      isActive
+                        ? 'bg-[#1b3b2f] text-[#f8faf7] shadow-xs'
+                        : 'text-[#556960] hover:text-[#1b3b2f] hover:bg-[#eef4f0]/70'
                     }`}
+                    type="button"
                   >
-                    {activeOrdersCount}
-                  </span>
-                )}
-              </button>
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-[#eef4f0]' : 'text-[#85988e]'}`} />
+                      <span>{item.label}</span>
+                    </div>
 
-              {/* Table & QR Studio */}
-              <button
-                onClick={() => setActiveTab('tables')}
-                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-semibold text-sm transition-colors duration-150 text-left ${
-                  activeTab === 'tables'
-                    ? 'bg-[#efa736] text-stone-950 font-bold shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
-                }`}
-                type="button"
-              >
-                <TableProperties className="w-5 h-5" />
-                <span>Tables &amp; QR</span>
-              </button>
-
-              {/* Accounting */}
-              <button
-                onClick={() => setActiveTab('accounting')}
-                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-semibold text-sm transition-colors duration-150 text-left ${
-                  activeTab === 'accounting'
-                    ? 'bg-[#efa736] text-stone-950 font-bold shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
-                }`}
-                type="button"
-              >
-                <Wallet className="w-5 h-5" />
-                <span>Accounting</span>
-              </button>
-
-              {/* Reviews */}
-              <button
-                onClick={() => setActiveTab('feedback')}
-                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-semibold text-sm transition-colors duration-150 text-left ${
-                  activeTab === 'feedback'
-                    ? 'bg-[#efa736] text-stone-950 font-bold shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
-                }`}
-                type="button"
-              >
-                <MessageSquare className="w-5 h-5" />
-                <span>Reviews</span>
-              </button>
-
-              {/* Settings */}
-              <button
-                onClick={() => setActiveTab('settings')}
-                className={`w-full flex items-center gap-3.5 px-4 py-3 rounded-2xl font-semibold text-sm transition-colors duration-150 text-left ${
-                  activeTab === 'settings'
-                    ? 'bg-[#efa736] text-stone-950 font-bold shadow-xs'
-                    : 'text-stone-600 hover:text-stone-900 hover:bg-stone-50'
-                }`}
-                type="button"
-              >
-                <Settings className="w-5 h-5" />
-                <span>Settings</span>
-              </button>
+                    <div className="flex items-center gap-1.5">
+                      {item.count !== null && item.count > 0 && (
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                            isActive ? 'bg-[#3a7d5c] text-white' : 'bg-[#eef4f0] text-[#1b3b2f] border border-[#d2ded6]'
+                          }`}
+                        >
+                          {item.count}
+                        </span>
+                      )}
+                      {item.isNew && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-md font-extrabold bg-[#eef4f0] text-[#1b3b2f] border border-[#cbe0d3]">
+                          NEW
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </nav>
           </div>
 
+          
+          
+
           {/* User Profile Card in Sidebar */}
-          <div className="pt-6 border-t border-stone-100">
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-stone-50 border border-stone-100 hover:bg-stone-100/60 transition-colors">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 rounded-full bg-[#1f4e47]/15 text-[#1f4e47] font-black flex items-center justify-center text-xs tracking-wider border border-white shrink-0">
-                  {user.name ? user.name.slice(0, 2).toUpperCase() : 'GS'}
+          <div className="pt-3 mt-4 border-t border-[#e6e2da]">
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-white/90 border border-[#e6e2da] shadow-2xs hover:bg-white transition-colors">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-2xl bg-[#eef4f0] text-[#1b3b2f] font-serif font-bold flex items-center justify-center text-xs tracking-wider border border-[#d2ded6] shrink-0">
+                  {user.name
+                    ? user.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
+                    : (user.email ? user.email.slice(0, 2).toUpperCase() : 'SO')}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-stone-900 truncate">
-                    {user.name || 'Gladina S.'}
+                  <p className="text-xs font-bold text-[#1b3b2f] truncate font-sans">
+                    {user.name || (user.email ? user.email.split('@')[0] : 'Merchant')}
                   </p>
-                  <p className="text-[11px] font-medium text-stone-400 capitalize truncate">
-                    {user.role === 'owner' ? 'Restaurant Owner' : 'Head Cashier'}
+                  <p className="text-[10px] font-medium text-[#85988e] capitalize truncate">
+                    {user.role === 'owner' ? 'Owner / General Manager' : (user.role === 'admin' ? 'Administrator' : 'Staff Member')}
                   </p>
                 </div>
               </div>
               <button
                 onClick={handleLogout}
                 aria-label="Log Out"
-                className="p-1.5 text-stone-400 hover:text-red-600 rounded-lg hover:bg-stone-200/50 transition shrink-0"
+                className="p-1.5 text-[#85988e] hover:text-[#b84232] rounded-xl hover:bg-[#f8f5f0] transition shrink-0"
                 type="button"
                 title="Log Out"
               >
@@ -261,17 +248,40 @@ export default function BitepointDashboardPage() {
         </aside>
 
         {/* Main Workspace Area */}
-        <div className="flex-1 flex flex-col overflow-y-auto custom-scrollbar p-6 lg:p-8 xl:p-9 bg-[#faf9f6]">
+        <div className="flex-1 flex flex-col overflow-y-auto custom-scrollbar p-5 lg:p-8 xl:p-9 bg-[#faf8f5]">
+          {/* Top Operational Navigation Bar */}
+          <div className="flex items-center justify-between gap-4 pb-4 mb-6 border-b border-[#e6e2da] shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#eef4f0] text-[#1b3b2f] border border-[#d2ded6]">
+                <span className="w-2 h-2 rounded-full bg-[#3a7d5c] animate-pulse" />
+                <span className="text-[11px] font-bold tracking-wider uppercase font-sans">
+                  {restaurant.name}
+                </span>
+              </div>
+              <span className="text-[#c5beb2] hidden sm:inline">&bull;</span>
+              <a
+                href={`/r/${restaurant.slug}`}
+                target="_blank"
+                rel="noreferrer"
+                className="hidden sm:flex text-xs font-semibold text-[#1b3b2f] hover:text-[#3a7d5c] items-center gap-1.5 bg-white px-3 py-1 rounded-xl border border-[#e6e2da] shadow-2xs transition-colors"
+              >
+                <span>Preview Customer Menu</span>
+                <ExternalLink className="w-3.5 h-3.5 text-[#85988e]" />
+              </a>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <NotificationDrawer restaurantId={restaurant.id} />
+            </div>
+          </div>
+
           {activeTab === 'overview' && (
             <BitepointOverview
               restaurant={restaurant}
               orders={orders}
+              tables={tables}
               onSelectTab={(tab) => setActiveTab(tab as any)}
             />
-          )}
-
-          {activeTab === 'menu' && (
-            <MenuManagement restaurantId={restaurant.id} />
           )}
 
           {activeTab === 'orders' && (
@@ -284,8 +294,27 @@ export default function BitepointDashboardPage() {
             />
           )}
 
+          {activeTab === 'menu' && (
+            <MenuManagement restaurantId={restaurant.id} />
+          )}
+
           {activeTab === 'tables' && (
-            <TableQrStudio restaurant={restaurant} />
+            <TableQrStudio
+              restaurant={restaurant}
+              tables={tables}
+              onTablesUpdated={async () => {
+                const refreshed = await TableService.getTables(restaurant.id);
+                setTables(refreshed);
+              }}
+            />
+          )}
+
+          {activeTab === 'staff' && (
+            <StaffManagement restaurant={restaurant} />
+          )}
+
+          {activeTab === 'billing' && (
+            <BillingPanel restaurant={restaurant} />
           )}
 
           {activeTab === 'accounting' && (
@@ -294,6 +323,10 @@ export default function BitepointDashboardPage() {
 
           {activeTab === 'feedback' && (
             <FeedbackSection restaurantId={restaurant.id} />
+          )}
+
+          {activeTab === 'marketing' && (
+            <MarketingHub restaurant={restaurant} />
           )}
 
           {activeTab === 'settings' && (

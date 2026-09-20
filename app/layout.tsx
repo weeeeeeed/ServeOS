@@ -14,41 +14,37 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: '#eae9e4',
+  themeColor: '#faf8f5',
 };
 
 export const metadata: Metadata = {
   title: {
-    default: 'BitePoint - Minimalist Restaurant Management & QR Ordering',
-    template: '%s | BitePoint',
+    default: 'ServeOS - Premium Restaurant Operating System',
+    template: '%s | ServeOS',
   },
   description:
-    'Tactile hospitality operational platform: contactless table QR menus, live KDS dispatch, table & floor planning, and accounting ledger.',
+    'Cozy, calm, premium restaurant operating system: contactless QR menus, live KDS kitchen display, floor radar, staff, accounting & marketing.',
   keywords: [
-    'bitepoint restaurant management',
+    'serveos restaurant operating system',
     'restaurant qr menu',
-    'contactless dining',
+    'botanical restaurant pos',
     'kitchen display system',
-    'table floor plan',
+    'restaurant floor plan',
     'restaurant accounting ledger',
   ],
-  authors: [{ name: 'BitePoint' }],
-  creator: 'BitePoint',
-  metadataBase: new URL('https://bitepoint.app'),
+  authors: [{ name: 'ServeOS' }],
+  creator: 'ServeOS',
+  metadataBase: new URL('https://serveos.app'),
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://bitepoint.app',
-    title: 'BitePoint - Minimalist Restaurant Management & QR Ordering',
+    url: 'https://serveos.app',
+    title: 'ServeOS - Premium Restaurant Operating System',
     description:
-      'Warm Culinary Modernism: contactless table ordering, live KDS dispatch, analytics, and table QR studio.',
-    siteName: 'BitePoint',
+      'The modern restaurant operating system: QR ordering, live orders, kitchen display, analytics, and floor management.',
+    siteName: 'ServeOS',
   },
   manifest: '/manifest.json',
-  icons: {
-    icon: '/favicon.ico',
-    apple: '/favicon.ico',
-  },
 };
 
 export default function RootLayout({

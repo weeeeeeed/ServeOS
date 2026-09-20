@@ -17,6 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Feedback, FeedbackStats } from '@/lib/types';
 import { FeedbackService } from '@/lib/feedback-service';
+import { BotanicalLeafBranch, HandwrittenNote } from '@/components/ui/botanical-decorations';
 
 interface FeedbackSectionProps {
   restaurantId: string;
@@ -25,7 +26,7 @@ interface FeedbackSectionProps {
 export function FeedbackSection({ restaurantId }: FeedbackSectionProps) {
   const [feedbackList, setFeedbackList] = useState<Feedback[]>([]);
   const [stats, setStats] = useState<FeedbackStats>({
-    averageRating: 5.0,
+    averageRating: 0.0,
     totalReviews: 0,
     ratingDistribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
   });
@@ -73,7 +74,7 @@ export function FeedbackSection({ restaurantId }: FeedbackSectionProps) {
   }, [feedbackList, selectedRatingFilter, searchQuery]);
 
   const fiveStarPercentage = useMemo(() => {
-    if (stats.totalReviews === 0) return 100;
+    if (stats.totalReviews === 0) return 0;
     return Math.round((stats.ratingDistribution[5] / stats.totalReviews) * 100);
   }, [stats]);
 
@@ -93,137 +94,148 @@ export function FeedbackSection({ restaurantId }: FeedbackSectionProps) {
       {/* Top Rating Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Overall Score Card */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-3xl p-6 shadow-card flex flex-col justify-between">
+        <div className="bg-white/95 border border-[#e6e2da] rounded-3xl p-6 shadow-2xs flex flex-col justify-between">
           <div>
-            <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-              Overall Guest Rating
+            <span className="text-xs font-medium uppercase tracking-wider text-[#556960]">
+              Overall Dining Rating
             </span>
-            <div className="flex items-baseline gap-3 mt-2">
-              <span className="text-4xl font-black text-zinc-900 dark:text-zinc-100">
-                {stats.averageRating.toFixed(1)}
+            <div className="mt-3 flex items-baseline gap-3">
+              <span className="text-4xl lg:text-5xl font-serif font-bold text-[#1b3b2f]">
+                {stats.totalReviews > 0 ? stats.averageRating.toFixed(1) : '—'}
               </span>
-              <div className="flex items-center text-amber-400">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star
-                    key={s}
-                    className={`w-5 h-5 ${
-                      s <= Math.round(stats.averageRating)
-                        ? 'fill-amber-400 text-amber-400'
-                        : 'text-zinc-200 dark:text-zinc-700'
-                    }`}
-                  />
-                ))}
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1 text-[#d4af37]">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <Star
+                      key={s}
+                      className={`w-4 h-4 ${
+                        stats.totalReviews > 0 && s <= Math.round(stats.averageRating)
+                          ? 'fill-[#d4af37] text-[#d4af37]'
+                          : 'text-[#dcd7ce]'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-[#85988e] mt-1 font-sans">
+                  {stats.totalReviews > 0 ? `From ${stats.totalReviews} verified diners` : 'No reviews yet'}
+                </span>
               </div>
             </div>
-            <p className="text-xs text-zinc-500 mt-1">
-              Based on <span className="font-bold text-zinc-700 dark:text-zinc-300">{stats.totalReviews} verified reviews</span> from table QR diners
-            </p>
           </div>
-
-          <div className="pt-4 mt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
-              <CheckCircle2 className="w-3.5 h-3.5" />
-              <span>{fiveStarPercentage}% 5-Star Reviews</span>
-            </span>
-            <button
-              onClick={loadFeedbackData}
-              className="text-xs text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 flex items-center gap-1"
-            >
-              <RefreshCw className="w-3 h-3" />
-              <span>Sync</span>
-            </button>
+          <div className="mt-4 pt-4 border-t border-[#f0ede6] flex items-center gap-2 text-xs font-semibold text-[#3a7d5c]">
+            <Sparkles className="w-4 h-4" />
+            <span>{stats.totalReviews > 0 ? 'Hospitality Excellence' : 'Awaiting First Guest Review'}</span>
           </div>
         </div>
 
-        {/* Rating Breakdown Bars */}
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-3xl p-6 shadow-card md:col-span-2 flex flex-col justify-center space-y-2.5">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-1">
-            Star Rating Distribution
-          </h3>
-          {[5, 4, 3, 2, 1].map((star) => {
-            const count = stats.ratingDistribution[star as keyof typeof stats.ratingDistribution] || 0;
-            const pct = stats.totalReviews > 0 ? (count / stats.totalReviews) * 100 : 0;
-            return (
-              <div key={star} className="flex items-center gap-3 text-xs">
-                <button
-                  onClick={() => setSelectedRatingFilter(star)}
-                  className="w-14 flex items-center gap-1 text-zinc-600 dark:text-zinc-400 font-semibold hover:text-zinc-900 shrink-0"
-                >
-                  <span>{star}</span>
-                  <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                </button>
-
-                <div className="flex-1 h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
-                  <div
-                    className="h-full bg-amber-400 rounded-full transition-all duration-500"
-                    style={{ width: `${pct}%` }}
-                  />
-                </div>
-
-                <span className="w-10 text-right font-mono text-[11px] text-zinc-400 shrink-0">
-                  {count}
-                </span>
+        {/* 5-Star Ratio Card */}
+        <div className="bg-white/95 border border-[#e6e2da] rounded-3xl p-6 shadow-2xs flex flex-col justify-between">
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#556960]">
+              Five-Star Guest Delight
+            </span>
+            <div className="mt-3">
+              <div className="text-3xl font-serif font-bold text-[#1b3b2f]">
+                {stats.totalReviews > 0 ? `${fiveStarPercentage}%` : '—'}
               </div>
-            );
-          })}
+              <p className="text-xs text-[#556960] mt-1">
+                {stats.totalReviews > 0
+                  ? `${stats.ratingDistribution[5]} out of ${stats.totalReviews} diners rated 5 stars.`
+                  : 'Guests can leave ratings after placing their order.'}
+              </p>
+            </div>
+          </div>
+          <div className="w-full bg-[#f4f1eb] h-2 rounded-full overflow-hidden mt-4">
+            <div
+              className="bg-[#3a7d5c] h-full rounded-full transition-all duration-500"
+              style={{ width: `${fiveStarPercentage}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Recent Sentiment Card */}
+        <div className="bg-white/95 border border-[#e6e2da] rounded-3xl p-6 shadow-2xs flex flex-col justify-between">
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#556960]">
+              Culinary Sentiment
+            </span>
+            <div className="mt-3 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-[#eef4f0] text-[#1b3b2f] flex items-center justify-center border border-[#d2ded6]">
+                <Heart className="w-6 h-6 text-[#3a7d5c] fill-[#3a7d5c]/20" />
+              </div>
+              <div>
+                <p className="font-serif font-bold text-base text-[#1b3b2f]">
+                  {stats.totalReviews > 0 ? 'Guest Culinary Feedback' : 'Awaiting Reviews'}
+                </p>
+                <p className="text-xs text-[#556960]">
+                  {stats.totalReviews > 0
+                    ? 'Latest feedback from your dining patrons'
+                    : 'Ratings submitted via digital menu will appear here in real time.'}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 pt-4 border-t border-[#f0ede6] flex items-center justify-between text-xs text-[#85988e]">
+            <span>Real-time Guest QR Feedback</span>
+            <span className="font-semibold text-[#1b3b2f]">Live Synced</span>
+          </div>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-4 shadow-card flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        {/* Rating Filter Pills */}
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#f4f1eb] text-xs font-semibold text-[#556960] overflow-x-auto">
           <button
             onClick={() => setSelectedRatingFilter('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors ${
+            className={`px-3.5 py-1.5 rounded-xl transition-all whitespace-nowrap ${
               selectedRatingFilter === 'all'
-                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-sm'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200'
+                ? 'bg-[#1b3b2f] text-white font-bold shadow-xs'
+                : 'hover:text-[#1b3b2f] hover:bg-white/60'
             }`}
+            type="button"
           >
             All Reviews ({stats.totalReviews})
           </button>
-
           {[5, 4, 3, 2, 1].map((r) => (
             <button
               key={r}
               onClick={() => setSelectedRatingFilter(r)}
-              className={`px-2.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1 ${
+              className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1 whitespace-nowrap ${
                 selectedRatingFilter === r
-                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 shadow-sm'
-                  : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200'
+                  ? 'bg-[#1b3b2f] text-white font-bold shadow-xs'
+                  : 'hover:text-[#1b3b2f] hover:bg-white/60'
               }`}
+              type="button"
             >
               <span>{r}</span>
-              <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+              <Star className="w-3 h-3 fill-[#d4af37] text-[#d4af37]" />
+              <span className="text-[10px] opacity-80">({stats.ratingDistribution[r as 1 | 2 | 3 | 4 | 5] || 0})</span>
             </button>
           ))}
         </div>
 
-        <div className="relative sm:w-64">
-          <Search className="w-3.5 h-3.5 absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400" />
+        <div className="relative w-full sm:w-72">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85988e] pointer-events-none" />
           <input
             type="text"
-            placeholder="Search diner reviews..."
+            placeholder="Search reviews or guests..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 text-xs bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:outline-none"
+            className="w-full pl-9 pr-3.5 py-2 text-xs rounded-2xl border border-[#dcd7ce] bg-white text-[#162820] placeholder-[#85988e] focus:outline-none focus:ring-2 focus:ring-[#3a7d5c] shadow-2xs"
           />
         </div>
       </div>
 
-      {/* Reviews Feed */}
+      {/* Feedback Cards List */}
       {filteredFeedback.length === 0 ? (
-        <div className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-3xl p-12 text-center shadow-card space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-zinc-100 dark:bg-zinc-800 text-zinc-400 flex items-center justify-center mx-auto">
-            <MessageSquare className="w-6 h-6" />
+        <div className="bg-white/90 rounded-3xl p-12 text-center border border-[#e6e2da] shadow-2xs space-y-3">
+          <div className="mx-auto w-12 h-12 rounded-full bg-[#eef4f0] text-[#1b3b2f] flex items-center justify-center">
+            <MessageSquare className="w-6 h-6 text-[#3a7d5c]" />
           </div>
-          <h3 className="text-base font-bold text-zinc-900 dark:text-zinc-100">
-            No Feedback Found
-          </h3>
-          <p className="text-xs text-zinc-500 max-w-sm mx-auto">
-            {selectedRatingFilter !== 'all'
-              ? `No ${selectedRatingFilter}-star reviews match your filter.`
-              : 'Ratings and feedback submitted by diners after placing orders will appear here.'}
+          <h3 className="font-serif font-bold text-lg text-[#1b3b2f]">No Reviews in this Filter</h3>
+          <p className="text-xs text-[#556960] max-w-xs mx-auto">
+            Guest reviews submitted at the end of their QR menu meal will appear here automatically.
           </p>
         </div>
       ) : (
@@ -231,61 +243,56 @@ export function FeedbackSection({ restaurantId }: FeedbackSectionProps) {
           {filteredFeedback.map((fb) => (
             <div
               key={fb.id}
-              className="bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 rounded-2xl p-5 shadow-card space-y-3 flex flex-col justify-between"
+              className="bg-white/95 rounded-3xl p-5 border border-[#e6e2da] shadow-2xs hover:shadow-xs transition-all flex flex-col justify-between"
             >
               <div>
-                {/* Header: Customer Name & Star Rating */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-brand-50 dark:bg-brand-950/60 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold text-xs">
-                      {fb.customer_name ? fb.customer_name.charAt(0) : 'D'}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-[#eef4f0] text-[#1b3b2f] font-serif font-bold text-sm flex items-center justify-center border border-[#d2ded6]">
+                      {fb.customer_name ? fb.customer_name.slice(0, 2).toUpperCase() : 'G'}
                     </div>
                     <div>
-                      <span className="text-xs font-bold text-zinc-900 dark:text-zinc-100 block">
-                        {fb.customer_name || 'Anonymous Diner'}
-                      </span>
-                      <div className="flex items-center text-amber-400 mt-0.5">
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <Star
-                            key={s}
-                            className={`w-3.5 h-3.5 ${
-                              s <= fb.rating
-                                ? 'fill-amber-400 text-amber-400'
-                                : 'text-zinc-200 dark:text-zinc-700'
-                            }`}
-                          />
-                        ))}
-                      </div>
+                      <h4 className="font-serif font-bold text-sm text-[#1b3b2f]">
+                        {fb.customer_name || 'Anonymous Guest'}
+                      </h4>
+                      <p className="text-[11px] text-[#85988e] flex items-center gap-1 mt-0.5">
+                        <Clock className="w-3 h-3" />
+                        {formatElapsed(fb.created_at)}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <span className="text-[11px] text-zinc-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      <span>{formatElapsed(fb.created_at)}</span>
-                    </span>
-                    {fb.order_id && (
-                      <span className="text-[10px] text-brand-600 dark:text-brand-400 font-mono block mt-0.5">
-                        #{fb.order_id.slice(-6)}
-                      </span>
-                    )}
+                  {/* Stars */}
+                  <div className="flex items-center gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        className={`w-3.5 h-3.5 ${
+                          s <= fb.rating
+                            ? 'fill-[#d4af37] text-[#d4af37]'
+                            : 'text-[#dcd7ce]'
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
 
-                {/* Comment */}
-                {fb.comment && (
-                  <p className="text-xs text-zinc-700 dark:text-zinc-300 mt-3 leading-relaxed italic bg-zinc-50 dark:bg-zinc-800/40 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800">
-                    &ldquo;{fb.comment}&rdquo;
+                {fb.comment ? (
+                  <p className="text-xs text-[#556960] mt-3 leading-relaxed">
+                    &quot;{fb.comment}&quot;
+                  </p>
+                ) : (
+                  <p className="text-xs text-[#85988e] mt-3 italic">
+                    Rating submitted without written comment.
                   </p>
                 )}
               </div>
 
-              <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-400">
-                <span className="flex items-center gap-1 text-emerald-600 font-medium">
-                  <CheckCircle2 className="w-3 h-3" />
-                  <span>Verified Table Order</span>
+              <div className="mt-4 pt-3 border-t border-[#f0ede6] flex items-center justify-between text-[11px] text-[#85988e]">
+                <span>Verified QR Table Order</span>
+                <span className="text-[#3a7d5c] font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" /> Published
                 </span>
-                <span>{new Date(fb.created_at).toLocaleDateString()}</span>
               </div>
             </div>
           ))}

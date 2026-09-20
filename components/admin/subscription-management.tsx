@@ -50,12 +50,12 @@ export function SubscriptionManagement({
   const getPlanBadge = (plan: SubscriptionPlan) => {
     switch (plan) {
       case 'Starter':
-        return <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-[#faf9f6] text-stone-700 border border-stone-200">Starter ($29/mo)</span>;
+        return <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-[#faf9f6] text-stone-700 border border-stone-200">Starter (₹199/mo)</span>;
       case 'Pro':
-        return <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-50 text-[#1f4e47] border border-emerald-200">Pro ($79/mo)</span>;
+        return <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-emerald-50 text-[#1f4e47] border border-emerald-200">Pro (₹499/mo)</span>;
       case 'Enterprise':
       case 'Growth':
-        return <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200">Enterprise ($199/mo)</span>;
+        return <span className="px-2.5 py-0.5 rounded-lg text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200">Enterprise (₹999/mo)</span>;
     }
   };
 
@@ -74,7 +74,7 @@ export function SubscriptionManagement({
         <div className="p-6 bg-white border border-stone-200 rounded-[28px] shadow-xs space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-[10px] font-black uppercase tracking-[0.16em] text-stone-400">Starter Tier</span>
-            <span className="text-sm font-black text-stone-900">$29 / mo</span>
+            <span className="text-sm font-black text-stone-900">₹199 / mo</span>
           </div>
           <p className="text-xs text-stone-500">Up to 25 dishes, 10 table QR codes, contactless dining menu</p>
           <div className="pt-2 text-xs font-bold text-stone-700">
@@ -88,7 +88,7 @@ export function SubscriptionManagement({
               <Sparkles className="w-3.5 h-3.5 text-[#efa736]" />
               <span>Pro Tier (Standard)</span>
             </span>
-            <span className="text-sm font-black text-stone-900">$79 / mo</span>
+            <span className="text-sm font-black text-stone-900">₹499 / mo</span>
           </div>
           <p className="text-xs text-stone-500">Unlimited dishes, live kitchen KDS, ordering cart, guest analytics</p>
           <div className="pt-2 text-xs font-bold text-[#1f4e47]">
@@ -99,7 +99,7 @@ export function SubscriptionManagement({
         <div className="p-6 bg-white border border-stone-200 rounded-[28px] shadow-xs space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-[10px] font-black uppercase tracking-[0.16em] text-amber-700">Enterprise Tier</span>
-            <span className="text-sm font-black text-stone-900">$199 / mo</span>
+            <span className="text-sm font-black text-stone-900">₹999 / mo</span>
           </div>
           <p className="text-xs text-stone-500">Multi-branch restaurant chains, custom domain branding, 24/7 SLA</p>
           <div className="pt-2 text-xs font-bold text-amber-800">

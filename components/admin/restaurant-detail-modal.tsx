@@ -22,6 +22,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { TenantWithDetails } from '@/lib/types';
+import { formatCurrency } from '@/lib/currency';
 
 interface RestaurantDetailModalProps {
   tenant: TenantWithDetails | null;
@@ -95,7 +96,7 @@ export function RestaurantDetailModal({
             <div className="p-4 bg-[#faf9f6] rounded-2xl border border-stone-200">
               <span className="text-[10px] font-bold text-stone-400 uppercase tracking-wider block">Gross Sales</span>
               <div className="text-xl font-black text-[#1f4e47] mt-1">
-                ${(tenant.grossRevenue || 1420.50).toFixed(2)}
+                {formatCurrency(tenant.grossRevenue || 1420.50)}
               </div>
               <span className="text-[10px] text-stone-400">Total volume</span>
             </div>
@@ -119,14 +120,14 @@ export function RestaurantDetailModal({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-stone-800">
                   <User className="w-4 h-4 text-stone-400" />
-                  <span className="font-bold">{tenant.owner?.name || 'Marco Rossi'}</span>
+                  <span className="font-bold">{tenant.owner?.name || tenant.owner?.email?.split('@')[0] || 'Merchant'}</span>
                 </div>
                 <span className="text-[11px] text-stone-400 font-mono">Owner UID: {tenant.owner_id.slice(-8)}</span>
               </div>
 
               <div className="flex items-center gap-2 text-stone-800">
                 <Mail className="w-4 h-4 text-stone-400" />
-                <span>{tenant.owner?.email || 'owner@demo.com'}</span>
+                <span>{tenant.owner?.email || '—'}</span>
               </div>
             </div>
           </div>

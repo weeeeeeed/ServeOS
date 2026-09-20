@@ -15,21 +15,21 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       'inline-flex items-center justify-center font-semibold transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none select-none rounded-2xl active:scale-[0.98]';
 
     const variants = {
-      // Warm Amber primary button from BitePoint design system
+      // Forest Green primary button from ServeOS botanical system
       primary:
-        'bg-[#efa736] text-[#1c1917] hover:bg-[#e09827] active:bg-[#d99322] focus-visible:ring-[#efa736] shadow-sm font-bold',
-      // Forest Emerald secondary button from BitePoint design system
+        'bg-[#1b3b2f] text-white hover:bg-[#153026] active:bg-[#0f241c] focus-visible:ring-[#1b3b2f] shadow-sm font-semibold',
+      // Sage Green soft pill secondary button
       secondary:
-        'bg-[#1f4e47] text-white hover:bg-[#153833] active:bg-[#0f2925] focus-visible:ring-[#1f4e47] shadow-sm',
+        'bg-[#eef4f0] text-[#1b3b2f] hover:bg-[#e2ede6] active:bg-[#d5e4db] focus-visible:ring-[#3a7d5c] font-medium',
       // Delicate hairline outline button
       outline:
-        'border border-stone-200/80 bg-white hover:bg-stone-50 active:bg-stone-100 text-stone-800 shadow-xs',
+        'border border-[#dce7e1] bg-white hover:bg-[#f7faf8] active:bg-[#eef4f0] text-[#162820] shadow-xs',
       ghost:
-        'bg-transparent hover:bg-stone-100 active:bg-stone-200 text-stone-700',
+        'bg-transparent hover:bg-[#eef4f0] active:bg-[#e2ede6] text-[#162820]',
       destructive:
-        'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus-visible:ring-red-600 shadow-xs',
+        'bg-rose-700 text-white hover:bg-rose-800 active:bg-rose-900 focus-visible:ring-rose-600 shadow-xs',
       subtle:
-        'bg-[#fff6e5] text-[#825500] hover:bg-[#ffedcc] active:bg-[#ffe5b3]',
+        'bg-[#fbf4eb] text-[#a36034] hover:bg-[#f5e9da] active:bg-[#ede0ce]',
     };
 
     const sizes = {

@@ -7,7 +7,6 @@ import {
   Download,
   Printer,
   FileText,
-  DollarSign,
   TrendingUp,
   Receipt,
   ShoppingBag,
@@ -18,10 +17,14 @@ import {
   Clock,
   ArrowUpRight,
   Sparkles,
+  Layers,
+  Wallet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/toast';
 import { Restaurant, OrderWithItems } from '@/lib/types';
+import { formatCurrency, CURRENCY_SYMBOL } from '@/lib/currency';
+import { BotanicalLeafBranch, HandwrittenNote } from '@/components/ui/botanical-decorations';
 
 interface AccountingLedgerProps {
   restaurant: Restaurant;
@@ -42,31 +45,56 @@ interface TransactionItem {
   status: 'Settled' | 'Processing';
 }
 
-const SAMPLE_TRANSACTIONS: TransactionItem[] = [
-  { id: '#TX-8821', orderNumber: '#925', tableBadge: 'A4', channel: 'Dine In', customer: 'Ariel Hikmat', server: 'Gladina S.', timestamp: 'Today, 06:12 PM', method: 'Apple Pay / QR', methodIcon: 'apple', amount: 87.34, status: 'Settled' },
-  { id: '#TX-8820', orderNumber: '#921', tableBadge: 'B2', channel: 'Dine In', customer: 'Denis Freeman', server: 'Gladina S.', timestamp: 'Today, 06:18 PM', method: 'POS Terminal', methodIcon: 'pos', amount: 57.87, status: 'Processing' },
-  { id: '#TX-8819', orderNumber: '#916', tableBadge: 'TA', channel: 'Takeaway', customer: 'Morgan Cox', server: 'Self Pick-up', timestamp: 'Today, 06:19 PM', method: 'Web Checkout', methodIcon: 'web', amount: 86.96, status: 'Settled' },
-  { id: '#TX-8818', orderNumber: '#912', tableBadge: 'A9', channel: 'Dine In', customer: 'Maja Becker', server: 'Gladina S.', timestamp: 'Today, 05:32 PM', method: 'Mastercard', methodIcon: 'card', amount: 98.34, status: 'Settled' },
-  { id: '#TX-8817', orderNumber: '#908', tableBadge: 'C2', channel: 'Dine In', customer: 'Erwan Richard', server: 'Gladina S.', timestamp: 'Today, 05:20 PM', method: 'Split Cash / Card', methodIcon: 'split', amount: 56.96, status: 'Settled' },
-];
-
 export function AccountingLedger({ restaurant, orders }: AccountingLedgerProps) {
   const toast = useToast();
-  const [timeframe, setTimeframe] = useState<'today' | 'week' | 'month' | 'custom'>('month');
+  const [timeframe, setTimeframe] = useState<'today' | 'week' | 'month'>('today');
   const [searchQuery, setSearchQuery] = useState('');
-  const [transactions, setTransactions] = useState<TransactionItem[]>(SAMPLE_TRANSACTIONS);
+  const [selectedTx, setSelectedTx] = useState<TransactionItem | null>(null);
+
+  // Compute transactions dynamically from live orders
+  const transactions: TransactionItem[] = React.useMemo(() => {
+    return (orders || [])
+      .filter((o) => o.status !== 'cancelled')
+      .map((o) => {
+        const orderDate = new Date(o.created_at);
+        const isToday = new Date().toDateString() === orderDate.toDateString();
+        const timeStr = orderDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        const dateFormatted = isToday
+          ? `Today, ${timeStr}`
+          : `${orderDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${timeStr}`;
+
+        const isSettled = o.status === 'completed' || o.status === 'ready';
+
+        return {
+          id: `#TX-${o.id.slice(0, 6).toUpperCase()}`,
+          orderNumber: `#${o.id.slice(0, 4).toUpperCase()}`,
+          tableBadge: o.table_number || 'Takeaway',
+          channel: (o.table_number ? 'QR Dine-In' : 'Takeaway') as 'Dine In' | 'Takeaway' | 'QR Dine-In',
+          customer: o.customer_notes || `Guest Diner (Table ${o.table_number || 'Takeaway'})`,
+          server: 'Self QR Order',
+          timestamp: dateFormatted,
+          method: 'UPI / Digital QR',
+          methodIcon: 'upi',
+          amount: Number(o.total_amount || 0),
+          status: isSettled ? 'Settled' : 'Processing',
+        };
+      });
+  }, [orders]);
 
   const filteredTx = transactions.filter((tx) => {
     return (
       !searchQuery ||
       tx.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       tx.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      tx.orderNumber.toLowerCase().includes(searchQuery.toLowerCase())
+      tx.orderNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      tx.tableBadge.toLowerCase().includes(searchQuery.toLowerCase())
     );
   });
 
+  const totalAmount = filteredTx.reduce((sum, tx) => sum + tx.amount, 0);
+
   const handleExportCsv = () => {
-    const headers = ['Tx ID', 'Order', 'Table', 'Channel', 'Customer', 'Server', 'Timestamp', 'Method', 'Amount', 'Status'];
+    const headers = ['Tx ID', 'Order', 'Table', 'Channel', 'Customer', 'Server', 'Timestamp', 'Method', 'Amount (INR)', 'Status'];
     const rows = filteredTx.map((t) => [
       t.id,
       t.orderNumber,
@@ -84,461 +112,298 @@ export function AccountingLedger({ restaurant, orders }: AccountingLedgerProps) 
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `BitePoint-Ledger-${restaurant.slug}-${Date.now()}.csv`);
+    link.setAttribute('download', `ServeOS-Ledger-${restaurant.slug}-${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    toast.success('CSV Exported', 'Financial ledger downloaded');
+    toast.success('CSV Exported', 'Financial register downloaded');
   };
 
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 pb-2 border-b border-stone-200/70">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#e6e2da]">
         <div>
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl lg:text-3xl font-black text-stone-900 tracking-tight">
-              Accounting &amp; Ledger
-            </h2>
-            <span className="px-2.5 py-0.5 rounded-full bg-[#1f4e47]/10 text-[#1f4e47] text-[11px] font-bold tracking-wide uppercase">
-              LIVE SYNC
+            <h1 className="text-2xl lg:text-3xl font-serif font-bold text-[#1b3b2f] tracking-tight">
+              Accounting Register &amp; Ledger
+            </h1>
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#eef4f0] text-[#1b3b2f] border border-[#d2ded6]">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#3a7d5c]" />
+              GST 5% Reconciled
             </span>
           </div>
-          <p className="text-xs text-stone-500 mt-0.5 font-medium">
-            {restaurant.name} &bull; Verified Ledger, Payment Distribution &amp; Turnout Analytics
+          <p className="text-xs lg:text-[13px] text-[#556960] mt-1 font-sans">
+            Detailed sales auditing, QR payment settlements, server tips, and daily cash flow in INR
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-stone-500 font-medium px-3.5 py-2 bg-white rounded-2xl border border-stone-200/80 shadow-xs">
-            <Calendar className="w-3.5 h-3.5 text-stone-400" />
-            <span>Wednesday, 12 July 2023</span>
-          </div>
-
+        <div className="flex items-center gap-3">
           <Button
-            variant="outline"
-            size="sm"
             onClick={handleExportCsv}
-            className="text-xs gap-1.5 rounded-2xl bg-white shadow-xs"
+            variant="outline"
+            disabled={filteredTx.length === 0}
+            className="flex items-center gap-1.5 rounded-2xl text-xs font-semibold px-4 py-2 border-[#dcd7ce] text-[#1b3b2f]"
           >
-            <Download className="w-3.5 h-3.5 text-stone-500" />
+            <Download className="w-4 h-4 text-[#3a7d5c]" />
             <span>Export CSV</span>
           </Button>
+        </div>
+      </header>
 
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => toast.success('Batch Settle Initiated', 'All pending payouts compiled')}
-            className="text-xs font-bold gap-1.5 rounded-2xl bg-[#efa736] hover:bg-[#e09827] text-stone-950 shadow-sm"
-          >
-            <span>Batch Settle</span>
-          </Button>
+      {/* Summary KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white/95 p-5 rounded-3xl border border-[#e6e2da] shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-[#556960] uppercase">Settled Sales</span>
+            <div className="w-8 h-8 rounded-2xl bg-[#eef4f0] text-[#1b3b2f] flex items-center justify-center font-bold text-xs">
+              {CURRENCY_SYMBOL}
+            </div>
+          </div>
+          <div className="mt-3 text-2xl font-serif font-bold text-[#1b3b2f]">
+            {formatCurrency(totalAmount)}
+          </div>
+          <div className="text-[11px] text-[#3a7d5c] mt-1 font-medium">
+            {filteredTx.length} {filteredTx.length === 1 ? 'transaction' : 'transactions'}
+          </div>
+        </div>
+
+        <div className="bg-white/95 p-5 rounded-3xl border border-[#e6e2da] shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-[#556960] uppercase">Average Ticket</span>
+            <div className="w-8 h-8 rounded-2xl bg-[#fdf8ee] text-[#b8782a] flex items-center justify-center">
+              <Receipt className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3 text-2xl font-serif font-bold text-[#1b3b2f]">
+            {formatCurrency(filteredTx.length > 0 ? totalAmount / filteredTx.length : 0)}
+          </div>
+          <div className="text-[11px] text-[#85988e] mt-1">
+            Across {filteredTx.length} completed {filteredTx.length === 1 ? 'order' : 'orders'}
+          </div>
+        </div>
+
+        <div className="bg-white/95 p-5 rounded-3xl border border-[#e6e2da] shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-[#556960] uppercase">Digital QR &amp; UPI</span>
+            <div className="w-8 h-8 rounded-2xl bg-[#eef4f0] text-[#1b3b2f] flex items-center justify-center">
+              <CreditCard className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3 text-2xl font-serif font-bold text-[#1b3b2f]">
+            {filteredTx.length > 0 ? '100%' : '0%'}
+          </div>
+          <div className="text-[11px] text-[#3a7d5c] mt-1 font-medium">
+            Direct QR ordering flow
+          </div>
+        </div>
+
+        <div className="bg-white/95 p-5 rounded-3xl border border-[#e6e2da] shadow-2xs">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-[#556960] uppercase">Tax Collected (GST)</span>
+            <div className="w-8 h-8 rounded-2xl bg-[#faf8f5] text-[#556960] flex items-center justify-center border border-[#e6e2da]">
+              <Wallet className="w-4 h-4" />
+            </div>
+          </div>
+          <div className="mt-3 text-2xl font-serif font-bold text-[#1b3b2f]">
+            {formatCurrency(totalAmount * 0.05)}
+          </div>
+          <div className="text-[11px] text-[#85988e] mt-1">
+            5% restaurant dining rate
+          </div>
         </div>
       </div>
 
-      {/* Timeframe selector bar */}
+      {/* Filter and Search */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div className="inline-flex bg-stone-100 p-1 rounded-2xl text-xs font-semibold text-stone-600">
-          {(['today', 'week', 'month', 'custom'] as const).map((tf) => (
+        {/* Timeframe Buttons */}
+        <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#f4f1eb] text-xs font-semibold text-[#556960]">
+          {(['today', 'week', 'month'] as const).map((tf) => (
             <button
               key={tf}
               onClick={() => setTimeframe(tf)}
-              className={`px-4 py-1.5 rounded-xl capitalize transition-all ${
+              className={`px-3.5 py-1.5 rounded-xl capitalize transition-all ${
                 timeframe === tf
-                  ? 'bg-stone-900 text-white font-bold shadow-xs'
-                  : 'hover:text-stone-900 hover:bg-white/50'
+                  ? 'bg-[#1b3b2f] text-white font-bold shadow-xs'
+                  : 'hover:text-[#1b3b2f] hover:bg-white/60'
               }`}
               type="button"
             >
-              {tf === 'today' ? 'Today' : tf === 'week' ? 'This Week' : tf === 'month' ? 'This Month' : 'Custom'}
+              {tf === 'today' ? 'Today' : tf === 'week' ? 'This Week' : 'This Month'}
             </button>
           ))}
         </div>
 
-        <div className="relative sm:w-64">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+        <div className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#85988e] pointer-events-none" />
           <input
             type="text"
-            placeholder="Search transactions, orders..."
+            placeholder="Search by ID, customer, order #..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-2xl border border-stone-200/80 bg-white text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#efa736] shadow-sm transition-all"
+            className="w-full pl-9 pr-3.5 py-2 text-xs rounded-2xl border border-[#dcd7ce] bg-white text-[#162820] placeholder-[#85988e] focus:outline-none focus:ring-2 focus:ring-[#3a7d5c] shadow-2xs"
           />
         </div>
       </div>
 
-      {/* 4 Financial KPI Tiles */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Total Net Revenue */}
-        <div className="bg-white p-5 rounded-2xl border border-[#eceae6] shadow-card flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Total Net Revenue</span>
-            <div className="w-8 h-8 rounded-xl bg-[#efa736]/15 text-[#825500] flex items-center justify-center font-black">
-              $
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-stone-900 tracking-tight tabular-nums">
-              $48,290<span className="text-stone-400 font-medium text-base">.50</span>
-            </div>
-            <div className="flex items-center gap-1.5 mt-2">
-              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-[#109955] text-[11px] font-bold">
-                <TrendingUp className="w-3 h-3" />
-                +14.2%
-              </span>
-              <span className="text-[11px] text-stone-400 font-medium">vs last month</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Orders Processed */}
-        <div className="bg-white p-5 rounded-2xl border border-[#eceae6] shadow-card flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Orders Processed</span>
-            <div className="w-8 h-8 rounded-xl bg-[#1f4e47]/10 text-[#1f4e47] flex items-center justify-center">
-              <Receipt className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-stone-900 tracking-tight tabular-nums">
-              1,482
-            </div>
-            <div className="flex items-center gap-1.5 mt-2">
-              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-[#109955] text-[11px] font-bold">
-                <TrendingUp className="w-3 h-3" />
-                +8.5%
-              </span>
-              <span className="text-[11px] text-stone-400 font-medium">98.4% completed</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Average Order Value */}
-        <div className="bg-white p-5 rounded-2xl border border-[#eceae6] shadow-card flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Avg. Order Value</span>
-            <div className="w-8 h-8 rounded-xl bg-stone-100 text-stone-700 flex items-center justify-center">
-              <ShoppingBag className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-stone-900 tracking-tight tabular-nums">
-              $32<span className="text-stone-400 font-medium text-base">.58</span>
-            </div>
-            <div className="flex items-center gap-1.5 mt-2">
-              <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-50 text-[#109955] text-[11px] font-bold">
-                <TrendingUp className="w-3 h-3" />
-                +3.1%
-              </span>
-              <span className="text-[11px] text-stone-400 font-medium">+$0.98 ticket gain</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Net Profit Margin */}
-        <div className="bg-white p-5 rounded-2xl border border-[#eceae6] shadow-card flex flex-col justify-between">
-          <div className="flex items-start justify-between">
-            <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider">Net Profit Margin</span>
-            <div className="w-8 h-8 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center">
-              <Sparkles className="w-4 h-4" />
-            </div>
-          </div>
-          <div className="mt-3">
-            <div className="text-2xl font-black text-stone-900 tracking-tight tabular-nums">
-              28.4%
-            </div>
-            <div className="flex items-center gap-1.5 mt-2">
-              <span className="text-xs font-bold text-stone-900">+$13,714.50</span>
-              <span className="text-[11px] text-stone-400 font-medium">clean EBITDAR</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SVG Multi-channel Revenue Breakdown Chart (Direct from Stitch Screen 4) */}
-      <div className="bg-white p-6 rounded-3xl border border-[#eceae6] shadow-card space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h3 className="text-base font-bold text-stone-900 tracking-tight">
-              Revenue Breakdown &amp; Sales Trend
-            </h3>
-            <p className="text-xs text-stone-500 mt-0.5 font-medium">
-              Cash flow &amp; sales volume grouped across dining channels
-            </p>
-          </div>
-
-          <div className="flex items-center gap-4 text-xs font-medium">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#efa736]" />
-              <span className="text-stone-700">Dine-In Orders</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#2f6858]" />
-              <span className="text-stone-700">Online &amp; QR</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#c7bfb4]" />
-              <span className="text-stone-400">Takeaway</span>
-            </div>
-          </div>
-        </div>
-
-        {/* SVG Chart */}
-        <div className="w-full h-56 sm:h-64 relative overflow-hidden pt-2">
-          <svg className="w-full h-full" preserveAspectRatio="none" viewBox="0 0 900 240">
-            <defs>
-              <linearGradient id="chartDineIn" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#efa736" stopOpacity="0.35" />
-                <stop offset="100%" stopColor="#efa736" stopOpacity="0.0" />
-              </linearGradient>
-              <linearGradient id="chartQR" x1="0" x2="0" y1="0" y2="1">
-                <stop offset="0%" stopColor="#2f6858" stopOpacity="0.22" />
-                <stop offset="100%" stopColor="#2f6858" stopOpacity="0.0" />
-              </linearGradient>
-            </defs>
-            <line stroke="#f3f1ec" strokeDasharray="3 3" strokeWidth="1" x1="30" x2="870" y1="30" y2="30" />
-            <line stroke="#f3f1ec" strokeDasharray="3 3" strokeWidth="1" x1="30" x2="870" y1="80" y2="80" />
-            <line stroke="#f3f1ec" strokeDasharray="3 3" strokeWidth="1" x1="30" x2="870" y1="130" y2="130" />
-            <line stroke="#f3f1ec" strokeDasharray="3 3" strokeWidth="1" x1="30" x2="870" y1="180" y2="180" />
-            <line stroke="#eae6de" strokeWidth="1" x1="30" x2="870" y1="220" y2="220" />
-            <line opacity="0.6" stroke="#efa736" strokeDasharray="4 4" strokeWidth="1.5" x1="670" x2="670" y1="25" y2="220" />
-
-            {/* QR Polygons */}
-            <polygon fill="url(#chartQR)" points="50,220 50,175 150,165 250,170 350,145 450,135 550,110 670,90 770,115 850,125 850,220" />
-            <polyline fill="none" points="50,175 150,165 250,170 350,145 450,135 550,110 670,90 770,115 850,125" stroke="#2f6858" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" />
-
-            {/* Dine-In Polygons */}
-            <polygon fill="url(#chartDineIn)" points="50,220 50,130 150,110 250,120 350,90 450,75 550,55 670,30 770,60 850,70 850,220" />
-            <polyline fill="none" points="50,130 150,110 250,120 350,90 450,75 550,55 670,30 770,60 850,70" stroke="#efa736" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
-
-            {/* Takeaway Dashed Line */}
-            <polyline fill="none" points="50,195 150,190 250,185 350,178 450,165 550,155 670,140 770,160 850,170" stroke="#c7bfb4" strokeDasharray="4 4" strokeLinecap="round" strokeWidth="2" />
-
-            <circle cx="670" cy="30" fill="#ffffff" r="5" stroke="#efa736" strokeWidth="3" />
-            <circle cx="670" cy="90" fill="#ffffff" r="4" stroke="#2f6858" strokeWidth="2" />
-          </svg>
-
-          {/* Peak Tooltip Callout */}
-          <div className="absolute top-2 left-[70%] sm:left-[73%] -translate-x-1/2 bg-[#1b1c1a] text-white px-3 py-2 rounded-xl shadow-lg flex flex-col pointer-events-none text-xs">
-            <div className="flex items-center justify-between gap-3 text-[10px] text-stone-400">
-              <span>Saturday Peak</span>
-              <span className="text-[#efa736] font-bold">08:00 PM</span>
-            </div>
-            <div className="font-bold text-sm text-white mt-0.5">$6,840.00</div>
-            <div className="flex items-center gap-2 mt-1 text-[10px] text-stone-300">
-              <span className="flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#efa736]" />
-                Dine: 74%
-              </span>
-              <span className="flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#2f6858]" />
-                QR: 26%
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-between px-6 text-stone-500 text-xs font-medium border-t border-stone-100 pt-2">
-          <span>Mon, 06</span>
-          <span>Tue, 07</span>
-          <span>Wed, 08</span>
-          <span>Thu, 09</span>
-          <span>Fri, 10</span>
-          <span className="text-[#825500] font-bold">Sat, 11 (Peak)</span>
-          <span>Sun, 12 (Today)</span>
-        </div>
-      </div>
-
-      {/* Payment Channels & Daily Peak Turnover Hours */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        {/* Payment Channels */}
-        <div className="lg:col-span-5 bg-white p-6 rounded-3xl border border-[#eceae6] shadow-card flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-stone-900">Payment Channels</h3>
-              <PieChart className="w-4 h-4 text-stone-400" />
-            </div>
-            <p className="text-xs text-stone-500 mt-0.5 font-medium">
-              Direct terminal vs digital frictionless settling
-            </p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-6 my-4">
-            {/* SVG Donut */}
-            <div className="relative w-32 h-32 flex items-center justify-center flex-shrink-0">
-              <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" fill="none" r="14" stroke="#f4f2ec" strokeWidth="4" />
-                <circle cx="18" cy="18" fill="none" r="14" stroke="#2f6858" strokeDasharray="51 100" strokeDashoffset="0" strokeLinecap="round" strokeWidth="4.2" />
-                <circle cx="18" cy="18" fill="none" r="14" stroke="#efa736" strokeDasharray="28 100" strokeDashoffset="-52" strokeLinecap="round" strokeWidth="4.2" />
-                <circle cx="18" cy="18" fill="none" r="14" stroke="#d6c4af" strokeDasharray="9 100" strokeDashoffset="-81" strokeLinecap="round" strokeWidth="4.2" />
-              </svg>
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span className="text-[10px] uppercase font-bold text-stone-400">Total</span>
-                <span className="text-sm font-black text-stone-900 leading-none mt-0.5">$48.3k</span>
-              </div>
-            </div>
-
-            {/* Channels Legend */}
-            <div className="flex flex-col gap-2.5 w-full sm:w-auto text-xs">
-              <div className="flex items-center justify-between sm:justify-start gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#2f6858]" />
-                  <span className="font-medium text-stone-800">Contactless QR</span>
-                </div>
-                <span className="font-bold text-stone-900">58%</span>
-              </div>
-              <div className="flex items-center justify-between sm:justify-start gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#efa736]" />
-                  <span className="font-medium text-stone-800">POS Terminal</span>
-                </div>
-                <span className="font-bold text-stone-900">32%</span>
-              </div>
-              <div className="flex items-center justify-between sm:justify-start gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#d6c4af]" />
-                  <span className="font-medium text-stone-800">Cash / Paper</span>
-                </div>
-                <span className="font-bold text-stone-900">10%</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-[#faf9f6] p-3 rounded-2xl border border-stone-100 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-stone-700">
-              <CheckCircle2 className="w-4 h-4 text-[#2f6858]" />
-              <span>Settlement fees: <strong className="font-bold text-stone-900">1.42% avg</strong></span>
-            </div>
-            <span className="text-[10px] font-bold text-[#2f6858] uppercase px-2 py-0.5 bg-emerald-50 rounded-full">
-              Optimal
-            </span>
-          </div>
-        </div>
-
-        {/* Daily Peak Turnover Hours */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-3xl border border-[#eceae6] shadow-card flex flex-col justify-between">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-bold text-stone-900">Daily Peak Turnover Hours</h3>
-              <p className="text-xs text-stone-500 mt-0.5 font-medium">Shift distribution of order load across service hours</p>
-            </div>
-            <div className="flex items-center gap-1.5 bg-stone-100 px-2.5 py-1 rounded-full text-[11px] font-semibold text-stone-600">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#efa736]" />
-              <span>11:00 AM - 10:00 PM</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-10 items-end gap-2 sm:gap-3 h-40 pt-4 pb-1 px-1">
-            {[
-              { label: '11a', height: '25%', active: false },
-              { label: '12p', height: '55%', active: false },
-              { label: '1p', height: '78%', active: true, val: '$2.1k' },
-              { label: '2p', height: '40%', active: false },
-              { label: '3p', height: '20%', active: false },
-              { label: '5p', height: '35%', active: false },
-              { label: '6p', height: '60%', active: false },
-              { label: '7p', height: '85%', active: false },
-              { label: '8p', height: '98%', active: true, val: '$3.4k' },
-              { label: '9p', height: '48%', active: false },
-            ].map((bar) => (
-              <div key={bar.label} className="flex flex-col items-center gap-1.5 h-full justify-end group cursor-pointer">
-                {bar.val && (
-                  <span className="text-[10px] text-[#825500] font-bold">
-                    {bar.val}
-                  </span>
-                )}
-                <div
-                  className={`w-full rounded-t transition-all ${
-                    bar.active ? 'bg-[#efa736] shadow-xs' : 'bg-[#edebe4] group-hover:bg-[#efa736]/70'
-                  }`}
-                  style={{ height: bar.height }}
-                />
-                <span className={`text-[10px] ${bar.active ? 'font-black text-stone-900' : 'text-stone-400 font-medium'}`}>
-                  {bar.label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs text-stone-500 font-medium">
-            <span>Lunch Rush: <strong className="text-stone-900 font-bold">82% Occupied</strong></span>
-            <span>Dinner Peak: <strong className="text-stone-900 font-bold">$3,420 / hr</strong></span>
-          </div>
-        </div>
-      </div>
-
-      {/* Settlement Register Table */}
-      <div className="bg-white rounded-3xl p-6 border border-[#eceae6] shadow-card space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-2 border-b border-stone-100">
-          <div>
-            <h3 className="text-base font-bold text-stone-900">Settlement Register</h3>
-            <p className="text-xs text-stone-500 mt-0.5 font-medium">Verified receipts &amp; payments for current business cycle</p>
-          </div>
-          <div className="text-xs text-stone-400 font-medium">
-            Showing {filteredTx.length} contemporary settlements
-          </div>
-        </div>
-
-        <div className="w-full overflow-x-auto">
+      {/* Transactions Register Table */}
+      <div className="bg-white/95 rounded-3xl p-5 border border-[#e6e2da] shadow-2xs overflow-hidden">
+        <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#faf9f6] text-stone-400 font-bold uppercase text-[10px] tracking-wider border-b border-stone-200/70">
-              <tr>
-                <th className="py-3 px-4 rounded-l-xl">Tx ID</th>
-                <th className="py-3 px-4">Order &amp; Origin</th>
-                <th className="py-3 px-4">Customer / Server</th>
-                <th className="py-3 px-4">Timestamp</th>
-                <th className="py-3 px-4">Method</th>
-                <th className="py-3 px-4 text-right">Amount</th>
-                <th className="py-3 px-4 text-center rounded-r-xl">Status</th>
+            <thead>
+              <tr className="border-b border-[#f0ede6] text-[#85988e] font-medium">
+                <th className="py-3 px-3">Transaction</th>
+                <th className="py-3 px-3">Table / Channel</th>
+                <th className="py-3 px-3">Customer</th>
+                <th className="py-3 px-3">Server</th>
+                <th className="py-3 px-3">Time</th>
+                <th className="py-3 px-3">Payment Method</th>
+                <th className="py-3 px-3">Amount</th>
+                <th className="py-3 px-3">Status</th>
+                <th className="py-3 px-3 text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100 text-stone-800">
-              {filteredTx.map((tx) => (
-                <tr key={tx.id} className="hover:bg-[#faf9f6] transition-colors">
-                  <td className="py-3.5 px-4 font-bold text-[#825500] font-mono">{tx.id}</td>
-                  <td className="py-3.5 px-4">
-                    <div className="flex items-center gap-2">
-                      <span className="w-5 h-5 rounded-md bg-[#1f4e47] text-white text-[10px] font-bold flex items-center justify-center">
-                        {tx.tableBadge}
-                      </span>
-                      <span className="font-semibold text-stone-900">{tx.orderNumber}</span>
-                      <span className="text-stone-400 text-[11px]">({tx.channel})</span>
+            <tbody className="divide-y divide-[#f0ede6]">
+              {filteredTx.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="py-14 text-center text-xs text-[#85988e]">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <div className="w-10 h-10 rounded-full bg-[#eef4f0] flex items-center justify-center text-[#3a7d5c]">
+                        <Receipt className="w-5 h-5" />
+                      </div>
+                      <p className="font-serif font-bold text-sm text-[#1b3b2f]">No Transactions Found</p>
+                      <p className="max-w-xs text-[#556960]">
+                        Settled dining and takeaway orders will automatically appear in this financial ledger.
+                      </p>
                     </div>
                   </td>
-                  <td className="py-3.5 px-4">
-                    <div className="flex flex-col">
-                      <span className="font-semibold text-stone-900">{tx.customer}</span>
-                      <span className="text-[11px] text-stone-400">{tx.server}</span>
-                    </div>
+                </tr>
+              ) : (
+                filteredTx.map((tx) => (
+                  <tr key={tx.id} className="hover:bg-[#faf8f5] transition-colors">
+                    <td className="py-3.5 px-3">
+                      <span className="font-mono font-bold text-[#1b3b2f] block">{tx.id}</span>
+                      <span className="text-[10px] text-[#85988e]">Order {tx.orderNumber}</span>
+                    </td>
+
+                  <td className="py-3.5 px-3">
+                    <span className="inline-flex items-center gap-1 font-bold text-[#162820]">
+                      {tx.tableBadge}
+                    </span>
+                    <span className="text-[10px] text-[#556960] block">{tx.channel}</span>
                   </td>
-                  <td className="py-3.5 px-4 text-stone-500 font-mono text-[11px]">{tx.timestamp}</td>
-                  <td className="py-3.5 px-4">
-                    <div className="flex items-center gap-1.5 text-stone-700">
-                      <CreditCard className="w-3.5 h-3.5 text-[#1f4e47]" />
-                      <span>{tx.method}</span>
-                    </div>
+
+                  <td className="py-3.5 px-3 font-medium text-[#162820]">{tx.customer}</td>
+
+                  <td className="py-3.5 px-3 text-[#556960]">{tx.server}</td>
+
+                  <td className="py-3.5 px-3 text-[#85988e] font-sans">{tx.timestamp}</td>
+
+                  <td className="py-3.5 px-3 text-[#162820] font-medium">{tx.method}</td>
+
+                  <td className="py-3.5 px-3 font-serif font-bold text-[#1b3b2f] text-sm">
+                    {formatCurrency(tx.amount)}
                   </td>
-                  <td className="py-3.5 px-4 text-right font-black text-stone-900 font-mono">
-                    +${tx.amount.toFixed(2)}
-                  </td>
-                  <td className="py-3.5 px-4 text-center">
-                    <span
-                      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase ${
-                        tx.status === 'Settled'
-                          ? 'bg-emerald-50 text-[#109955]'
-                          : 'bg-amber-50 text-[#d97706]'
-                      }`}
-                    >
-                      <span className={`w-1.5 h-1.5 rounded-full ${tx.status === 'Settled' ? 'bg-[#109955]' : 'bg-[#d97706]'}`} />
+
+                  <td className="py-3.5 px-3">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#eef4f0] text-[#1b3b2f] border border-[#d2ded6]">
+                      <CheckCircle2 className="w-3 h-3 text-[#3a7d5c]" />
                       {tx.status}
                     </span>
                   </td>
+
+                  <td className="py-3.5 px-3 text-right">
+                    <button
+                      onClick={() => setSelectedTx(tx)}
+                      className="p-1.5 rounded-xl hover:bg-[#eef4f0] text-[#556960] hover:text-[#1b3b2f] transition-colors inline-flex items-center gap-1"
+                      title="View Receipt Slip"
+                    >
+                      <Receipt className="w-3.5 h-3.5" />
+                      <span className="text-[10px] font-semibold">Slip</span>
+                    </button>
+                  </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Slip Modal */}
+      {selectedTx && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/40 backdrop-blur-xs">
+          <div className="bg-[#faf8f5] rounded-4xl p-6 max-w-sm w-full border border-[#e6e2da] shadow-xl relative animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-center justify-between pb-3 border-b border-[#e6e2da]">
+              <div>
+                <h3 className="text-base font-serif font-bold text-[#1b3b2f]">Settlement Receipt</h3>
+                <p className="text-[11px] text-[#556960]">{selectedTx.id}</p>
+              </div>
+              <button
+                onClick={() => setSelectedTx(null)}
+                className="w-7 h-7 rounded-full bg-white text-[#556960] hover:text-[#1b3b2f] flex items-center justify-center border border-[#e6e2da]"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="mt-4 p-4 bg-white rounded-2xl border border-[#e6e2da] font-mono text-xs space-y-3">
+              <div className="text-center border-b border-dashed border-[#e6e2da] pb-3">
+                <p className="font-bold text-sm text-[#1b3b2f]">{restaurant.name}</p>
+                <p className="text-[10px] text-[#85988e]">{selectedTx.timestamp}</p>
+                <p className="text-xs font-bold text-[#1b3b2f] mt-1">TABLE: {selectedTx.tableBadge}</p>
+              </div>
+
+              <div className="space-y-1 py-1 text-xs">
+                <div className="flex justify-between text-[#556960]">
+                  <span>Customer:</span>
+                  <span className="font-medium text-[#162820]">{selectedTx.customer}</span>
+                </div>
+                <div className="flex justify-between text-[#556960]">
+                  <span>Server:</span>
+                  <span className="font-medium text-[#162820]">{selectedTx.server}</span>
+                </div>
+                <div className="flex justify-between text-[#556960]">
+                  <span>Method:</span>
+                  <span className="font-medium text-[#162820]">{selectedTx.method}</span>
+                </div>
+                <div className="flex justify-between text-[#556960]">
+                  <span>Subtotal:</span>
+                  <span className="font-medium text-[#162820]">{formatCurrency(selectedTx.amount * 0.95)}</span>
+                </div>
+                <div className="flex justify-between text-[#556960]">
+                  <span>GST (5%):</span>
+                  <span className="font-medium text-[#162820]">{formatCurrency(selectedTx.amount * 0.05)}</span>
+                </div>
+              </div>
+
+              <div className="border-t border-dashed border-[#e6e2da] pt-3 flex justify-between font-bold text-sm text-[#1b3b2f]">
+                <span>TOTAL PAID</span>
+                <span>{formatCurrency(selectedTx.amount)}</span>
+              </div>
+            </div>
+
+            <div className="mt-4 flex gap-2">
+              <Button
+                variant="outline"
+                className="w-1/2 rounded-2xl text-xs"
+                onClick={() => setSelectedTx(null)}
+              >
+                Close
+              </Button>
+              <Button
+                className="w-1/2 rounded-2xl text-xs bg-[#1b3b2f] text-white hover:bg-[#122820] flex items-center justify-center gap-1.5"
+                onClick={() => {
+                  window.print();
+                  setSelectedTx(null);
+                }}
+              >
+                <Printer className="w-3.5 h-3.5" />
+                <span>Print Slip</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

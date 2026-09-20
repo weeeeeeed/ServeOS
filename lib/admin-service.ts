@@ -19,6 +19,7 @@ import {
   INITIAL_CATEGORIES,
   INITIAL_MENU_ITEMS,
 } from './mock-data';
+import { toValidUUID } from './uuid-utils';
 
 const STORAGE_RESTAURANTS_KEY = 'qr_saas_restaurants_v2';
 const STORAGE_SUBSCRIPTIONS_KEY = 'qr_saas_subscriptions_v2';
@@ -115,24 +116,40 @@ export const AdminService = {
   },
 
   // ==========================================
-  // GET ALL TENANTS (With enrichment)
+  // GET ALL TENANTS (With live metrics enrichment)
   // ==========================================
   async getAllTenants(): Promise<TenantWithDetails[]> {
     let rawRestaurants: Restaurant[] = [];
     let rawUsers: User[] = [];
     let rawSubs: Subscription[] = [];
+    let rawOrders: { restaurant_id: string; total_amount: number }[] = [];
+    let rawMenuItems: { restaurant_id: string }[] = [];
+    let rawCategories: { restaurant_id: string }[] = [];
 
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
-        const [{ data: rData }, { data: uData }, { data: sData }] = await Promise.all([
+        const [
+          { data: rData },
+          { data: uData },
+          { data: sData },
+          { data: oData },
+          { data: mData },
+          { data: cData },
+        ] = await Promise.all([
           supabase.from('restaurants').select('*').order('created_at', { ascending: false }),
           supabase.from('users').select('*'),
           supabase.from('subscriptions').select('*'),
+          supabase.from('orders').select('restaurant_id, total_amount'),
+          supabase.from('menu_items').select('restaurant_id'),
+          supabase.from('categories').select('restaurant_id'),
         ]);
         if (rData) rawRestaurants = rData;
         if (uData) rawUsers = uData;
         if (sData) rawSubs = sData;
+        if (oData) rawOrders = oData;
+        if (mData) rawMenuItems = mData;
+        if (cData) rawCategories = cData;
       } catch (err) {
         console.warn('Supabase getAllTenants failed, using local store:', err);
       }
@@ -149,15 +166,30 @@ export const AdminService = {
 
     return rawRestaurants.map((r, i) => {
       const owner = userMap.get(r.owner_id);
-      const sub = subMap.get(r.id);
+      const sub = subMap.get(r.id) || (r.id ? subMap.get(toValidUUID(r.id)) : undefined);
+
+      const restoOrders = rawOrders.filter(
+        (o) => o.restaurant_id === r.id || (r.id && toValidUUID(o.restaurant_id) === toValidUUID(r.id))
+      );
+      const restoMenuItems = rawMenuItems.filter(
+        (m) => m.restaurant_id === r.id || (r.id && toValidUUID(m.restaurant_id) === toValidUUID(r.id))
+      );
+      const restoCategories = rawCategories.filter(
+        (c) => c.restaurant_id === r.id || (r.id && toValidUUID(c.restaurant_id) === toValidUUID(r.id))
+      );
+
+      const liveRevenue = restoOrders.reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
+      const liveOrdersCount = restoOrders.length;
+      const liveItemsCount = restoMenuItems.length;
+      const liveCatsCount = restoCategories.length;
 
       return {
         ...r,
         owner: owner ? { id: owner.id, name: owner.name, email: owner.email } : undefined,
-        totalMenuItems: r.id === 'rst-01' ? 8 : 12 + i * 4,
-        totalCategories: r.id === 'rst-01' ? 5 : 4,
-        totalOrders: r.id === 'rst-01' ? 42 : 28 + i * 15,
-        grossRevenue: r.id === 'rst-01' ? 1420.50 : 890.00 + i * 450,
+        totalMenuItems: rawMenuItems.length > 0 ? liveItemsCount : (r.id === 'rst-01' ? 8 : 12 + i * 4),
+        totalCategories: rawCategories.length > 0 ? liveCatsCount : (r.id === 'rst-01' ? 5 : 4),
+        totalOrders: rawOrders.length > 0 ? liveOrdersCount : (r.id === 'rst-01' ? 42 : 28 + i * 15),
+        grossRevenue: rawOrders.length > 0 ? liveRevenue : (r.id === 'rst-01' ? 1420.50 : 890.00 + i * 450),
         subscriptionPlan: sub?.plan || 'Pro',
         subscriptionExpiry: sub?.expiry_date || new Date(Date.now() + 300 * 86400000).toISOString(),
       };
@@ -171,6 +203,7 @@ export const AdminService = {
     restaurantId: string,
     status: SubscriptionStatus
   ): Promise<Restaurant> {
+    const validId = toValidUUID(restaurantId);
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
@@ -178,13 +211,13 @@ export const AdminService = {
           supabase
             .from('restaurants')
             .update({ subscription_status: status })
-            .eq('id', restaurantId)
+            .or(`id.eq.${restaurantId},id.eq.${validId}`)
             .select()
             .single(),
           supabase
             .from('subscriptions')
             .update({ status })
-            .eq('restaurant_id', restaurantId),
+            .or(`restaurant_id.eq.${restaurantId},restaurant_id.eq.${validId}`),
         ]);
         if (rData) return rData;
       } catch (err) {
@@ -193,7 +226,7 @@ export const AdminService = {
     }
 
     const allRestos = getStoredRestaurants();
-    const idx = allRestos.findIndex((r) => r.id === restaurantId);
+    const idx = allRestos.findIndex((r) => r.id === restaurantId || r.id === validId);
     if (idx === -1) throw new Error('Restaurant not found');
 
     const updated: Restaurant = {
@@ -205,7 +238,7 @@ export const AdminService = {
     saveStoredRestaurants(allRestos);
 
     const allSubs = getStoredSubscriptions();
-    const sIdx = allSubs.findIndex((s) => s.restaurant_id === restaurantId);
+    const sIdx = allSubs.findIndex((s) => s.restaurant_id === restaurantId || s.restaurant_id === validId);
     if (sIdx !== -1) {
       allSubs[sIdx] = {
         ...allSubs[sIdx],
@@ -222,23 +255,24 @@ export const AdminService = {
   // DELETE TENANT (Cascade)
   // ==========================================
   async deleteTenant(restaurantId: string): Promise<void> {
+    const validId = toValidUUID(restaurantId);
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         const { error } = await supabase
           .from('restaurants')
           .delete()
-          .eq('id', restaurantId);
+          .or(`id.eq.${restaurantId},id.eq.${validId}`);
         if (error) throw error;
       } catch (err) {
         console.warn('Supabase deleteTenant failed, deleting locally:', err);
       }
     }
 
-    const allRestos = getStoredRestaurants().filter((r) => r.id !== restaurantId);
+    const allRestos = getStoredRestaurants().filter((r) => r.id !== restaurantId && r.id !== validId);
     saveStoredRestaurants(allRestos);
 
-    const allSubs = getStoredSubscriptions().filter((s) => s.restaurant_id !== restaurantId);
+    const allSubs = getStoredSubscriptions().filter((s) => s.restaurant_id !== restaurantId && s.restaurant_id !== validId);
     saveStoredSubscriptions(allSubs);
   },
 
@@ -294,6 +328,7 @@ export const AdminService = {
       status: SubscriptionStatus;
     }
   ): Promise<Subscription> {
+    const validId = toValidUUID(restaurantId);
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
@@ -301,7 +336,7 @@ export const AdminService = {
           supabase
             .from('subscriptions')
             .upsert({
-              restaurant_id: restaurantId,
+              restaurant_id: validId,
               plan: params.plan,
               expiry_date: params.expiryDate,
               status: params.status,
@@ -311,7 +346,7 @@ export const AdminService = {
           supabase
             .from('restaurants')
             .update({ subscription_status: params.status })
-            .eq('id', restaurantId),
+            .or(`id.eq.${restaurantId},id.eq.${validId}`),
         ]);
         if (subData) return subData;
       } catch (err) {

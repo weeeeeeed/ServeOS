@@ -3,6 +3,7 @@
 import { createClient, isSupabaseConfigured } from './supabase/client';
 import { User, Restaurant, TenantWithDetails, SubscriptionStatus } from './types';
 import { INITIAL_USERS, INITIAL_RESTAURANTS } from './mock-data';
+import { toValidUUID } from './uuid-utils';
 
 const STORAGE_USERS_KEY = 'qr_saas_users_v1';
 const STORAGE_RESTAURANTS_KEY = 'qr_saas_restaurants_v1';
@@ -77,6 +78,16 @@ export const AuthService = {
       if (!raw) return { user: null, restaurant: null };
       const parsed = JSON.parse(raw);
       
+      // If Supabase is configured and restaurant has a mock ID like rst-01, bridge it to UUID
+      if (isSupabaseConfigured()) {
+        if (parsed.restaurant?.id) {
+          parsed.restaurant.id = toValidUUID(parsed.restaurant.id);
+        }
+        if (parsed.user?.id) {
+          parsed.user.id = toValidUUID(parsed.user.id);
+        }
+      }
+
       // Sync cookie if session exists
       if (parsed.user) {
         setAuthCookie(parsed.user);
@@ -118,40 +129,46 @@ export const AuthService = {
           .from('users')
           .select('*')
           .eq('id', authData.user.id)
-          .single();
+          .maybeSingle();
 
-        if (userError || !userData) {
-          // Fallback if trigger was delayed
-          const fallbackUser: User = {
-            id: authData.user.id,
-            name: authData.user.user_metadata?.name || cleanEmail.split('@')[0],
-            email: cleanEmail,
-            role: (authData.user.user_metadata?.role as 'admin' | 'owner') || 'owner',
-            created_at: new Date().toISOString(),
-          };
-          this.setSession(fallbackUser);
-          return { user: fallbackUser, restaurant: null };
-        }
+        const activeUser: User = userData || {
+          id: authData.user.id,
+          name: authData.user.user_metadata?.name || cleanEmail.split('@')[0],
+          email: cleanEmail,
+          role: (authData.user.user_metadata?.role as 'admin' | 'owner') || 'owner',
+          created_at: new Date().toISOString(),
+        };
 
         let restaurant: Restaurant | null = null;
-        if (userData.role === 'owner') {
+        if (activeUser.role === 'owner') {
           const { data: rData } = await supabase
             .from('restaurants')
             .select('*')
-            .eq('owner_id', userData.id)
-            .single();
-          restaurant = rData || null;
+            .eq('owner_id', activeUser.id)
+            .maybeSingle();
+
+          if (rData) {
+            restaurant = rData;
+          } else {
+            // Check for demo or first available restaurant in database
+            const { data: fallbackRest } = await supabase
+              .from('restaurants')
+              .select('*')
+              .limit(1)
+              .maybeSingle();
+            restaurant = fallbackRest || null;
+          }
         }
 
-        this.setSession(userData, restaurant);
-        return { user: userData, restaurant };
+        this.setSession(activeUser, restaurant);
+        return { user: activeUser, restaurant };
       } catch (err: any) {
-        console.warn('Supabase auth failed, trying local store/demo fallback:', err?.message);
-        // If live Supabase failed, check local store for demo users
+        console.error('Supabase authentication failed:', err?.message || err);
+        throw new Error(err?.message || 'Authentication failed. Please check your credentials.');
       }
     }
 
-    // Local / Demo Mode Execution
+    // Local / Demo Mode Execution (Only when Supabase is not configured)
     const users = getStoredUsers();
     let user = users.find((u) => u.email.toLowerCase() === cleanEmail);
 
@@ -212,6 +229,30 @@ export const AuthService = {
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
+
+        // 1. Pre-check if email already exists in public.users
+        const { data: existingUser } = await supabase
+          .from('users')
+          .select('id, email')
+          .eq('email', cleanEmail)
+          .maybeSingle();
+
+        if (existingUser) {
+          throw new Error('An account with this email address already exists. Please log in instead.');
+        }
+
+        // 2. Pre-check if restaurant slug is already taken
+        const { data: existingSlug } = await supabase
+          .from('restaurants')
+          .select('id, slug')
+          .eq('slug', cleanSlug)
+          .maybeSingle();
+
+        if (existingSlug) {
+          throw new Error(`The URL slug "${cleanSlug}" is already taken by another restaurant. Please choose a different custom slug.`);
+        }
+
+        // 3. Register user in Supabase Auth
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: cleanEmail,
           password: params.password || 'TemporaryPass123!',
@@ -226,9 +267,26 @@ export const AuthService = {
         if (authError) throw authError;
         if (!authData.user) throw new Error('Registration failed');
 
+        // Check for GoTrue silent duplicate signup (empty identities array)
+        if (authData.user.identities && authData.user.identities.length === 0) {
+          throw new Error('An account with this email address already exists. Please log in instead.');
+        }
+
         const userId = authData.user.id;
 
-        // Ensure user record in public.users
+        // 4. Ensure active session if possible (or sign in)
+        if (!authData.session && params.password) {
+          try {
+            await supabase.auth.signInWithPassword({
+              email: cleanEmail,
+              password: params.password,
+            });
+          } catch {
+            // Non-blocking: proceed with registration
+          }
+        }
+
+        // 5. Ensure user record in public.users
         const userObj: User = {
           id: userId,
           name: params.name,
@@ -237,7 +295,18 @@ export const AuthService = {
           created_at: new Date().toISOString(),
         };
 
-        // Insert restaurant
+        // Explicitly upsert user in public.users
+        const { error: userError } = await supabase.from('users').upsert({
+          id: userId,
+          name: params.name,
+          email: cleanEmail,
+          role: 'owner',
+        });
+        if (userError) {
+          console.warn('public.users upsert notice:', userError.message);
+        }
+
+        // 6. Insert restaurant
         const { data: restData, error: restError } = await supabase
           .from('restaurants')
           .insert({
@@ -251,16 +320,34 @@ export const AuthService = {
           .select()
           .single();
 
-        if (restError) throw restError;
+        if (restError) {
+          if (restError.code === '23503' || restError.message?.includes('restaurants_owner_id_fkey')) {
+            throw new Error('User account could not be linked. An account with this email may already exist — please log in instead.');
+          }
+          if (restError.code === '23505' || restError.message?.includes('restaurants_slug_key')) {
+            throw new Error(`The URL slug "${cleanSlug}" is already taken. Please choose a different restaurant name or slug.`);
+          }
+          throw restError;
+        }
+
+        // 7. Auto-seed starter categories in Supabase for the new establishment
+        const starterCategories = ['Chef Specials', 'Main Courses', 'Beverages'];
+        for (const catName of starterCategories) {
+          await supabase.from('categories').insert({
+            restaurant_id: restData.id,
+            name: catName,
+          });
+        }
 
         this.setSession(userObj, restData);
         return { user: userObj, restaurant: restData };
       } catch (err: any) {
-        console.warn('Supabase registration failed, falling back to local storage:', err?.message);
+        console.error('Supabase registration error:', err?.message || err);
+        throw new Error(err?.message || 'Registration failed. Please check your details and try again.');
       }
     }
 
-    // Local / Demo Mode Registration
+    // Local / Demo Mode Registration (Only when Supabase is not configured)
     const users = getStoredUsers();
     const existingUser = users.find((u) => u.email.toLowerCase() === cleanEmail);
     if (existingUser) {
@@ -315,13 +402,33 @@ export const AuthService = {
     restaurantId: string,
     updates: Partial<Restaurant>
   ): Promise<Restaurant> {
+    const validRestaurantId = toValidUUID(restaurantId);
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
+        const allowedCols = [
+          'name',
+          'address',
+          'phone',
+          'description',
+          'logo',
+          'opening_hours',
+          'subscription_status',
+          'marketing_enabled',
+        ];
+        const sanitizedUpdates: Record<string, any> = {};
+        for (const [k, v] of Object.entries(updates)) {
+          if (allowedCols.includes(k) && v !== undefined) {
+            sanitizedUpdates[k] = v;
+          }
+        }
+        sanitizedUpdates.updated_at = new Date().toISOString();
+
         const { data, error } = await supabase
           .from('restaurants')
-          .update(updates)
-          .eq('id', restaurantId)
+          .update(sanitizedUpdates)
+          .eq('id', validRestaurantId)
           .select()
           .single();
 
@@ -329,17 +436,18 @@ export const AuthService = {
         
         // Update local session cache if it matches
         const current = this.getCurrentSession();
-        if (current.restaurant?.id === restaurantId) {
+        if (current.restaurant?.id === restaurantId || current.restaurant?.id === validRestaurantId) {
           this.setSession(current.user, data);
         }
         return data;
       } catch (err: any) {
-        console.warn('Supabase restaurant update failed, updating local state:', err?.message);
+        console.error('Supabase restaurant update error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to update restaurant profile in database');
       }
     }
 
     const restaurants = getStoredRestaurants();
-    const index = restaurants.findIndex((r) => r.id === restaurantId);
+    const index = restaurants.findIndex((r) => r.id === restaurantId || r.id === validRestaurantId);
     if (index === -1) throw new Error('Restaurant not found');
 
     const updated: Restaurant = {
@@ -351,7 +459,7 @@ export const AuthService = {
     saveStoredRestaurants(restaurants);
 
     const current = this.getCurrentSession();
-    if (current.restaurant?.id === restaurantId) {
+    if (current.restaurant?.id === restaurantId || current.restaurant?.id === validRestaurantId) {
       this.setSession(current.user, updated);
     }
 
@@ -367,7 +475,7 @@ export const AuthService = {
           .from('restaurants')
           .select('*')
           .eq('slug', cleanSlug)
-          .single();
+          .maybeSingle();
 
         if (!error && data) return data;
       } catch (err) {
@@ -376,7 +484,14 @@ export const AuthService = {
     }
 
     const restaurants = getStoredRestaurants();
-    return restaurants.find((r) => r.slug.toLowerCase() === cleanSlug) || null;
+    const found = restaurants.find((r) => r.slug.toLowerCase() === cleanSlug) || null;
+    if (found && isSupabaseConfigured()) {
+      return {
+        ...found,
+        id: toValidUUID(found.id),
+      };
+    }
+    return found;
   },
 
   async getAllTenants(): Promise<TenantWithDetails[]> {
@@ -438,21 +553,22 @@ export const AuthService = {
     restaurantId: string,
     subscription_status: SubscriptionStatus
   ): Promise<void> {
+    const validRestaurantId = toValidUUID(restaurantId);
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         const { error } = await supabase
           .from('restaurants')
-          .update({ subscription_status })
-          .eq('id', restaurantId);
+          .update({ subscription_status, updated_at: new Date().toISOString() })
+          .or(`id.eq.${validRestaurantId},id.eq.${restaurantId}`);
         if (error) throw error;
-      } catch (err) {
-        console.warn('Supabase updateSubscriptionStatus failed:', err);
+      } catch (err: any) {
+        console.error('Supabase updateSubscriptionStatus failed:', err?.message || err);
       }
     }
 
     const restaurants = getStoredRestaurants();
-    const index = restaurants.findIndex((r) => r.id === restaurantId);
+    const index = restaurants.findIndex((r) => r.id === restaurantId || r.id === validRestaurantId);
     if (index !== -1) {
       restaurants[index].subscription_status = subscription_status;
       restaurants[index].updated_at = new Date().toISOString();

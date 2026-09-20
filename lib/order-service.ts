@@ -3,6 +3,7 @@
 import { createClient, isSupabaseConfigured } from './supabase/client';
 import { Order, OrderItem, OrderWithItems, OrderStatus, CartItem, OrderStats } from './types';
 import { INITIAL_ORDERS } from './mock-data';
+import { toValidUUID } from './uuid-utils';
 
 const STORAGE_ORDERS_KEY = 'qr_saas_orders_v2';
 
@@ -46,15 +47,17 @@ export const OrderService = {
       0
     );
 
+    const validRestaurantId = toValidUUID(params.restaurantId);
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
 
-        // 1. Insert order
+        // 1. Insert order into Supabase
         const { data: orderData, error: orderError } = await supabase
           .from('orders')
           .insert({
-            restaurant_id: params.restaurantId,
+            restaurant_id: validRestaurantId,
             table_number: params.tableNumber.trim(),
             customer_notes: params.customerNotes?.trim() || null,
             status: 'pending',
@@ -65,10 +68,10 @@ export const OrderService = {
 
         if (orderError) throw orderError;
 
-        // 2. Insert line items
+        // 2. Insert line items into Supabase
         const lineItems = params.items.map((it) => ({
           order_id: orderData.id,
-          menu_item_id: it.menuItem.id,
+          menu_item_id: toValidUUID(it.menuItem.id),
           name: it.menuItem.name,
           quantity: it.quantity,
           price: it.menuItem.price,
@@ -81,12 +84,21 @@ export const OrderService = {
 
         if (itemsError) throw itemsError;
 
-        return {
+        const completeOrder: OrderWithItems = {
           ...orderData,
           items: itemsData || [],
         };
+
+        // Cache in local store for instantaneous UI reads
+        const allOrders = getStoredOrders();
+        allOrders.unshift(completeOrder);
+        saveStoredOrders(allOrders);
+
+        console.log('✅ Supabase order placed successfully:', orderData.id);
+        return completeOrder;
       } catch (err: any) {
-        console.warn('Supabase createOrder failed, saving to local store:', err?.message);
+        console.error('❌ Supabase createOrder error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to send order to kitchen database');
       }
     }
 
@@ -161,13 +173,15 @@ export const OrderService = {
   async getRestaurantOrders(restaurantId: string, status?: OrderStatus | 'all'): Promise<OrderWithItems[]> {
     if (!restaurantId) return [];
 
+    const validRestaurantId = toValidUUID(restaurantId);
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         let query = supabase
           .from('orders')
           .select('*, order_items(*)')
-          .eq('restaurant_id', restaurantId)
+          .or(`restaurant_id.eq.${validRestaurantId},restaurant_id.eq.${restaurantId}`)
           .order('created_at', { ascending: false });
 
         if (status && status !== 'all') {
@@ -187,7 +201,7 @@ export const OrderService = {
     }
 
     const allOrders = getStoredOrders();
-    let filtered = allOrders.filter((o) => o.restaurant_id === restaurantId);
+    let filtered = allOrders.filter((o) => o.restaurant_id === restaurantId || o.restaurant_id === validRestaurantId);
     if (status && status !== 'all') {
       filtered = filtered.filter((o) => o.status === status);
     }
@@ -202,27 +216,44 @@ export const OrderService = {
     status: OrderStatus,
     restaurantId?: string
   ): Promise<OrderWithItems> {
+    const validOrderId = toValidUUID(orderId);
+    const validRestaurantId = restaurantId ? toValidUUID(restaurantId) : undefined;
+
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         let query = supabase
           .from('orders')
-          .update({ status })
-          .eq('id', orderId);
+          .update({ status, updated_at: new Date().toISOString() })
+          .or(`id.eq.${validOrderId},id.eq.${orderId}`);
 
-        if (restaurantId) {
-          query = query.eq('restaurant_id', restaurantId);
+        if (validRestaurantId) {
+          query = query.or(`restaurant_id.eq.${validRestaurantId},restaurant_id.eq.${restaurantId}`);
         }
 
-        const { data, error } = await query.select().single();
+        const { data, error } = await query.select('*, order_items(*)').single();
         if (error) throw error;
+
+        const completeOrder: OrderWithItems = {
+          ...data,
+          items: data.order_items || [],
+        };
+
+        const allOrders = getStoredOrders();
+        const index = allOrders.findIndex((o) => o.id === orderId || o.id === validOrderId);
+        if (index !== -1) {
+          allOrders[index] = completeOrder;
+          saveStoredOrders(allOrders);
+        }
+        return completeOrder;
       } catch (err: any) {
-        console.warn('Supabase updateOrderStatus failed, updating local store:', err?.message);
+        console.error('Supabase updateOrderStatus error:', err?.message || err);
+        throw new Error(err?.message || 'Failed to update order status in database');
       }
     }
 
     const allOrders = getStoredOrders();
-    const index = allOrders.findIndex((o) => o.id === orderId && (!restaurantId || o.restaurant_id === restaurantId));
+    const index = allOrders.findIndex((o) => (o.id === orderId || o.id === validOrderId) && (!restaurantId || o.restaurant_id === restaurantId || o.restaurant_id === validRestaurantId));
     if (index === -1) throw new Error('Order not found');
 
     const updated: OrderWithItems = {
@@ -244,19 +275,20 @@ export const OrderService = {
     onUpdate: () => void
   ): () => void {
     let supabaseChannel: any = null;
+    const validRestaurantId = toValidUUID(restaurantId);
 
     if (isSupabaseConfigured()) {
       try {
         const supabase = createClient();
         supabaseChannel = supabase
-          .channel(`restaurant_orders_${restaurantId}`)
+          .channel(`restaurant_orders_${validRestaurantId}`)
           .on(
             'postgres_changes',
             {
               event: '*',
               schema: 'public',
               table: 'orders',
-              filter: `restaurant_id=eq.${restaurantId}`,
+              filter: `restaurant_id=eq.${validRestaurantId}`,
             },
             () => {
               onUpdate();
